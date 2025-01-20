@@ -1,0 +1,23 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name:
+      config-service
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///C:/Users/bbseb/Documents/programmation/ashs2/ashs/backend/configuration/
+          default-label: main
+
+encrypt:
+  key-store:
+    location: classpath:config-keystore.p12
+    password: ${CONFIG_SERVICE_KEYSTORE_PASS}
+    alias: config-key
+    type: 'PKCS12'
+
+
+

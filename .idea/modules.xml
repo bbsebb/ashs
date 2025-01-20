@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2048379408/ashs.backend.backend_config-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/2048379408/ashs.backend.backend_config-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/backend/backend_discovery-service/ashs.backend.backend_discovery-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/backend/backend_discovery-service/ashs.backend.backend_discovery-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ashs.backend.backend_gateway-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ashs.backend.backend_gateway-service.main.iml" />
     </modules>
