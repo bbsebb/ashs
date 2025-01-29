@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///C:/Users/bbseb/Documents/programmation/ashs2/ashs/backend/configuration/
+
+
+
