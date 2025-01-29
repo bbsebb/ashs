@@ -1,2 +1,4 @@
 /backend/configuration/
 /vault/
+**/build/
+**/.gradle/
