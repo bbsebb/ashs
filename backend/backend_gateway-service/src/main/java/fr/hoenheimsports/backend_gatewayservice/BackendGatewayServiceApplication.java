@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BackendGatewayServiceApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(BackendGatewayServiceApplication.class, args);
     }
+
 
 }
