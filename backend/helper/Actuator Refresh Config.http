@@ -1,0 +1,19 @@
+### POST Actuator/refresh on config-service
+POST http://localhost:8888/actuator/refresh
+
+###
+
+
+
+### POST Actuator/refresh on discovery-service
+POST http://localhost:8761/actuator/refresh
+
+###
+
+
+
+### POST Actuator/refresh on gateway-service
+POST http://localhost:8080/actuator/refresh
+
+###
+
