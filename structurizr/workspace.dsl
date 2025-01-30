@@ -142,10 +142,22 @@ workspace "ASHS" "Handball Club Management and Information System" {
                 tags "spring spring-cloud backend"
             }
 
+            dbTraining = container "Postgres db training" {
+                description "Postgres db for training service"
+                technology "postegresql"
+                tag "db psql"
+            }
+
+            dbInstagram = container "Postgres db instagram" {
+                description "Postgres db for isntagram service"
+                technology "postegresql"
+                tag "db psql"
+            }
+
         }
 
         googleMap = softwareSystem "Google Maps API" "Provides mapping data and services"
-        emailProvider = softwareSystem "Gmail provider" "Provides sending email"
+        emailProvider = softwareSystem "SMTP provider" "Provides sending email with gmail"
         authProvider = softwareSystem "Keycloak" "Provides authentification and authorization"
         gitHubConfigRepo = softwareSystem "GitHub Configuration Repository" "Hosts configuration files for the Config Service"
 
@@ -168,13 +180,13 @@ workspace "ASHS" "Handball Club Management and Information System" {
         ss.publicFrontend.teamView -> ss.publicFrontend.teamService "Uses"
 
         //Inside to API or providers
-        ss.publicFrontend.instagramService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
+        ss.publicFrontend.instagramService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
         ss.publicFrontend.hallService -> googleMap "Uses"
-        ss.publicFrontend.hallService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
-        ss.publicFrontend.trainingSessionService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
-        ss.publicFrontend.coachService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
-        ss.publicFrontend.teamService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
-        ss.publicFrontend.contactService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
+        ss.publicFrontend.hallService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
+        ss.publicFrontend.trainingSessionService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
+        ss.publicFrontend.coachService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
+        ss.publicFrontend.teamService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
+        ss.publicFrontend.contactService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
 
         // admin user
         // User to inside
@@ -208,12 +220,14 @@ workspace "ASHS" "Handball Club Management and Information System" {
 
         ss.instagramService -> ss.discoveryService "Registers itself to"
         ss.instagramService -> ss.configService "Fetches configurations from"
+        ss.instagramService -> ss.dbInstagram "Reads from and write to" "SQL"
 
         ss.contactService -> ss.discoveryService "Registers itself to"
         ss.contactService -> ss.configService "Fetches configurations from"
 
         ss.trainingService -> ss.discoveryService "Registers itself to"
         ss.trainingService -> ss.configService "Fetches configurations from"
+        ss.trainingService -> ss.dbTraining "Reads from and write to" "SQL"
 
         // Linking the config service to the GitHub repository
         ss.configService -> gitHubConfigRepo "Fetches configuration files from"
