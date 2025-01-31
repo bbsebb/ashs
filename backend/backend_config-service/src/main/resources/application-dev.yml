@@ -3,7 +3,7 @@ spring:
     config:
       server:
         native:
-          search-locations: file:///C:/Users/bbseb/Documents/programmation/ashs2/ashs/backend/configuration/
+          search-locations: file:///C:/Users/bbseb/Documents/programmation/ashs/backend/configuration/
 management:
   zipkin:
     tracing:
