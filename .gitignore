@@ -20,3 +20,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/backend/.env
