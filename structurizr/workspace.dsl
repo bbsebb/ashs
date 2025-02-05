@@ -128,19 +128,64 @@ workspace "ASHS" "Handball Club Management and Information System" {
                 description "Retrieves and processes Instagram posts for display on the website."
                 technology "Spring"
                 tags "spring spring-cloud backend"
+                instagramController = component "instagramController" {
+                    description "Controller for instagram"
+                    technology "Spring MVC REST"
+                    tags "spring mvc rest controller"
+                }
+                instagramService = component "instagramService" {
+                    description "Service for instagram"
+                    technology "Spring"
+                    tags "spring service"
+                }
+                instagramRepository = component "instagramRepository" {
+                    description "Repository for instagram"
+                    technology "Spring Data JPA"
+                    tags "spring data jpa repository"
+                }
             }
+
+
+
 
             trainingService = container "training-service" {
                 description "Manages training data (teams, coaches, venues, training slots) and persists data in a PostgreSQL database."
                 technology "Spring"
                 tags "spring spring-cloud backend"
+                trainingController = component "trainingController" {
+                    description "Controller for training"
+                    technology "Spring MVC REST"
+                    tags "spring mvc rest controller"
+                }
+                trainingService = component "trainingService" {
+                    description "Service for training"
+                    technology "Spring"
+                    tags "spring service"
+                }
+                trainingRepository = component "trainingRepository" {
+                    description "Repository for training"
+                    technology "Spring Data JPA"
+                    tags "spring data jpa repository"
+                }
             }
+
 
             contactService = container "contact-service" {
                 description "Manages sending message forward gmail "
                 technology "Spring"
                 tags "spring spring-cloud backend"
+                emailController = component "emailController" {
+                    description "Controller for email"
+                    technology "Spring MVC REST"
+                    tags "spring mvc rest controller"
+                }
+                emailService = component "emailService" {
+                    description "Service for email"
+                    technology "Spring"
+                    tags "spring service"
+                }
             }
+
 
             dbTraining = container "Postgres db training" {
                 description "Postgres db for training service"
@@ -156,6 +201,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
 
         }
 
+        instagram = softwareSystem "Instagram API" "Provides instagram data and services"
         googleMap = softwareSystem "Google Maps API" "Provides mapping data and services"
         emailProvider = softwareSystem "SMTP provider" "Provides sending email with gmail"
         authProvider = softwareSystem "Keycloak" "Provides authentification and authorization"
@@ -209,29 +255,36 @@ workspace "ASHS" "Handball Club Management and Information System" {
         ss.adminFrontend.coachService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
         ss.adminFrontend.teamService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
 
-        
+
         //backend
-        ss.gatewayService -> ss.instagramService "Routes requests to"
-        ss.gatewayService -> ss.contactService "Routes requests to"
-        ss.gatewayService -> ss.trainingService "Routes requests to"
+        ss.gatewayService -> ss.instagramService.instagramController "Routes requests to"
+        ss.gatewayService -> ss.contactService.emailController "Routes requests to"
+        ss.gatewayService -> ss.trainingService.trainingController "Routes requests to"
 
         ss.gatewayService -> ss.discoveryService "Registers and discovers services from"
         ss.gatewayService -> ss.configService "Fetches configurations from"
 
         ss.instagramService -> ss.discoveryService "Registers itself to"
         ss.instagramService -> ss.configService "Fetches configurations from"
-        ss.instagramService -> ss.dbInstagram "Reads from and write to" "SQL"
+        ss.instagramService.instagramController -> ss.instagramService.instagramService "Uses"
+        ss.instagramService.instagramService -> ss.instagramService.instagramRepository "Uses"
+        ss.instagramService.instagramRepository -> ss.dbInstagram "Reads from and write to" "SQL"
 
         ss.contactService -> ss.discoveryService "Registers itself to"
         ss.contactService -> ss.configService "Fetches configurations from"
+        ss.contactService.emailController -> ss.contactService.emailService "Uses"
+
 
         ss.trainingService -> ss.discoveryService "Registers itself to"
         ss.trainingService -> ss.configService "Fetches configurations from"
-        ss.trainingService -> ss.dbTraining "Reads from and write to" "SQL"
+        ss.trainingService.trainingController -> ss.trainingService.trainingService "Uses"
+        ss.trainingService.trainingService -> ss.trainingService.trainingRepository "Uses"
+        ss.trainingService.trainingRepository -> ss.dbTraining "Reads from and write to" "SQL"
 
         // Linking the config service to the GitHub repository
         ss.configService -> gitHubConfigRepo "Fetches configuration files from"
-        ss.contactService -> emailProvider "uses to send email"
+        ss.contactService.emailService -> emailProvider "uses to send email"
+        ss.instagramService.instagramService -> instagram "Uses"
     }
 
     views {
@@ -245,12 +298,28 @@ workspace "ASHS" "Handball Club Management and Information System" {
             autolayout lr
         }
 
-        component ss.publicFrontend "Diagram3" {
+
+        component ss.instagramService "Diagram3" {
             include *
             autolayout
         }
 
-        component ss.adminFrontend "Diagram4" {
+        component ss.trainingService "Diagram4" {
+            include *
+            autolayout
+        }
+
+        component ss.contactService "Diagram5" {
+            include *
+            autolayout
+        }
+
+        component ss.publicFrontend "Diagram6" {
+            include *
+            autolayout
+        }
+
+        component ss.adminFrontend "Diagram7" {
             include *
             autolayout
         }
