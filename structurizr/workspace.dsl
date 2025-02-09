@@ -6,6 +6,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
         publicUser = person "Public user"
         adminUser = person "Administrator"
         ss = softwareSystem "Handball Club Management and Information System" {
+            authProvider = container "Keycloak" "Provides authentification and authorization"
             publicFrontend = container "public-fronted" {
                 description "The public-facing website for the handball club, providing information about the club, social media updates, and a contact form."
                 technology "Angular"
@@ -204,7 +205,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
         instagram = softwareSystem "Instagram API" "Provides instagram data and services"
         googleMap = softwareSystem "Google Maps API" "Provides mapping data and services"
         emailProvider = softwareSystem "SMTP provider" "Provides sending email with gmail"
-        authProvider = softwareSystem "Keycloak" "Provides authentification and authorization"
+        
         gitHubConfigRepo = softwareSystem "GitHub Configuration Repository" "Hosts configuration files for the Config Service"
 
 
@@ -249,6 +250,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
         ss.adminFrontend.coachManager -> ss.adminFrontend.coachService "Uses"
         ss.adminFrontend.teamManager -> ss.adminFrontend.teamService "Uses"
         //Inside to API or providers
+        ss.adminFrontend -> ss.authProvider "Authenticates and authorizes" "JWT" "auth"
         ss.adminFrontend.instagramService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
         ss.adminFrontend.hallService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
         ss.adminFrontend.trainingSessionService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
@@ -277,6 +279,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
 
         ss.trainingService -> ss.discoveryService "Registers itself to"
         ss.trainingService -> ss.configService "Fetches configurations from"
+        ss.trainingService -> ss.authProvider "JWT validation" "JWT" "auth"
         ss.trainingService.trainingController -> ss.trainingService.trainingService "Uses"
         ss.trainingService.trainingService -> ss.trainingService.trainingRepository "Uses"
         ss.trainingService.trainingRepository -> ss.dbTraining "Reads from and write to" "SQL"
