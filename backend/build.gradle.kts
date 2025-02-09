@@ -15,6 +15,9 @@ subprojects {
         }
     }
 
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
     extra["springCloudVersion"] = "2024.0.0"
 
     dependencyManagement {
@@ -48,6 +51,8 @@ subprojects {
  //test
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        testImplementation("org.mockito:mockito-junit-jupiter")
+
     }
 }
 
