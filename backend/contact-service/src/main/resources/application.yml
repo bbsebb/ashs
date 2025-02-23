@@ -6,21 +6,5 @@ spring:
     name: contact-service
   config:
     import: configserver:http://localhost:8888
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    protocol: smtp
-    username: contact@hoenheimsports.fr
-    password: #todo
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
-custom:
-  contact:
-    email: president@hoenheimsports.fr
 
 
