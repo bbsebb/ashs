@@ -13,6 +13,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of the {@link EmailService} interface responsible for sending emails.
+ * This service uses the {@link JavaMailSender} for email composition and delivery.
+ * It also adds a security warning message in the email body to notify the recipient about the sender.
+ */
 @Service
 @RefreshScope
 public class EmailServiceImpl implements EmailService {
@@ -26,8 +31,18 @@ public class EmailServiceImpl implements EmailService {
         this.javaMailSender = javaMailSender;
     }
 
+    /**
+     * Sends an email using the details provided in the {@link EmailRequest}.
+     * The email includes a security warning message in the body and is sent
+     * to the configured default recipient email address.
+     *
+     * @param emailRequest An {@link EmailRequest} object containing the sender's name,
+     *                     email address, and the message content to be sent.
+     *                     The {@link EmailRequest} must not be null.
+     * @throws EmailException     If an error occurs while sending the email using {@link JavaMailSender}.
+     */
     @Override
-    public void sendEmail(@NonNull EmailRequest emailRequest)   {
+    public void sendEmail(@NonNull EmailRequest emailRequest) {
         var name = emailRequest.name();
         var from = emailRequest.email();
         var message = emailRequest.message();
