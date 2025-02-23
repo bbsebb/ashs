@@ -1,117 +1,185 @@
-# Modélisation Fonctionnelle et Validation de l'Envoi d'un E-mail via Formulaire
-
-## 1. Cas d'Utilisation : Transmission d'un Message via un Formulaire
-
-### 1.1 Description Générale
-Dans le cadre d'une application web, un utilisateur soumet un formulaire de contact. Suite à cette action, un e-mail est généré et transmis à une adresse prédéfinie (non accessible depuis le frontend). Le système fournit un retour d'état indiquant le succès ou l'échec de l'opération.
+# Documentation de la Fonctionnalité : Contact
 
 ---
 
-## 2. Structuration en Modules Fonctionnels
+## 1. Introduction
 
-### 2.1 Envoi du Message
+Le service **Contact** permet aux utilisateurs d'un site web d'envoyer des messages à l'administration via un formulaire de contact. Une fois le formulaire soumis, le backend valide les données, formate un e-mail et l'envoie à une adresse prédéfinie.
 
-#### 2.1.1 Interface Utilisateur (Frontend - Angular)
-**Décomposition Fonctionnelle**
-- **Présentation du formulaire** incluant les champs suivants :
-    - Nom
-    - Adresse e-mail
-    - Contenu du message
-- **Validation des entrées utilisateur** :
-    - Nom : contrainte de longueur (3 à 50 caractères)
-    - Adresse e-mail : respect du format standard
-    - Message : contrainte de longueur (10 à 1000 caractères)
-- **Transmission des données** au backend via une requête HTTP POST
-- **Gestion des réponses serveur** :
-    - Succès : affichage d'un message de confirmation
-    - Erreur : affichage d'un message d'erreur approprié
-
-#### 2.1.2 Architecture Backend - Service de Gestion des E-mails (Spring Boot)
-**Décomposition Fonctionnelle**
-- **Validation et filtrage des données entrantes**
-- **Encapsulation des informations sous forme d'objet e-mail**
-- **Transmission du message via un protocole SMTP** (ex : Gmail SMTP, SendGrid...)
-- **Traitement des erreurs et retours de transmission**
-    - Succès : réponse HTTP 200
-    - Erreur : codes HTTP 400/500 accompagnés d'un message d'explication
-
-### 2.2 Gestion du Contact
-
-#### 2.2.1 Gestion Technique des E-mails
-**Décomposition Fonctionnelle**
-- Configuration du serveur SMTP
-- Intégration d'un gabarit (template) d'e-mail
-- Surveillance du bon fonctionnement de la connexion SMTP
-- Enregistrement des logs de transmission et des erreurs associées
-
-#### 2.2.2 Gestion de l'Adresse de Destination (Admin)
-**Décomposition Fonctionnelle**
-- **Affichage de l'adresse e-mail de destination**
-    - Accessible uniquement aux administrateurs via une interface sécurisée
-- **Rafraîchissement dynamique de l'adresse**
-    - Utilisation de `@RefreshScope` pour récupérer automatiquement la nouvelle adresse stockée dans les propriétés de l'application
-- **Mise à jour des propriétés**
-    - Modification manuelle du fichier de configuration
-    - Application des changements en temps réel sans redémarrage du service
+Ce document est structuré autour des aspects suivants :
+- **Frontend** : Interface visible par l'utilisateur (place laissée pour future implémentation).
+- **Backend** : Ensemble des services gérant la validation, l'envoi des données et la configuration.
+- **Diagrammes (Structurizr)** : À ajouter ultérieurement pour représenter les flux et l'architecture de ce module.
 
 ---
 
-## 3. Sécurité et Protection des Données
+## 2. Vision fonctionnelle
 
-### 3.1 Protection contre les attaques
-- **Protection contre le spam et les robots** :
-    - Implémentation d'un CAPTCHA (ex : Google reCAPTCHA)
-    - Limitation du nombre de requêtes via un mécanisme de rate limiting (ex : Spring Rate Limiter)
-- **Validation stricte des entrées utilisateur** :
-    - Filtrage des données pour éviter les injections SQL/XSS
-    - Vérification des formats et encodage des données sensibles
-- **Authentification et autorisation** :
-    - Restriction des accès aux services SMTP via des identifiants sécurisés
-    - Utilisation de OAuth2 pour les services e-mail tiers (ex : Gmail, SendGrid)
-
-### 3.2 Sécurisation des communications
-- **Chiffrement des données en transit** :
-    - Utilisation de TLS/SSL pour toutes les communications entre le frontend et le backend
-    - Chiffrement des e-mails via S/MIME ou PGP si nécessaire
-- **Protection des informations sensibles** :
-    - Masquage des adresses e-mail dans les réponses JSON
-    - Journalisation des erreurs sans exposer les détails des configurations SMTP
+Ce module se compose des éléments suivants :
+1. **Frontend** : Présente un formulaire utilisateur, valide les entrées, et communique les données au backend (partie non encore implémentée).
+2. **Backend** : Reçoit, valide et transmet les messages sous forme d'e-mails via un serveur SMTP.
+3. **Flux** (général) :
+  - Un utilisateur envoie des informations (nom, e-mail, message) via le formulaire.
+  - Le backend vérifie les données (sécurité, erreurs).
+  - Un e-mail est généré et transmis à une adresse administrateur.
 
 ---
 
-## 4. Validation et Tests Unitaires
+## 3. Architecture
 
-### 4.1 Tests Unitaires - Frontend
-| Composant | Méthode évaluée | Type de test |
-|------------|----------------|---------------|
-| Validation du nom | `validateName()` | Test de validation |
-| Validation de l'e-mail | `validateEmail()` | Test de validation |
-| Validation du message | `validateMessage()` | Test de validation |
-| Envoi du formulaire | `submitForm()` | Test unitaire (Mock HttpClient) |
-| Gestion des erreurs | `handleError()` | Test unitaire |
+### 3.1 Backend
 
-### 4.2 Tests Unitaires - Backend
-| Module | Méthode testée | Type de test |
-|---------|----------------|--------------|
-| `EmailService` | `sendEmail()` | Test unitaire (Mock SMTP) |
-| `ContactController` | `sendMessage()` | Test API (Mock EmailService) |
-| `EmailValidator` | `isValidEmail()` | Test de validation |
-| `AdminContactService` | `getContactEmail()` | Test unitaire |
-| `AdminContactService` | `refreshContactEmail()` | Test d'intégration |
+#### 3.1.1 Structure technique
 
-### 4.3 Tests d’Intégration
-| Scénario | Type de test |
-|----------|--------------|
-| Transmission effective d'un e-mail via SMTP | Test d'intégration |
-| Gestion d'une erreur SMTP (ex : authentification incorrecte) | Test d'intégration |
-| Modification et rafraîchissement de l'adresse e-mail de destination | Test d'intégration |
+| Éléments         | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| **API REST**     | Expose un endpoint POST pour la réception des messages.                    |
+| **Validation**   | Vérifie les données envoyées par l'utilisateur (via annotations Jakarta). |
+| **Service SMTP** | Se charge de la transmission de l'e-mail au destinataire configuré.        |
+
+#### 3.1.2 Modules/Classes
+
+- **DTO (Data Transfer Object)** :
+  - `EmailRequest` : Représente les données transmises par le frontend.
+  - `ApiErrorModel` : Standardise les réponses d’erreur renvoyées par l'API.
+
+- **Service** :
+  - `EmailServiceImpl` : Implémente la logique pour la génération et l’envoi des e-mails.
+
+- **Controller** :
+  - `EmailController` :
+    - Expose l’endpoint REST `/contact/message` pour recevoir les données utilisateur.
+    - Appelle les services nécessaires à la validation et au traitement.
+
+#### 3.1.3 Endpoints exposés
+
+| Méthode | URI                | Authentification | Description                  |
+|---------|--------------------|------------------|------------------------------|
+| POST    | `/contact/message` | Aucune           | Reçoit un message utilisateur.|
+
+##### Exemple d'appel à l'API :
+**Requête POST :**
+```json
+{
+  "email": "john.doe@example.com",
+  "name": "John Doe",
+  "message": "Bonjour, je souhaiterais avoir plus d'informations."
+}
+```
+
+**Réponse en cas de succès :**
+```json
+{
+  "status": "Message envoyé avec succès"
+}
+```
+
+**Réponse en cas d'erreur :**
+```json
+{
+  "type": "https://example.com/probs/email-error",
+  "title": "Invalid email address",
+  "status": 400,
+  "detail": "The provided email address is not in a valid format.",
+  "instance": "/contact/message"
+}
+```
 
 ---
 
-## 5. Mécanismes de Suivi et de Résolution des Dysfonctionnements
-- Surveillance des logs pour analyser les erreurs de transmission
-- Signalement automatisé des anomalies critiques
-- Réévaluation continue des cas de test pour inclure les scénarios de panne identifiés
+## 4. Sécurité
 
-Ce document vise à assurer une validation rigoureuse de l’envoi d’e-mails via le formulaire de contact, en couvrant à la fois les aspects fonctionnels, techniques et de sécurité du système.
+### 4.1 Backend
 
+1. **Validation stricte des données entrantes :**
+  - Les annotations Jakarta Validation (@NotBlank, @Email...) protègent contre des données malformées.
+  - Les tailles minimales et maximales des champs empêchent les abus.
+
+2. **Protection des communications :**
+  - Toutes les communications se font via HTTPS.
+  - Les e-mails sont transmis via un serveur SMTP configuré avec **TLS/SSL**.
+
+3. **Restriction accès administratif (adresse e-mail) :**
+  - L'adresse e-mail de destination est configurée dans les propriétés d'application (`application.yml`) et sécurisée avec des variables d'environnement si nécessaire.
+
+4. **Journalisation des incidents :**
+  - Les erreurs (comme des échecs d'envoi d'e-mail) sont loguées avec Logback pour une analyse ultérieure.
+
+---
+
+## 5. Tests et Validation
+
+### 5.1 Tests unitaires
+
+| Composant              | Méthode      | Type de test         |
+|------------------------|--------------|----------------------|
+| **DTO** - Validation   | EmailRequest | Validation des entrées |
+| **Service** - Email    | EmailService | Tests des cas d'envoi d'e-mails. |
+| **Controller** - REST  | EmailController | Validation des endpoints exposés. |
+
+#### Cas validés :
+1. Champs manquants (`name`, `email`, ou `message`) renvoient des erreurs.
+2. Formats invalides pour les champs (`email` incorrect, messages trop courts).
+3. Test des réponses aux requêtes HTTP dans des cas d'erreur ou de succès.
+
+### 5.2 Tests d'intégration
+
+- **Via Mailhog** (Docker) :
+  - Un conteneur local capture les e-mails envoyés par le service.
+  - Exécution d'appels API pour valider que les messages formatés sont correctement transmis.
+
+---
+
+## 6. Documentation Structurizr
+
+**Diagrammes à ajouter :**
+1. **Diagramme de contexte :**
+  - Illustre les interactions globales entre l'utilisateur, le frontend, et le backend.
+
+2. **Diagramme de conteneurs :**
+  - Décrit la structure interne du module backend et ses dépendances.
+
+3. **Diagramme de composant (backend uniquement) :**
+  - Visualise les principales classes ou services impliqués dans le traitement des e-mails.
+
+---
+
+## 7. Frontend (Placeholder)
+
+### Éléments prévus
+1. Affichage d'un formulaire utilisateur avec les champs nécessaires :
+  - **Nom** (input text)
+  - **E-mail** (input text)
+  - **Message** (textarea)
+
+2. Validation des entrées saisies côté client :
+  - Contrôle de format (e-mail, taille des champs).
+  - Feedback interactif à l'utilisateur (erreurs directes sous les champs).
+
+3. Appel API :
+  - Envoi des données au backend via une requête HTTP POST.
+
+4. Interfaces responsives :
+  - Adaptation aux écrans mobiles/tablettes pour une meilleure expérience utilisateur.
+
+### Remarque :
+Les détails de la structure et de l'implémentation Angular seront complétés après le développement.
+
+---
+
+## 8. Améliorations futures
+
+### Fonctionnalités envisageables
+- **Confirmation à l'utilisateur** : Ajouter une notification par e-mail pour confirmer au demandeur que son message a bien été reçu.
+- **Gestion des spams** : Intégration de Google reCAPTCHA pour limiter les abus.
+- **Journalisation persistante** : Enregistrement des messages reçus dans une base de données pour suivi.
+
+### Optimisation technique
+- **Évolutivité** :
+  - Modularisation d'autres points (comme un service email générique si d'autres modules en ont besoin).
+- **Monitoring avancé** :
+  - Ajouter des métriques Prometheus spécifiques à ce module (e.g., nombre de messages reçus par heure).
+
+---
+
+Ce document offre une base solide pour comprendre et utiliser le module de contact. Les sections incomplètes (comme le frontend ou les diagrammes Structurizr) pourront être enrichies dès qu'elles seront développées ou disponibles.
