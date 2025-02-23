@@ -11,7 +11,7 @@ spring:
     port: 587
     protocol: smtp
     username: contact@hoenheimsports.fr
-    password: sknmulzxhurfauuh
+    password: #todo
     properties:
       mail:
         smtp:
