@@ -38,20 +38,22 @@ import org.springframework.hateoas.RepresentationModel;
 @Schema(description = "Represents an error response returned by the API in case of failures.")
 public class ApiErrorModel extends RepresentationModel<ApiErrorModel> {
 
-    @Schema(description = "Type of the error, usually a URI reference identifying the problem type.", example = "https://example.com/probs/email-error")
+
+    @Schema(description = "Type of the error, typically a URI or string identifying the problem type.", example = "https://example.com/problems/error-type")
     private String type;
 
-    @Schema(description = "A short, human-readable summary of the problem type.", example = "Invalid email address")
+    @Schema(description = "A brief, descriptive summary of the problem.", example = "Invalid input format")
     private String title;
 
-    @Schema(description = "HTTP status code for this problem.", example = "400")
+    @Schema(description = "HTTP status code representing this error.", example = "500")
     private int status;
 
-    @Schema(description = "A human-readable explanation specific to this occurrence of the problem.", example = "The provided email address is not in a valid format.")
+    @Schema(description = "A detailed description of this specific error occurrence.", example = "A required field is missing or invalid.")
     private String detail;
 
-    @Schema(description = "A URI reference that identifies the specific occurrence of the problem.", example = "/sendEmail/12345")
+    @Schema(description = "A URI or string that identifies the specific occurrence of the problem.", example = "/api/resource/123")
     private String instance;
+
 
     /**
      * Creates an instance of {@link ApiErrorModel} to represent a specific type of error.
