@@ -1,0 +1,14 @@
+<mat-toolbar>
+  @if (isHandset()) {
+    <button
+      type="button"
+      aria-label="Toggle sidenav"
+      mat-icon-button
+      (click)="opening.emit()">
+      <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+    </button>
+  }
+
+  <a class="logo" routerLink="/"></a>
+  <span>Administration ASHS</span>
+</mat-toolbar>

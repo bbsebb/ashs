@@ -1,0 +1,56 @@
+<h2>Ajout d'une session d'entrainement</h2>
+<form [formGroup]=addTrainingSessionForm (ngSubmit)="add()">
+  <mat-dialog-content>
+    <div formGroupName="timeSlot" class="timeslot-form">
+      <mat-form-field>
+        <mat-label>Jour</mat-label>
+        <mat-select formControlName="dayOfWeek">
+          @for (dayOfWeek of Object.values(DayOfWeek); track dayOfWeek) {
+            <mat-option [value]=dayOfWeek>{{ dayOfWeek | dayOfWeekToFrench }}</mat-option>
+          }
+        </mat-select>
+        @let dayOfWeekControl = addTrainingSessionForm.get("timeSlot.dayOfWeek");
+        @if (hasError(dayOfWeekControl)) {
+          <mat-error>{{ displayError(dayOfWeekControl) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Heure de début</mat-label>
+        <input type="time" matInput formControlName="startTime">
+        @let startTimeControl = addTrainingSessionForm.get("timeSlot.startTime");
+        @if (hasError(startTimeControl)) {
+          <mat-error>{{ displayError(startTimeControl) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Heure de fin</mat-label>
+        <input type="time" matInput formControlName="endTime">
+        @let endTimeControl = addTrainingSessionForm.get("timeSlot.endTime");
+        @if (hasError(endTimeControl)) {
+          <mat-error>{{ displayError(endTimeControl) }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+    <mat-form-field>
+      <mat-label>Salle</mat-label>
+      <mat-select formControlName="hall">
+        @for (hall of hallService.hallsResource.value(); track hall.id) {
+          <mat-option [value]=hall>{{ hall.name }}</mat-option>
+        }
+      </mat-select>
+      @let hallIdControl = addTrainingSessionForm.get("hall");
+      @if (hasError(hallIdControl)) {
+        <mat-error>{{ displayError(hallIdControl) }}</mat-error>
+      }
+    </mat-form-field>
+    @let timeSlotControl = addTrainingSessionForm.get("timeSlot");
+    @if (hasError(timeSlotControl)) {
+      <mat-error>{{ displayError(timeSlotControl) }}</mat-error>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions>
+
+    <button mat-button mat-dialog-close>ANNULER</button>
+    <button mat-flat-button type="submit">AJOUTER</button>
+  </mat-dialog-actions>
+</form>

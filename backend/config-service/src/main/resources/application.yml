@@ -1,0 +1,24 @@
+server:
+  port: 8888
+spring:
+  application:
+    name:
+      config-service
+
+
+#        git:
+#          uri: file:///C:/Users/bbseb/Documents/programmation/ashs2/ashs/backend/configuration/
+#          clone-on-start: true
+#          skipSslValidation: true
+
+
+
+encrypt:
+  key-store:
+    location: classpath:config-keystore.p12
+    password: ${CONFIG_SERVICE_KEYSTORE_PASS}
+    alias: config-key
+    type: 'PKCS12'
+
+
+

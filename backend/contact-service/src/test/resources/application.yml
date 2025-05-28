@@ -1,0 +1,30 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  mail:
+    host: smtp.example.com
+    port: 587
+    username: contact@hoenheimsports.fr
+    password: your_password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          from: contact@hoenheimsports.fr
+          starttls:
+            enable: true
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+custom:
+  contact:
+    email: sebastien.burckhardt+test@hoenheimsports.fr
+
+logging:
+  config: classpath:logback-test.xml

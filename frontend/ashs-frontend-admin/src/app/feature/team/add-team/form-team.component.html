@@ -1,0 +1,106 @@
+<h2>Ajout d'une équipe</h2>
+<form [formGroup]="teamForm" (ngSubmit)="submit()">
+  <div class="information">
+    <mat-form-field>
+      <mat-label>Numéro d'équipe</mat-label>
+      <input matInput formControlName="teamNumber">
+      @let teamNumberControl = teamForm.get("teamNumber");
+      @if (hasError(teamNumberControl)) {
+        <mat-error>{{ displayError(teamNumberControl) }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Catégorie</mat-label>
+      <mat-select formControlName="category">
+        @for (category of Object.values(Category); track category) {
+          <mat-option [value]="category">{{ category | category }}</mat-option>
+        }
+      </mat-select>
+      @let categoryControl = teamForm.get("category");
+      @if (hasError(categoryControl)) {
+        <mat-error>{{ displayError(categoryControl) }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-radio-group aria-label="Select an option" formControlName="gender">
+      @for (gender of Object.values(Gender); track gender) {
+        <mat-radio-button [value]=gender>{{ gender | gender:"long" }}</mat-radio-button>
+      }
+    </mat-radio-group>
+    @let genderControl = teamForm.get("gender");
+    @if (hasError(genderControl)) {
+      <mat-error>{{ displayError(genderControl) }}</mat-error>
+    }
+  </div>
+  <mat-divider></mat-divider>
+  <div class="add-training-session-button">
+    <button mat-fab extended type="button" (click)="addTrainingSession()">
+      <mat-icon>add</mat-icon>
+      AJOUTER UN ENTRAINEMENT
+    </button>
+  </div>
+  <div class="list-of-training-sessions">
+    <mat-list>
+      @for (trainingSession of trainingSessionsSignal(); track trainingSession) {
+        <mat-list-item>
+          <div class="training-session-item">
+            <div>
+              <mat-icon>event</mat-icon>
+              {{ trainingSession.timeSlot.dayOfWeek | dayOfWeekToFrench }} {{ trainingSession.timeSlot.startTime | timeFormat }}
+              - {{ trainingSession.timeSlot.endTime | timeFormat }}
+            </div>
+            <div>
+              <mat-icon>location_on</mat-icon>
+              {{ trainingSession.hall.name }}
+            </div>
+            <button mat-icon-button type="button" (click)="deleteTrainingSession(trainingSession)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-list-item>
+      }
+    </mat-list>
+  </div>
+  <mat-divider></mat-divider>
+
+  <div class="add-coaches-button">
+    <button mat-fab extended type="button" (click)="addCoach()">
+      <mat-icon>add</mat-icon>
+      AJOUTER UN ENTRAINEUR
+    </button>
+  </div>
+  <div class="list-of-coaches">
+    <mat-list>
+      @for (roleCoach of roleCoachesSignal(); track roleCoach.coach.id) {
+        <mat-list-item>
+          <div class="coach-item">
+            <div>
+              <mat-icon>event</mat-icon>
+              {{ roleCoach.role | roleToFrench }}
+            </div>
+            <div>
+              <mat-icon>location_on</mat-icon>
+              {{ roleCoach.coach.name }} {{ roleCoach.coach.surname }}
+            </div>
+            <button mat-icon-button type="button" (click)="deleteCoach(roleCoach)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-list-item>
+      }
+    </mat-list>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="button-container">
+    <button mat-button type="button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      RETOUR
+    </button>
+    <button mat-flat-button type="submit" [disabled]="teamForm.invalid">
+      @if (isCreateSignal()) {
+        CRÉER
+      } @else {
+        MODIFIER
+      }
+    </button>
+  </div>
+</form>

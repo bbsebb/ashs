@@ -1,0 +1,58 @@
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.not-found-card {
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+}
+
+mat-card-header {
+  justify-content: center;
+  padding-top: 20px;
+}
+
+.error-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  color: #dc3545;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.error-code {
+  font-size: 6rem;
+  margin: 0;
+  color: #dc3545;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.error-title {
+  font-size: 2rem;
+  margin-top: 10px;
+  margin-bottom: 1rem;
+  color: #343a40;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+mat-card-actions {
+  padding-bottom: 20px;
+}
+
+button mat-icon {
+  margin-right: 8px;
+}

@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+
+
+:root {
+  --a-on-surface-color: var(--mat-sys-on-primary-container);
+  --a-hover-on-surface-color: var(--mat-sys-on-secondary-container);
+}
+
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.app-container {
+  height: calc(100vh - var(--mat-toolbar-standard-height, 64px));
+}
+

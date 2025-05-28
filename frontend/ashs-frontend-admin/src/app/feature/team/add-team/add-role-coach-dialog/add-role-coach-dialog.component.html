@@ -1,0 +1,33 @@
+<h2>Ajout d'un entraîneur</h2>
+<form [formGroup]=addRoleCoachForm (ngSubmit)="add()">
+  <mat-dialog-content>
+    <mat-form-field>
+      <mat-label>Entraineur</mat-label>
+      <mat-select formControlName="coach">
+        @for (coach of coachService.coachesResource.value(); track coach.id) {
+          <mat-option [value]=coach>{{ coach.name }} {{ coach.surname }}</mat-option>
+        }
+      </mat-select>
+      @let coachControl = addRoleCoachForm.get("coach");
+      @if (hasError(coachControl)) {
+        <mat-error>{{ displayError(coachControl) }}</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Role</mat-label>
+      <mat-select formControlName="role">
+        @for (role of Object.values(Role); track role) {
+          <mat-option [value]=role>{{ role | roleToFrench }}</mat-option>
+        }
+      </mat-select>
+      @let roleControl = addRoleCoachForm.get("role");
+      @if (hasError(roleControl)) {
+        <mat-error>{{ displayError(roleControl) }}</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close>ANNULER</button>
+    <button mat-flat-button type="submit">AJOUTER</button>
+  </mat-dialog-actions>
+</form>

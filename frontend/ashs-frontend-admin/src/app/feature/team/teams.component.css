@@ -1,0 +1,16 @@
+/*
+ * Teams Component Styles
+ * Contains styling for the teams list view
+ */
+
+/* Table Cell
+ * ---------- */
+.mat-cell-team {
+  cursor: pointer;
+}
+
+/* Action Button
+ * ------------ */
+.add-team-button {
+  margin: 10px;
+}

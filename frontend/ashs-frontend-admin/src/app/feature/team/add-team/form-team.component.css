@@ -1,0 +1,125 @@
+/*
+ * Team Form Styles
+ * Contains styling for the team creation form
+ */
+
+/* Base Elements
+ * -------------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  margin: 20px;
+}
+
+mat-divider {
+  margin: 10px 0;
+}
+
+mat-list-item {
+  height: auto;
+  margin-bottom: 8px;
+}
+
+/* Buttons
+ * ------- */
+button[mat-fab] {
+  width: 300px;
+}
+
+button[mat-icon-button] {
+  color: var(--mat-sys-error);
+}
+
+/* Information Section
+ * ------------------ */
+.information {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.information * {
+  flex-grow: 1;
+}
+
+.information mat-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Action Buttons
+ * ------------- */
+.add-training-session-button,
+.add-coaches-button {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* Lists
+ * ----- */
+.list-of-training-sessions,
+.list-of-coaches {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+/* List Items
+ * ---------- */
+.coach-item,
+.training-session-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+  position: relative;
+  padding-right: 40px; /* Prevents button overlap */
+}
+
+.coach-item div,
+.training-session-item div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coach-item button,
+.training-session-item button {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Responsive Styles
+ * ---------------- */
+@media (width > 800px) {
+  .training-session-item,
+  .coach-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .training-session-item button,
+  .coach-item button {
+    position: static;
+    transform: none;
+  }
+}

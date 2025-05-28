@@ -1,0 +1,101 @@
+package fr.hoenheimsports.trainingservice.assembler;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.*;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.hateoas.server.core.EmbeddedWrapper;
+import org.springframework.hateoas.server.core.EmbeddedWrappers;
+import org.springframework.util.Assert;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.StreamSupport;
+
+public abstract class AbstractAssembler<T, D extends RepresentationModel<?>> implements RepresentationModelAssembler<T, D> {
+    protected final PagedResourcesAssembler<T> pagedResourcesAssembler;
+
+    protected AbstractAssembler(PagedResourcesAssembler<T> pagedResourcesAssembler) {
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
+    }
+
+    /**
+     * Converts a Spring Data Page containing entities of type T into a HATEOAS-compliant PagedModel containing DTOs of type D.
+     *
+     * @param page the paginated data containing entities of type T
+     * @return a HATEOAS-compliant PagedModel containing DTOs of type D
+     */
+    public <R> PagedModel<D> toPagedModel(Page<T> page, Class<R> dtoClass) {
+        Assert.notNull(page, "Page must not be null!");
+
+        PagedModel<D> pagedModel;
+
+        // Handle empty pages by creating an empty wrapper
+        if (page.isEmpty()) {
+            EmbeddedWrapper emptyWrapper = new EmbeddedWrappers(false)
+                    .emptyCollectionOf(dtoClass);
+
+            // In HAL, the "_embedded.<resource-name>" relation will be the lowercase class name + 'List' by default
+            // Force type casting as we know there will never be direct access to the wrapper itself
+            @SuppressWarnings("unchecked")
+            PagedModel<D> emptyPagedModel = (PagedModel<D>) (PagedModel<?>) PagedModel.of(
+                    Collections.singletonList(emptyWrapper),
+                    new PagedModel.PageMetadata(
+                            page.getSize(),
+                            page.getNumber(),
+                            page.getTotalElements(),
+                            page.getTotalPages()
+                    )
+            );
+            pagedModel = emptyPagedModel;
+
+        } else {
+            pagedModel = pagedResourcesAssembler.toModel(page, this);
+        }
+        return pagedModel;
+    }
+
+    /**
+     * Creates a templated link for pagination.
+     *
+     * @param uri The base URI to create the templated link from
+     * @return A Link with pagination template variables
+     */
+    public Link getTemplatedAndPagedLink(String uri) {
+        UriTemplate uriTemplate = UriTemplate.of(uri)
+                .with("page", TemplateVariable.VariableType.REQUEST_PARAM)
+                .with("size", TemplateVariable.VariableType.REQUEST_PARAM)
+                .with("sort", TemplateVariable.VariableType.REQUEST_PARAM);
+        return Link.of(uriTemplate, "page");
+    }
+
+    /**
+     * Converts a collection of entities to a CollectionModel with appropriate links.
+     *
+     * @param entities The collection of entities to convert
+     * @return CollectionModel containing converted entities
+     */
+
+    public <R> CollectionModel<D> toCollectionModel(Iterable<? extends T> entities, Class<R> dtoClass) {
+        Assert.notNull(entities, "Entities must not be null!");
+        List<D> models = StreamSupport.stream(entities.spliterator(), false) //
+                .map(this::toModel) //
+                .toList();
+        CollectionModel<D> collectionModel;
+
+        // Handle empty collections by creating an empty wrapper
+        if (models.isEmpty()) {
+            EmbeddedWrapper emptyWrapper = new EmbeddedWrappers(false)
+                    .emptyCollectionOf(dtoClass);
+
+            // Force type casting as we know there will never be direct access to the wrapper itself
+            @SuppressWarnings("unchecked")
+            CollectionModel<D> emptyModel =
+                    (CollectionModel<D>) (CollectionModel<?>) CollectionModel.of(Collections.singletonList(emptyWrapper));
+            collectionModel = emptyModel;
+        } else {
+            collectionModel = CollectionModel.of(models);
+        }
+        return collectionModel;
+    }
+}

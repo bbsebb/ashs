@@ -1,0 +1,36 @@
+/*
+ * Training Session Dialog Styles
+ * Contains styling for the training session dialog component
+ */
+
+/* Dialog Content
+ * -------------- */
+mat-dialog-content,
+.timeslot-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+}
+
+mat-dialog-content {
+  padding: 20px;
+}
+
+h2 {
+  margin: 20px;
+}
+
+/* Dialog Actions
+ * ------------- */
+mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px 20px 20px;
+}
+
+/* Buttons
+ * ------- */
+button {
+  min-width: 80px;
+}

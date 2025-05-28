@@ -1,0 +1,73 @@
+<button class="add-team-button" mat-fab extended (click)="addTeam()">
+  <mat-icon>add</mat-icon>
+  Ajouter une équipe
+</button>
+<table mat-table [dataSource]="dataSource">
+  <ng-container matColumnDef="team">
+    <th mat-header-cell *matHeaderCellDef>Équipe</th>
+    <td mat-cell class="mat-cell-team"
+        *matCellDef="let team"
+        (click)="viewTeam(team)"> {{ team.category | category }} {{ team.gender | gender }} {{ team.teamNumber }}
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="update">
+    <th mat-header-cell *matHeaderCellDef>Mise à jour</th>
+    <td mat-cell *matCellDef="let team">
+      <button mat-mini-fab (click)="updateTeam(team)">
+        <mat-icon>edit_note</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="delete">
+    <th mat-header-cell *matHeaderCellDef>Suppression</th>
+    <td mat-cell *matCellDef="let team">
+      <button mat-mini-fab (click)="deleteTeam(team)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="view">
+    <th mat-header-cell *matHeaderCellDef>Voir</th>
+    <td mat-cell *matCellDef="let team">
+      <button mat-mini-fab (click)="viewTeam(team)">
+        <mat-icon>visibility</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let team; columns: displayedColumns"></tr>
+
+  <tr class="mat-row" *matNoDataRow>
+    @if (!teamsStore.teamsResource.isLoading()) {
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
+        Aucune équipe.
+      </td>
+    } @else if (teamsStore.teamsResource.status() === 1) {
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
+        Une erreur est survenue.
+      </td>
+    } @else {
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
+        Chargement en cours ...
+      </td>
+    }
+
+  </tr>
+</table>
+@if (teamsStore.teamsResource.isLoading()) {
+  <mat-progress-bar mode="query"></mat-progress-bar>
+}
+@let pagination = teamsStore.getPagination();
+@if (pagination) {
+  <mat-paginator
+    [disabled]="teamsStore.teamsResource.isLoading()"
+    (page)="handlePageEvent($event)"
+    [length]="pagination.page.totalElements"
+    [pageSize]="pagination.page.size"
+    [pageSizeOptions]="[1,5,10,20]"
+    [pageIndex]="pagination.page.number"
+    aria-label="Select page">
+  </mat-paginator>
+}
+

@@ -1,0 +1,82 @@
+@let team = teamStore.teamResource.value();
+@if (!teamStore.teamResource.isLoading() && team) {
+
+  <mat-card class="team-card">
+    <mat-card-header>
+      <mat-card-title>
+        <div class="title-container">
+          <mat-icon>sports_handball</mat-icon>
+          <span>{{ team.category | category }} {{ team.gender | gender }} {{ team.teamNumber }}</span>
+        </div>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="subtitle-3">
+        <h3>
+          <mat-icon>schedule</mat-icon>
+          Séances d'entraînement
+        </h3>
+      </div>
+      <mat-list>
+        @for (trainingSession of teamStore.trainingSessionResource.value(); track trainingSession.id) {
+          <mat-list-item>
+            <div class="training-session-item">
+              <div>
+                <mat-icon>event</mat-icon>
+                {{ trainingSession.timeSlot.dayOfWeek | dayOfWeekToFrench }} {{ trainingSession.timeSlot.startTime | timeFormat }}
+                - {{ trainingSession.timeSlot.endTime | timeFormat }}
+              </div>
+              <a [routerLink]="['/hall']" class="hall-link">
+                <mat-icon>location_on</mat-icon>
+                {{ trainingSession.hall.name }}
+              </a>
+            </div>
+          </mat-list-item>
+        }
+      </mat-list>
+      <mat-divider></mat-divider>
+      <div class="subtitle-3">
+        <h3>
+          <mat-icon>people</mat-icon>
+          Entraîneurs
+        </h3>
+      </div>
+      <mat-list>
+        @for (roleCoach of teamStore.roleCoachResource.value(); track roleCoach.id) {
+          <mat-list-item>
+            <a [routerLink]="['/coach']" class="coach-link">
+              <mat-icon>person</mat-icon>
+              {{ roleCoach.role }} {{ roleCoach.coach.name }} {{ roleCoach.coach.surname }}
+            </a>
+          </mat-list-item>
+        }
+      </mat-list>
+    </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-actions>
+      <button mat-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        RETOUR
+      </button>
+      <div>
+        <button (click)="updateTeam(team)" mat-button>
+          <mat-icon>edit</mat-icon>
+          ÉDITER
+        </button>
+        <button mat-button (click)="deleteTeam(team)">
+          <mat-icon>delete</mat-icon>
+          SUPPRIMER
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+} @else if (teamStore.teamResource.isLoading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+} @else {
+  <p>L'équipe n'a pas été trouvé</p>
+}
