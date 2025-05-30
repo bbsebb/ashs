@@ -1,6 +1,7 @@
 package fr.hoenheimsports.trainingservice.mapper;
 
-import fr.hoenheimsports.trainingservice.dto.request.HallDTORequest;
+import fr.hoenheimsports.trainingservice.dto.request.HallDTOCreateRequest;
+import fr.hoenheimsports.trainingservice.dto.request.HallDTOUpdateRequest;
 import fr.hoenheimsports.trainingservice.dto.response.HallDTOResponse;
 import fr.hoenheimsports.trainingservice.model.Hall;
 import org.mapstruct.*;
@@ -44,10 +45,12 @@ public interface HallMapper {
 
     HallDTOResponse toDto(Hall hall);
 
-    Hall toEntity(HallDTORequest hallDtoRequest);
+    Hall toEntity(HallDTOCreateRequest hallDtoCreateRequest);
+
+    Hall toEntity(HallDTOUpdateRequest hallDtoUpdateRequest);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Hall partialUpdate(HallDTORequest hallDtoRequest, @MappingTarget Hall hall);
+    Hall partialUpdate(HallDTOCreateRequest hallDtoCreateRequest, @MappingTarget Hall hall);
 
     Hall toEntity(HallDTOResponse hallDTOResponse);
 

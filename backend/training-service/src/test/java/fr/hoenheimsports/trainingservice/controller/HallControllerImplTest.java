@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.hoenheimsports.trainingservice.assembler.HallAssembler;
 import fr.hoenheimsports.trainingservice.config.TestSecurityConfig;
 import fr.hoenheimsports.trainingservice.dto.request.AddressDTORequest;
+import fr.hoenheimsports.trainingservice.dto.request.HallDTOCreateRequest;
 import fr.hoenheimsports.trainingservice.dto.response.AddressDTOResponse;
-import fr.hoenheimsports.trainingservice.dto.request.HallDTORequest;
 import fr.hoenheimsports.trainingservice.dto.response.HallDTOResponse;
 import fr.hoenheimsports.trainingservice.mapper.HallMapper;
 import fr.hoenheimsports.trainingservice.model.Address;
@@ -56,17 +56,17 @@ class HallControllerImplTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void testCreateHall() throws Exception {
         //Arrange
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
         HallDTOResponse hallDTOResponse = getHallDTOResponse(1L);
         Hall hallRequest = getHall();
         Hall hallResponse = getHall(1L);
         EntityModel<HallDTOResponse> entityModel = EntityModel.of(hallDTOResponse);
         when(hallService.createHall(hallRequest)).thenReturn(hallResponse);
         when(hallAssembler.toModel(hallResponse)).thenReturn(entityModel);
-        when(hallMapper.toEntity(hallDTORequest)).thenReturn(hallRequest);
+        when(hallMapper.toEntity(hallDTOCreateRequest)).thenReturn(hallRequest);
         //Act et Assert
         mockMvc.perform(post(URI_PATH).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest)))
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType("application/hal+json"))
                 .andExpect(jsonPath("$.id").value(hallDTOResponse.id()))
@@ -77,45 +77,44 @@ class HallControllerImplTest {
                 .andExpect(jsonPath("$.address.postalCode").value(hallDTOResponse.address().postalCode()));
         verify(hallService, times(1)).createHall(hallRequest);
         verify(hallAssembler, times(1)).toModel(hallResponse);
-        verify(hallMapper,times(1)).toEntity(hallDTORequest);
+        verify(hallMapper, times(1)).toEntity(hallDTOCreateRequest);
     }
 
     @Test// Utilisateur avec un rôle non autorisé
     @WithMockUser(username = "admin", roles = {"NO_ADMIN"})
     void testCreateHall_AccessDenied_WithoutAdminRole() throws Exception {
         // Arrange
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
 
         // Act & Assert
         mockMvc.perform(post(URI_PATH).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest)))
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest)))
                 .andExpect(status().isForbidden()); // Vérification que l'accès est refusé
     }
 
-    @Test// Utilisateur avec un rôle non autorisé
+    @Test
+// Utilisateur avec un rôle non autorisé
     void testCreateHall_AccessDenied_WithoutAuthentication() throws Exception {
         // Arrange
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
 
         // Act & Assert
         mockMvc.perform(post(URI_PATH).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest)))
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest)))
                 .andExpect(status().isUnauthorized()); // Vérification que l'accès est refusé
     }
-
-
 
 
     @Test
     void getHallById() throws Exception {
         //Arrange
         long id = 1L;
-        Hall hallResponse = getHall(id );
+        Hall hallResponse = getHall(id);
         HallDTOResponse hallDTOResponse = getHallDTOResponse(id);
         when(hallService.getHallById(id)).thenReturn(hallResponse);
         when(hallAssembler.toModel(hallResponse)).thenReturn(EntityModel.of(hallDTOResponse));
         //Act & Assert
-        mockMvc.perform(get(URI_PATH+"/{id}",id))
+        mockMvc.perform(get(URI_PATH + "/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/hal+json"))
                 .andExpect(jsonPath("$.id").value(hallDTOResponse.id()))
@@ -129,7 +128,6 @@ class HallControllerImplTest {
     }
 
 
-
     @Test
     void getHalls_WithResults() throws Exception {
         // Arrange
@@ -138,7 +136,7 @@ class HallControllerImplTest {
         List<HallDTOResponse> hallDTOResponses = List.of(getHallDTOResponse(1L), getHallDTOResponse(2L));
 
 
-        PagedModel<EntityModel<HallDTOResponse>> model =  PagedModel.of(hallDTOResponses.stream()
+        PagedModel<EntityModel<HallDTOResponse>> model = PagedModel.of(hallDTOResponses.stream()
                 .map(EntityModel::of).toList(), new PagedModel.PageMetadata(2, 0, 2));
         when(hallService.getHalls(any(Pageable.class))).thenReturn(hallPage);
 
@@ -182,16 +180,16 @@ class HallControllerImplTest {
     void updateHall() throws Exception {
         //Arrange
         long id = 1L;
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
         Hall hallRequest = getHall();
         Hall hallResponse = getHall(id);
         HallDTOResponse hallDTOResponse = getHallDTOResponse(id);
-        when(hallMapper.toEntity(hallDTORequest)).thenReturn(hallRequest);
-        when(hallService.updateHall(id,hallRequest)).thenReturn(hallResponse);
+        when(hallMapper.toEntity(hallDTOCreateRequest)).thenReturn(hallRequest);
+        when(hallService.updateHall(id, hallRequest)).thenReturn(hallResponse);
         when(hallAssembler.toModel(hallResponse)).thenReturn(EntityModel.of(hallDTOResponse));
         //Act & Assert
-        mockMvc.perform(put(URI_PATH+"/{id}",id).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest))
+        mockMvc.perform(put(URI_PATH + "/{id}", id).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest))
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/hal+json"))
@@ -202,8 +200,8 @@ class HallControllerImplTest {
                 .andExpect(jsonPath("$.address.street").value(hallDTOResponse.address().street()))
                 .andExpect(jsonPath("$.address.postalCode").value(hallDTOResponse.address().postalCode()));
 
-        verify(hallMapper, times(1)).toEntity(hallDTORequest);
-        verify(hallService, times(1)).updateHall(id,hallRequest);
+        verify(hallMapper, times(1)).toEntity(hallDTOCreateRequest);
+        verify(hallService, times(1)).updateHall(id, hallRequest);
         verify(hallAssembler, times(1)).toModel(hallResponse);
 
     }
@@ -212,23 +210,24 @@ class HallControllerImplTest {
     @WithMockUser(username = "admin", roles = {"TEST"})
     void updateHall_AccessDenied_WithoutAdminRole() throws Exception {
         // Arrange
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
         long id = 1L;
         // Act & Assert
-        mockMvc.perform(put(URI_PATH+"/{id}",id).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest))
+        mockMvc.perform(put(URI_PATH + "/{id}", id).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest))
                 )
                 .andExpect(status().isForbidden()); // Vérification que l'accès est refusé
     }
 
-    @Test// Utilisateur avec un rôle non autorisé
+    @Test
+// Utilisateur avec un rôle non autorisé
     void updateHall_AccessDenied_WithoutAuthentication() throws Exception {
         // Arrange
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
         long id = 1L;
         // Act & Assert
-        mockMvc.perform(put(URI_PATH+"/{id}",id).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest))
+        mockMvc.perform(put(URI_PATH + "/{id}", id).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest))
                 )
                 .andExpect(status().isUnauthorized()); // Vérification que l'accès est refusé
     }
@@ -239,7 +238,7 @@ class HallControllerImplTest {
         //arrange
         long id = 1L;
         // Act & Assert
-        mockMvc.perform(delete(URI_PATH+"/{id}",id))
+        mockMvc.perform(delete(URI_PATH + "/{id}", id))
                 .andExpect(status().isNoContent());
     }
 
@@ -249,7 +248,7 @@ class HallControllerImplTest {
         //arrange
         long id = 1L;
         // Act & Assert
-        mockMvc.perform(delete(URI_PATH+"/{id}",id))
+        mockMvc.perform(delete(URI_PATH + "/{id}", id))
                 .andExpect(status().isForbidden());
     }
 
@@ -260,13 +259,13 @@ class HallControllerImplTest {
         //arrange
         long id = 1L;
         // Act & Assert
-        mockMvc.perform(delete(URI_PATH+"/{id}",id))
+        mockMvc.perform(delete(URI_PATH + "/{id}", id))
                 .andExpect(status().isForbidden());
     }
 
 
-    private static HallDTORequest getHallDTORequest() {
-        return HallDTORequest.builder()
+    private static HallDTOCreateRequest getHallDTORequest() {
+        return HallDTOCreateRequest.builder()
                 .name("Gymnase")
                 .address(
                         AddressDTORequest.builder()

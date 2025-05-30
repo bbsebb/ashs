@@ -1,7 +1,8 @@
 package fr.hoenheimsports.trainingservice.controller;
 
 import fr.hoenheimsports.trainingservice.assembler.HallAssembler;
-import fr.hoenheimsports.trainingservice.dto.request.HallDTORequest;
+import fr.hoenheimsports.trainingservice.dto.request.HallDTOCreateRequest;
+import fr.hoenheimsports.trainingservice.dto.request.HallDTOUpdateRequest;
 import fr.hoenheimsports.trainingservice.dto.response.HallDTOResponse;
 import fr.hoenheimsports.trainingservice.mapper.HallMapper;
 import fr.hoenheimsports.trainingservice.model.Hall;
@@ -48,7 +49,7 @@ public class HallControllerImpl implements HallController {
 
 
     @Override
-    public ResponseEntity<EntityModel<HallDTOResponse>> createHall(@Valid @RequestBody HallDTORequest hallDTO) {
+    public ResponseEntity<EntityModel<HallDTOResponse>> createHall(@Valid @RequestBody HallDTOCreateRequest hallDTO) {
         Hall hall = hallService.createHall(hallMapper.toEntity(hallDTO));
         return new ResponseEntity<>(this.hallAssembler.toModel(hall), HttpStatus.CREATED);
     }
@@ -69,7 +70,7 @@ public class HallControllerImpl implements HallController {
 
 
     @Override
-    public ResponseEntity<EntityModel<HallDTOResponse>> updateHall(@PathVariable Long id, @Valid @RequestBody HallDTORequest updatedHallDTO) {
+    public ResponseEntity<EntityModel<HallDTOResponse>> updateHall(@PathVariable Long id, @Valid @RequestBody HallDTOUpdateRequest updatedHallDTO) {
         Hall persistedHall = hallService.updateHall(id, hallMapper.toEntity(updatedHallDTO));
         return ResponseEntity.ok(this.hallAssembler.toModel(persistedHall));
     }

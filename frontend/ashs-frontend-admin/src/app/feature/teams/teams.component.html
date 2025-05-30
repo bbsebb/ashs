@@ -11,7 +11,11 @@
     </td>
   </ng-container>
   <ng-container matColumnDef="update">
-    <th mat-header-cell *matHeaderCellDef>Mise à jour</th>
+    <th mat-header-cell *matHeaderCellDef>
+      @if (layoutService.isDesktop()) {
+        Mise à jour
+      }
+    </th>
     <td mat-cell *matCellDef="let team">
       <button mat-mini-fab (click)="updateTeam(team)">
         <mat-icon>edit_note</mat-icon>
@@ -19,7 +23,11 @@
     </td>
   </ng-container>
   <ng-container matColumnDef="delete">
-    <th mat-header-cell *matHeaderCellDef>Suppression</th>
+    <th mat-header-cell *matHeaderCellDef>
+      @if (layoutService.isDesktop()) {
+        Suppression
+      }
+    </th>
     <td mat-cell *matCellDef="let team">
       <button mat-mini-fab (click)="deleteTeam(team)">
         <mat-icon>delete</mat-icon>
@@ -27,7 +35,11 @@
     </td>
   </ng-container>
   <ng-container matColumnDef="view">
-    <th mat-header-cell *matHeaderCellDef>Voir</th>
+    <th mat-header-cell *matHeaderCellDef>
+      @if (layoutService.isDesktop()) {
+        Voir
+      }
+    </th>
     <td mat-cell *matCellDef="let team">
       <button mat-mini-fab (click)="viewTeam(team)">
         <mat-icon>visibility</mat-icon>
@@ -39,13 +51,13 @@
   <tr mat-row *matRowDef="let team; columns: displayedColumns"></tr>
 
   <tr class="mat-row" *matNoDataRow>
-    @if (!teamsStore.teamsResource.isLoading()) {
-      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
-        Aucune équipe.
-      </td>
-    } @else if (teamsStore.teamsResource.status() === 1) {
+    @if (teamsStore.getTeamsResourceStatus() === 1) {
       <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
         Une erreur est survenue.
+      </td>
+    } @else if (!teamsStore.teamsResourceIsLoading()) {
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
+        Aucune équipe.
       </td>
     } @else {
       <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
@@ -55,13 +67,13 @@
 
   </tr>
 </table>
-@if (teamsStore.teamsResource.isLoading()) {
+@if (teamsStore.teamsResourceIsLoading()) {
   <mat-progress-bar mode="query"></mat-progress-bar>
 }
 @let pagination = teamsStore.getPagination();
 @if (pagination) {
   <mat-paginator
-    [disabled]="teamsStore.teamsResource.isLoading()"
+    [disabled]="teamsStore.teamsResourceIsLoading()"
     (page)="handlePageEvent($event)"
     [length]="pagination.page.totalElements"
     [pageSize]="pagination.page.size"

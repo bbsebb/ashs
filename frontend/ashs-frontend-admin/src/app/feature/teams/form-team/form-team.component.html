@@ -1,4 +1,10 @@
-<h2>Ajout d'une équipe</h2>
+<h2>
+  @if (isCreateSignal()) {
+    Créer une équipe
+  } @else {
+    Modifier une équipe
+  }
+</h2>
 <form [formGroup]="teamForm" (ngSubmit)="submit()">
   <div class="information">
     <mat-form-field>
@@ -31,6 +37,9 @@
       <mat-error>{{ displayError(genderControl) }}</mat-error>
     }
   </div>
+  @if (teamStore.teamResourceIsLoading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
   <mat-divider></mat-divider>
   <div class="add-training-session-button">
     <button mat-fab extended type="button" (click)="addTrainingSession()">
@@ -60,6 +69,9 @@
       }
     </mat-list>
   </div>
+  @if (teamStore.trainingSessionResourceIsLoading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
   <mat-divider></mat-divider>
 
   <div class="add-coaches-button">
@@ -89,13 +101,17 @@
       }
     </mat-list>
   </div>
+  @if (teamStore.roleCoachResourceIsLoading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
   <mat-divider></mat-divider>
   <div class="button-container">
     <button mat-button type="button" (click)="goBack()">
       <mat-icon>arrow_back</mat-icon>
       RETOUR
     </button>
-    <button mat-flat-button type="submit" [disabled]="teamForm.invalid">
+    <button mat-flat-button type="submit"
+            [disabled]="teamForm.invalid || teamStore.teamResourceIsLoading() || teamStore.trainingSessionResourceIsLoading() || teamStore.roleCoachResourceIsLoading()">
       @if (isCreateSignal()) {
         CRÉER
       } @else {

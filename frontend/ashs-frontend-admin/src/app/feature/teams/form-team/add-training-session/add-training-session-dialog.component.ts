@@ -9,9 +9,9 @@ import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {timeSlotValidator} from '@app/share/validator/time-slot.validator';
 import {displayError, hasError} from '@app/share/validator/form-error.util';
-import {HallService} from '@app/share/service/hall.service';
 import {Hall} from '@app/share/model/hall';
 import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-session-d-t-o';
+import {HallsStore} from '@app/share/store/halls.store';
 
 @Component({
   selector: 'app-add-training-session',
@@ -34,7 +34,7 @@ import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-sessi
 })
 export class AddTrainingSessionDialogComponent {
   formBuild = inject(NonNullableFormBuilder);
-  hallService = inject(HallService);
+  hallsStore = inject(HallsStore);
   matRef = inject(MatDialogRef);
   addTrainingSessionForm = this.formBuild.group({
     timeSlot: this.formBuild.group({

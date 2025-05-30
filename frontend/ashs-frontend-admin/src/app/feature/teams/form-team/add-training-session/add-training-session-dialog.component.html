@@ -34,7 +34,7 @@
     <mat-form-field>
       <mat-label>Salle</mat-label>
       <mat-select formControlName="hall">
-        @for (hall of hallService.hallsResource.value(); track hall.id) {
+        @for (hall of hallsStore.getHalls(); track hall.id) {
           <mat-option [value]=hall>{{ hall.name }}</mat-option>
         }
       </mat-select>

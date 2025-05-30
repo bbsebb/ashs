@@ -1,5 +1,5 @@
-@let team = teamStore.teamResource.value();
-@if (!teamStore.teamResource.isLoading() && team) {
+@let team = teamStore.getTeam();
+@if (!teamStore.teamResourceIsLoading() && team) {
 
   <mat-card class="team-card">
     <mat-card-header>
@@ -21,7 +21,7 @@
         </h3>
       </div>
       <mat-list>
-        @for (trainingSession of teamStore.trainingSessionResource.value(); track trainingSession.id) {
+        @for (trainingSession of teamStore.getTrainingSession(); track trainingSession.id) {
           <mat-list-item>
             <div class="training-session-item">
               <div>
@@ -45,7 +45,7 @@
         </h3>
       </div>
       <mat-list>
-        @for (roleCoach of teamStore.roleCoachResource.value(); track roleCoach.id) {
+        @for (roleCoach of teamStore.getRoleCoach(); track roleCoach.id) {
           <mat-list-item>
             <a [routerLink]="['/coach']" class="coach-link">
               <mat-icon>person</mat-icon>
@@ -75,7 +75,7 @@
       </div>
     </mat-card-actions>
   </mat-card>
-} @else if (teamStore.teamResource.isLoading()) {
+} @else if (teamStore.teamResourceIsLoading()) {
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 } @else {
   <p>L'équipe n'a pas été trouvé</p>

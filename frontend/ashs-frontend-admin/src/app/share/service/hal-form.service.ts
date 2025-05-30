@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {delay, forkJoin, Observable, ReplaySubject} from 'rxjs';
 import {AllHalResources, HalLink, HalResource, PaginatedHalResource} from '../model/hal/hal';
 import {Pagination} from '@app/share/model/hal/pagination';
+import {PaginationOption} from '@app/share/service/pagination-option';
 
 @Injectable({
   providedIn: 'root'
@@ -165,6 +166,22 @@ export class HalFormService {
     } else {
       return undefined;
     }
+  }
+
+  /**
+   * Builds the pagination parameters for API requests
+   * @returns The pagination parameters
+   * @param paginationOption
+   */
+  buildParamPage(paginationOption: PaginationOption) {
+    let paramPage: ParamPage = {}
+    if (paginationOption !== 'all') {
+      paramPage = {
+        page: paginationOption.page,
+        size: paginationOption.size
+      }
+    }
+    return paramPage;
   }
 }
 

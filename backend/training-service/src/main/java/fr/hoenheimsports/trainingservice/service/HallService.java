@@ -19,4 +19,6 @@ public interface HallService {
 
     void deleteHall(Long id);
 
+
+    boolean isNotUniqueHall(String name, String street, String city, String postalCode, String country);
 }

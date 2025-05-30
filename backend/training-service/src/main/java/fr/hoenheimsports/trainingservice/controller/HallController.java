@@ -1,6 +1,7 @@
 package fr.hoenheimsports.trainingservice.controller;
 
-import fr.hoenheimsports.trainingservice.dto.request.HallDTORequest;
+import fr.hoenheimsports.trainingservice.dto.request.HallDTOCreateRequest;
+import fr.hoenheimsports.trainingservice.dto.request.HallDTOUpdateRequest;
 import fr.hoenheimsports.trainingservice.dto.response.HallDTOResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,7 +24,7 @@ public interface HallController {
     )
     @ApiResponse(responseCode = "201", description = "Hall successfully created")
     @PostMapping
-    ResponseEntity<EntityModel<HallDTOResponse>> createHall(@Valid @RequestBody HallDTORequest hallDTO);
+    ResponseEntity<EntityModel<HallDTOResponse>> createHall(@Valid @RequestBody HallDTOCreateRequest hallDTO);
 
     @Operation(
             summary = "Get a Hall by ID",
@@ -57,7 +58,7 @@ public interface HallController {
     )
     @ApiResponse(responseCode = "200", description = "Hall successfully updated")
     @PutMapping("/{id}")
-    ResponseEntity<EntityModel<HallDTOResponse>> updateHall(@PathVariable Long id, @Valid @RequestBody HallDTORequest updatedHallDTO);
+    ResponseEntity<EntityModel<HallDTOResponse>> updateHall(@PathVariable Long id, @Valid @RequestBody HallDTOUpdateRequest updatedHallDTO);
 
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(

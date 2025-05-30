@@ -21,6 +21,7 @@ import {GenderPipe} from '@app/share/pipe/gender.pipe';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MatIcon} from '@angular/material/icon';
 import {TeamsStore} from '@app/share/store/teams.store';
+import {LayoutService} from '@app/share/service/layout.service';
 
 @Component({
   selector: 'app-team',
@@ -49,7 +50,7 @@ import {TeamsStore} from '@app/share/store/teams.store';
 
 })
 export class TeamsComponent {
-
+  layoutService = inject(LayoutService);
   teamsStore = inject(TeamsStore);
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -62,7 +63,7 @@ export class TeamsComponent {
   }
 
   addTeam() {
-    this.router.navigate(['create'], {relativeTo: this.route});
+    void this.router.navigate(['create'], {relativeTo: this.route});
   }
 
   deleteTeam(team: Team) {
@@ -71,11 +72,11 @@ export class TeamsComponent {
 
 
   updateTeam(team: Team) {
-    this.router.navigate([encodeURIComponent(team._links.self.href), 'update'], {relativeTo: this.route});
+    void this.router.navigate([encodeURIComponent(team._links.self.href), 'update'], {relativeTo: this.route});
   }
 
   viewTeam(team: Team) {
-    this.router.navigate([encodeURIComponent(team._links.self.href)], {relativeTo: this.route});
+    void this.router.navigate([encodeURIComponent(team._links.self.href)], {relativeTo: this.route});
   }
 
   handlePageEvent($event: PageEvent) {

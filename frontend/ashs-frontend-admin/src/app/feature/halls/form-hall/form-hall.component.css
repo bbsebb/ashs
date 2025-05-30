@@ -1,0 +1,94 @@
+/*
+ * Hall Form Styles
+ * Contains styling for the hall creation form
+ */
+
+/* Base Elements
+ * -------------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  margin: 20px;
+}
+
+mat-divider {
+  margin: 10px 0;
+}
+
+/* Title container */
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Form sections */
+.form-section {
+  margin: 16px 0;
+}
+
+/* Full width form fields */
+.full-width {
+  width: 100%;
+}
+
+/* Headings with icons */
+h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  color: var(--mat-sys-secondary, #673ab7);
+}
+
+/* Address flex layout */
+.address-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.address-fields mat-form-field {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+/* Street field - wider to accommodate more text */
+.street-field {
+  flex: 1 1 100%;
+}
+
+/* Button container */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* Responsive styles */
+@media (min-width: 600px) {
+  .address-fields mat-form-field {
+    flex: 1 1 calc(50% - 16px);
+  }
+
+  .street-field {
+    flex: 1 1 100% !important;
+  }
+}
+
+@media (min-width: 960px) {
+  .address-fields mat-form-field {
+    flex: 1 1 calc(25% - 16px);
+  }
+
+  .street-field {
+    flex: 1 1 calc(50% - 16px) !important;
+  }
+}

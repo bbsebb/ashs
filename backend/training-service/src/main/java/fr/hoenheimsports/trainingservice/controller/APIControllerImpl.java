@@ -29,8 +29,11 @@ public class APIControllerImpl implements APIController {
                 linkTo(methodOn(TeamControllerImpl.class).getTeams(null)).withRel("teams"),
                 linkTo(methodOn(TeamControllerImpl.class).getAllTeams()).withRel("allTeams"),
                 linkTo(methodOn(CoachControllerImpl.class).getCoaches(null)).withRel("coaches"),
+                linkTo(methodOn(CoachControllerImpl.class).getAllCoaches()).withRel("allCoaches"),
                 linkTo(methodOn(HallControllerImpl.class).getHalls(null)).withRel("halls"),
+                linkTo(methodOn(HallControllerImpl.class).getAllHalls()).withRel("allHalls"),
                 linkTo(methodOn(TrainingSessionControllerImpl.class).getTrainingSessions(null)).withRel("trainingSessions"),
+                linkTo(methodOn(TrainingSessionControllerImpl.class).getAllTrainingSessions()).withRel("allTrainingSessions"),
                 linkTo(methodOn(APIControllerImpl.class).getApiIndex()).withSelfRel()
         );
 

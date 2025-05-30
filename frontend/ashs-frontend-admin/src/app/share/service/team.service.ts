@@ -10,7 +10,7 @@ import {
   AddTrainingSessionInTeamDTORequest,
   toAddTrainingSessionInTeamDTORequest
 } from '@app/share/service/dto/add-training-session-in-team-d-t-o-request';
-import {catchError, forkJoin, Observable, of, switchMap, throwError} from 'rxjs';
+import {catchError, forkJoin, iif, Observable, of, switchMap, throwError} from 'rxjs';
 import {TrainingSession} from '@app/share/model/training-session';
 import {
   AddRoleCoachInTeamDTORequest,
@@ -21,7 +21,9 @@ import {HalFormService} from '@app/share/service/hal-form.service';
 import {CreateTeamDTORequest} from '@app/share/service/dto/create-team-d-t-o-request';
 import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-session-d-t-o';
 import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
-import {HalResource} from '@app/share/model/hal/hal';
+import {AllHalResources, HalResource, PaginatedHalResource} from '@app/share/model/hal/hal';
+import {PaginationOption} from '@app/share/service/pagination-option';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -29,9 +31,26 @@ import {HalResource} from '@app/share/model/hal/hal';
 export class TeamService {
   matDialog = inject(MatDialog);
   halFormService = inject(HalFormService);
+  private static readonly PAGINATION_OPTION_DEFAULT: PaginationOption = {
+    size: 20,
+    page: 0
+  };
 
   constructor() {
   }
+
+  getTeams(paginationOption: PaginationOption = TeamService.PAGINATION_OPTION_DEFAULT): Observable<AllHalResources<Team> | PaginatedHalResource<Team>> {
+    return this.halFormService.root.pipe(
+      switchMap((root) =>
+        iif(
+          () => paginationOption == 'all',
+          this.halFormService.follow<AllHalResources<Team>>(root, "allTeams"),
+          this.halFormService.follow<PaginatedHalResource<Team>>(root, "teams", this.halFormService.buildParamPage(paginationOption))
+        )
+      )
+    );
+  }
+
 
   createTeamWithTrainingSessionsAndRoleCoaches(
     team: HalResource,
@@ -110,6 +129,26 @@ export class TeamService {
   }
 
 
+  getTrainingSessions(team: Team): Observable<TrainingSession[]> {
+    return this.halFormService
+      .follow<AllHalResources<TrainingSession>>(team, 'trainingSessions')
+      .pipe(
+        map(resource => this.halFormService.unwrap<TrainingSession[]>(resource, 'trainingSessions')),
+        catchError(_ => of([])) // en cas d'erreur, renvoyer []
+      );
+  }
+
+
+  getRoleCoaches(team: Team): Observable<RoleCoach[]> {
+    return this.halFormService
+      .follow<AllHalResources<RoleCoach>>(team, 'roleCoaches')
+      .pipe(
+        map(resource => this.halFormService.unwrap<RoleCoach[]>(resource, 'roleCoaches')),
+        catchError(_ => of([])) // en cas d'erreur, renvoyer []
+      );
+  }
+
+
   createDeleteConfirmation(team: Team) {
     const genderDisplay = new GenderPipe().transform(team.gender);
     const categoryDisplay = new CategoryPipe().transform(team.category);
@@ -166,3 +205,4 @@ export class TeamService {
     return roleCoachObservables.length ? forkJoin(roleCoachObservables) : of([]);
   }
 }
+

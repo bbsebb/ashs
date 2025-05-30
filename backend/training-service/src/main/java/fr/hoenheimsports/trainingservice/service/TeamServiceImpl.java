@@ -2,7 +2,6 @@ package fr.hoenheimsports.trainingservice.service;
 
 import fr.hoenheimsports.trainingservice.exception.TeamAlreadyExistsException;
 import fr.hoenheimsports.trainingservice.model.*;
-import fr.hoenheimsports.trainingservice.repository.RoleCoachRepository;
 import fr.hoenheimsports.trainingservice.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -35,16 +34,12 @@ public class TeamServiceImpl implements TeamService {
     private final TeamRepository teamRepository;
     private final HallService hallService;
     private final CoachService coachService;
-    private final RoleCoachRepository roleCoachRepository;
-    private final TrainingSessionService trainingSessionService;
     private final RoleCoachService roleCoachService;
 
-    public TeamServiceImpl(TeamRepository teamRepository, HallService hallService, CoachService coachService, RoleCoachRepository roleCoachRepository, TrainingSessionService trainingSessionService, RoleCoachService roleCoachService) {
+    public TeamServiceImpl(TeamRepository teamRepository, HallService hallService, CoachService coachService, RoleCoachService roleCoachService) {
         this.teamRepository = teamRepository;
         this.hallService = hallService;
         this.coachService = coachService;
-        this.roleCoachRepository = roleCoachRepository;
-        this.trainingSessionService = trainingSessionService;
         this.roleCoachService = roleCoachService;
     }
 

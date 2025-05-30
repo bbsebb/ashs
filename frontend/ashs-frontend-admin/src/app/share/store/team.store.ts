@@ -3,7 +3,7 @@ import {HalFormService} from '@app/share/service/hal-form.service';
 import {rxResource} from '@angular/core/rxjs-interop';
 import {Team} from '@app/share/model/team';
 import {TrainingSession} from '@app/share/model/training-session';
-import {delay, of} from 'rxjs';
+import {of} from 'rxjs';
 import {RoleCoach} from '@app/share/model/role-coach';
 import {tap} from 'rxjs/operators';
 import {UpdateTeamDTORequest} from '@app/share/service/dto/update-team-d-t-o-request';
@@ -31,7 +31,14 @@ export class TeamStore {
    * Sets up the team, training sessions, and role coaches resources
    */
   constructor() {
-    this._teamResource = rxResource({
+    this._teamResource = this.loadTeam();
+
+    this._trainingSessionResource = this.loadTrainingSessions();
+    this._roleCoachResource = this.loadRoleCoaches();
+  }
+
+  loadTeam() {
+    return rxResource({
       request: () => {
         const uri = this._uri();
         if (uri) {
@@ -39,16 +46,24 @@ export class TeamStore {
         }
         return undefined
       },
-      loader: ({request}) => this.halFormService.loadResource<Team>(request).pipe(delay(2000))
+      loader: ({request}) => {
+        const team = this.teamsStore.getTeamByUri(request);
+        return team ? of(team) : this.halFormService.loadResource<Team>(request);
+      }
     });
+  }
 
-    this._trainingSessionResource = rxResource({
+  loadTrainingSessions() {
+    return rxResource({
       request: () => this.teamResource.value(),
       loader: ({request}) => {
         return request ? this.halFormService.follow<TrainingSession[]>(request, 'trainingSessionsList') : of([]);
       }
     });
-    this._roleCoachResource = rxResource({
+  }
+
+  loadRoleCoaches() {
+    return rxResource({
       request: () => this.teamResource.value(),
       loader: ({request}) => {
         return request ? this.halFormService.follow<RoleCoach[]>(request, 'roleCoachesList') : of([]);
@@ -60,16 +75,28 @@ export class TeamStore {
    * Gets the team resource
    * @returns The team resource reference
    */
-  get teamResource() {
+  private get teamResource() {
     return this._teamResource;
   }
 
-  /**
-   * Gets the current URI
-   * @returns The current URI or undefined
-   */
-  get uri(): string | undefined {
-    return this._uri();
+  getTeam() {
+    return this.teamResource.value();
+  }
+
+  reloadTeam() {
+    this.teamResource.reload();
+  }
+
+  teamResourceIsLoading() {
+    return this.teamResource.isLoading();
+  }
+
+  getTeamResourceStatus() {
+    return this.teamResource.status();
+  }
+
+  getTeamResourceError() {
+    return this.teamResource.error();
   }
 
   /**
@@ -88,12 +115,52 @@ export class TeamStore {
     return this._trainingSessionResource;
   }
 
+  getTrainingSession() {
+    return this.trainingSessionResource.value();
+  }
+
+  reloadTrainingSession() {
+    this.trainingSessionResource.reload();
+  }
+
+  trainingSessionResourceIsLoading() {
+    return this.trainingSessionResource.isLoading();
+  }
+
+  getTrainingSessionResourceStatus() {
+    return this.trainingSessionResource.status();
+  }
+
+  getTrainingSessionResourceError() {
+    return this.trainingSessionResource.error();
+  }
+
   /**
    * Gets the role coach resource
    * @returns The role coach resource reference
    */
-  get roleCoachResource() {
+  private get roleCoachResource() {
     return this._roleCoachResource;
+  }
+
+  getRoleCoach() {
+    return this.roleCoachResource.value();
+  }
+
+  reloadRoleCoach() {
+    this.roleCoachResource.reload();
+  }
+
+  roleCoachResourceIsLoading() {
+    return this.roleCoachResource.isLoading();
+  }
+
+  getRoleCoachResourceStatus() {
+    return this.roleCoachResource.status();
+  }
+
+  getRoleCoachResourceError() {
+    return this.roleCoachResource.error();
   }
 
   /**
@@ -118,4 +185,6 @@ export class TeamStore {
         tap(() => this.teamResource.reload()), //TODO A optimiser en modifiant directement le store
       );
   }
+
+
 }

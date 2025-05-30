@@ -1,0 +1,86 @@
+<h2>
+  <div class="title-container">
+    <mat-icon>add_location</mat-icon>
+    <span>Enregistrer une salle</span>
+  </div>
+</h2>
+
+<form [formGroup]="hallForm" (ngSubmit)="submit()">
+  <!-- Hall Name Section -->
+  <div class="form-section">
+    <h3>
+      <mat-icon>location_on</mat-icon>
+      Informations de la salle
+    </h3>
+
+    <mat-form-field class="full-width">
+      <mat-label>Nom de la salle</mat-label>
+      <input matInput formControlName="name">
+      @let nameControl = hallForm.get("name");
+      @if (hasError(nameControl)) {
+        <mat-error>{{ displayError(nameControl) }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Address Section -->
+  <div class="form-section" formGroupName="address">
+    <h3>
+      <mat-icon>home</mat-icon>
+      Adresse
+    </h3>
+
+    <div class="address-fields">
+      <mat-form-field class="street-field">
+        <mat-label>Numéro et rue</mat-label>
+        <input matInput formControlName="street">
+        @let streetControl = hallForm.get("address.street");
+        @if (hasError(streetControl)) {
+          <mat-error>{{ displayError(streetControl) }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Ville</mat-label>
+        <input matInput formControlName="city">
+        @let cityControl = hallForm.get("address.city");
+        @if (hasError(cityControl)) {
+          <mat-error>{{ displayError(cityControl) }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Code Postal</mat-label>
+        <input matInput formControlName="postalCode">
+        @let postalCodeControl = hallForm.get("address.postalCode");
+        @if (hasError(postalCodeControl)) {
+          <mat-error>{{ displayError(postalCodeControl) }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Pays</mat-label>
+        <input matInput formControlName="country">
+        @let countryControl = hallForm.get("address.country");
+        @if (hasError(countryControl)) {
+          <mat-error>{{ displayError(countryControl) }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="button-container">
+    <button mat-button type="button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      RETOUR
+    </button>
+    <button mat-flat-button type="submit"
+            [disabled]="hallForm.invalid">
+      ENREGISTRER
+    </button>
+  </div>
+</form>

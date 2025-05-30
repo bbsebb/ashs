@@ -1,5 +1,6 @@
 package fr.hoenheimsports.trainingservice.service;
 
+import fr.hoenheimsports.trainingservice.exception.HallAlreadyExistsException;
 import fr.hoenheimsports.trainingservice.model.Hall;
 import fr.hoenheimsports.trainingservice.repository.HallRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -46,6 +48,17 @@ public class HallServiceImpl implements HallService {
      */
     @Override
     public Hall createHall(Hall hall) {
+        if (isNotUniqueHall(hall)) {
+            var messageError = """
+                    Hall already exists with combinaison of
+                     name : %s
+                     street : %s
+                     cp : %s
+                     city: %s
+                     country: %s
+                    """.formatted(hall.getName(), hall.getAddress().getStreet(), hall.getAddress().getPostalCode(), hall.getAddress().getCity(), hall.getAddress().getCountry());
+            throw new HallAlreadyExistsException(messageError);
+        }
         return hallRepository.save(hall);
     }
 
@@ -59,7 +72,7 @@ public class HallServiceImpl implements HallService {
      */
     @Override
     public Hall getHallById(Long id) {
-        return  hallRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Hall not found with id: " + id));
+        return hallRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Hall not found with id: " + id));
     }
 
 
@@ -88,7 +101,7 @@ public class HallServiceImpl implements HallService {
     /**
      * Updates an existing Hall entity with new information.
      *
-     * @param id the unique identifier of the Hall to update
+     * @param id          the unique identifier of the Hall to update
      * @param updatedHall the Hall entity containing updated information
      * @return the updated Hall entity after saving to the repository
      * @throws EntityNotFoundException if no Hall entity with the given identifier is found
@@ -97,9 +110,31 @@ public class HallServiceImpl implements HallService {
     @Transactional
     public Hall updateHall(Long id, Hall updatedHall) {
         Hall hall = hallRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Hall not found with id: " + id));
+        if (areEqual(hall, updatedHall)) {
+            return hall;
+        }
+        if (isNotUniqueHall(updatedHall)) {
+            var messageError = """
+                    Hall already exists with combinaison of
+                     name : %s
+                     street : %s
+                     cp : %s
+                     city: %s
+                     country: %s
+                    """.formatted(updatedHall.getName(), updatedHall.getAddress().getStreet(), updatedHall.getAddress().getPostalCode(), updatedHall.getAddress().getCity(), updatedHall.getAddress().getCountry());
+            throw new HallAlreadyExistsException(messageError);
+        }
         hall.setName(updatedHall.getName());
         hall.setAddress(updatedHall.getAddress());
         return hallRepository.save(hall);
+    }
+
+    private static boolean areEqual(Hall hall1, Hall hall2) {
+        if (hall1 == hall2) return true;
+        if (hall1 == null || hall2 == null) return false;
+
+        return Objects.equals(hall1.getName(), hall2.getName()) &&
+                Objects.equals(hall1.getAddress(), hall2.getAddress());
     }
 
 
@@ -117,5 +152,18 @@ public class HallServiceImpl implements HallService {
         hallRepository.deleteById(id);
     }
 
+
+    private boolean isNotUniqueHall(Hall hall) {
+        return isNotUniqueHall(
+                hall.getName(), hall.getAddress().getStreet(), hall.getAddress().getCity(), hall.getAddress().getPostalCode(), hall.getAddress().getCountry()
+        );
+    }
+
+    @Override
+    public boolean isNotUniqueHall(String name, String street, String city, String postalCode, String country) {
+        return hallRepository.existsByNameAndAddress_StreetAndAddress_CityAndAddress_PostalCodeAndAddress_Country(
+                name, street, city, postalCode, country
+        );
+    }
 
 }

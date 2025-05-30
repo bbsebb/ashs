@@ -21,7 +21,7 @@ import {MatButton} from '@angular/material/button';
   template: `
     <h2 mat-dialog-title>{{ data.title }}</h2>
     <mat-dialog-content>
-      {{ data.content }} ?
+      {{ data.content }}
     </mat-dialog-content>
     <mat-dialog-actions>
       <button mat-button [mat-dialog-close]="false">NON</button>

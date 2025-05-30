@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.hoenheimsports.trainingservice.TestcontainersConfiguration;
 import fr.hoenheimsports.trainingservice.config.TestSecurityConfig;
 import fr.hoenheimsports.trainingservice.dto.request.AddressDTORequest;
-import fr.hoenheimsports.trainingservice.dto.request.HallDTORequest;
+import fr.hoenheimsports.trainingservice.dto.request.HallDTOCreateRequest;
 import fr.hoenheimsports.trainingservice.model.Address;
 import fr.hoenheimsports.trainingservice.model.Hall;
 import fr.hoenheimsports.trainingservice.repository.HallRepository;
@@ -28,13 +28,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Import({TestcontainersConfiguration.class,TestSecurityConfig.class})
+@Import({TestcontainersConfiguration.class, TestSecurityConfig.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class HallIntegrationTest {
 
-    private static final String BASE_URI = "/api/halls" ;
-    
+    private static final String BASE_URI = "/api/halls";
+
     @Autowired
     private HallRepository hallRepository;
     @Autowired
@@ -46,7 +46,7 @@ public class HallIntegrationTest {
 
     @BeforeEach
     void setUp() {
-      var h1 =   Hall.builder()
+        var h1 = Hall.builder()
                 .name("Gymnase")
                 .address(
                         Address.builder()
@@ -56,19 +56,19 @@ public class HallIntegrationTest {
                                 .postalCode("67800")
                                 .build())
                 .build();
-      var h2 = Hall.builder()
-              .name("Gymnase2")
-              .address(
-                      Address.builder()
-                              .city("Hoenheim2")
-                              .country("France2")
-                              .street("rue des vosges2")
-                              .postalCode("67802")
-                              .build()
-              )
-              .build();
-      hall1 = hallRepository.save(h1);
-      hall2 = hallRepository.save(h2);
+        var h2 = Hall.builder()
+                .name("Gymnase2")
+                .address(
+                        Address.builder()
+                                .city("Hoenheim2")
+                                .country("France2")
+                                .street("rue des vosges2")
+                                .postalCode("67802")
+                                .build()
+                )
+                .build();
+        hall1 = hallRepository.save(h1);
+        hall2 = hallRepository.save(h2);
     }
 
     @AfterEach
@@ -86,7 +86,7 @@ public class HallIntegrationTest {
         var hall1BasePath = hallBasePath(0);
         var hall2BasePath = hallBasePath(1);
         //Act & Assert
-        mockMvc.perform(get(BASE_URI ).param("page",String.valueOf(page)).param("size", String.valueOf(size)))
+        mockMvc.perform(get(BASE_URI).param("page", String.valueOf(page)).param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/prs.hal-forms+json"))
 
@@ -100,7 +100,7 @@ public class HallIntegrationTest {
                 .andExpect(jsonPath("$.page.totalPages").value(1))
 
                 // Verifying high-level links
-                .andExpect(jsonPath("$._links.self.href").value(String.format("http://localhost/api/halls?page=%d&size=%d",page,size)))
+                .andExpect(jsonPath("$._links.self.href").value(String.format("http://localhost/api/halls?page=%d&size=%d", page, size)))
 
                 // Verifying high-level templates
                 .andExpect(templatesCreateHall(hallBasePath()))
@@ -129,7 +129,7 @@ public class HallIntegrationTest {
         var hall1BasePath = hallBasePath(0);
         var hall2BasePath = hallBasePath(1);
         //Act & Assert
-        mockMvc.perform(get(BASE_URI ).param("page",String.valueOf(page)).param("size", String.valueOf(size)))
+        mockMvc.perform(get(BASE_URI).param("page", String.valueOf(page)).param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/prs.hal-forms+json"))
 
@@ -153,12 +153,12 @@ public class HallIntegrationTest {
 
                 // Hall 1
                 .andExpect(hall1(hall1BasePath))
-                .andExpect( jsonPath(hallBasePath(0) + "._templates.deleteHall").doesNotExist())
+                .andExpect(jsonPath(hallBasePath(0) + "._templates.deleteHall").doesNotExist())
                 .andExpect(jsonPath(hallBasePath(0) + "._templates.updateHall").doesNotExist())
 
                 //Hall 2
                 .andExpect(hall2(hall2BasePath))
-                .andExpect( jsonPath(hallBasePath(1) + "._templates.deleteHall").doesNotExist())
+                .andExpect(jsonPath(hallBasePath(1) + "._templates.deleteHall").doesNotExist())
                 .andExpect(jsonPath(hallBasePath(1) + "._templates.updateHall").doesNotExist());
     }
 
@@ -172,7 +172,7 @@ public class HallIntegrationTest {
         var hall2BasePath = hallBasePath(1);
 
         //Act & Assert
-        mockMvc.perform(get(BASE_URI ).param("page",String.valueOf(page)).param("size", String.valueOf(size)))
+        mockMvc.perform(get(BASE_URI).param("page", String.valueOf(page)).param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/prs.hal-forms+json"))
 
@@ -186,7 +186,7 @@ public class HallIntegrationTest {
                 .andExpect(jsonPath("$.page.totalPages").value(1))
 
                 // Vérification des liens haut niveau
-                .andExpect(jsonPath("$._links.self.href").value(String.format("http://localhost/api/halls?page=%d&size=%d",page,size)))
+                .andExpect(jsonPath("$._links.self.href").value(String.format("http://localhost/api/halls?page=%d&size=%d", page, size)))
 
                 // Vérification des templates haut niveau
                 .andExpect(jsonPath("$._templates.createHall").doesNotExist())
@@ -196,12 +196,12 @@ public class HallIntegrationTest {
 
                 // Verifying Hall 1
                 .andExpect(hall1(hall1BasePath))
-                .andExpect( jsonPath(hallBasePath(0) + "._templates.deleteHall").doesNotExist())
+                .andExpect(jsonPath(hallBasePath(0) + "._templates.deleteHall").doesNotExist())
                 .andExpect(jsonPath(hallBasePath(0) + "._templates.updateHall").doesNotExist())
 
                 //Hall 2
                 .andExpect(hall2(hall2BasePath))
-                .andExpect( jsonPath(hallBasePath(1) + "._templates.deleteHall").doesNotExist())
+                .andExpect(jsonPath(hallBasePath(1) + "._templates.deleteHall").doesNotExist())
                 .andExpect(jsonPath(hallBasePath(1) + "._templates.updateHall").doesNotExist());
     }
 
@@ -214,7 +214,7 @@ public class HallIntegrationTest {
         var size = 10;
         var hallBasePath = hallBasePath();
         //Act & Assert
-        mockMvc.perform(get(BASE_URI + "/" +hall1.getId()).param("page",String.valueOf(page)).param("size", String.valueOf(size)))
+        mockMvc.perform(get(BASE_URI + "/" + hall1.getId()).param("page", String.valueOf(page)).param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/prs.hal-forms+json"))
 
@@ -233,13 +233,13 @@ public class HallIntegrationTest {
         var size = 10;
         var hallBasePath = hallBasePath();
         //Act & Assert
-        mockMvc.perform(get(BASE_URI + "/" +hall1.getId()).param("page",String.valueOf(page)).param("size", String.valueOf(size)))
+        mockMvc.perform(get(BASE_URI + "/" + hall1.getId()).param("page", String.valueOf(page)).param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/prs.hal-forms+json"))
 
                 // Hall 1
                 .andExpect(hall1(hallBasePath))
-                .andExpect( jsonPath(hallBasePath() + "._templates.deleteHall").doesNotExist())
+                .andExpect(jsonPath(hallBasePath() + "._templates.deleteHall").doesNotExist())
                 .andExpect(jsonPath(hallBasePath() + "._templates.updateHall").doesNotExist());
     }
 
@@ -251,13 +251,13 @@ public class HallIntegrationTest {
         var size = 10;
         var hallBasePath = hallBasePath();
         //Act & Assert
-        mockMvc.perform(get(BASE_URI + "/" +hall1.getId()).param("page",String.valueOf(page)).param("size", String.valueOf(size)))
+        mockMvc.perform(get(BASE_URI + "/" + hall1.getId()).param("page", String.valueOf(page)).param("size", String.valueOf(size)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/prs.hal-forms+json"))
 
                 // Hall 1
                 .andExpect(hall1(hallBasePath))
-                .andExpect( jsonPath(hallBasePath() + "._templates.deleteHall").doesNotExist())
+                .andExpect(jsonPath(hallBasePath() + "._templates.deleteHall").doesNotExist())
                 .andExpect(jsonPath(hallBasePath() + "._templates.updateHall").doesNotExist());
     }
 
@@ -270,7 +270,7 @@ public class HallIntegrationTest {
         var size = 10;
         var id = hall1.getId() + hall2.getId();  // Use ID that doesn't exist
         //Act & Assert
-        mockMvc.perform(get(BASE_URI + "/"  + id).param("page", String.valueOf(page)).param("size", String.valueOf(size)))
+        mockMvc.perform(get(BASE_URI + "/" + id).param("page", String.valueOf(page)).param("size", String.valueOf(size)))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType("application/prs.hal-forms+json"));
     }
@@ -280,14 +280,14 @@ public class HallIntegrationTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void createHall_WithValidHall() throws Exception {
         //Arrange
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
         var hallBasePath = hallBasePath();
         //Act & Assert
         mockMvc.perform(post(BASE_URI)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest)))
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(hall(hallBasePath(), null, hallDTORequest.name(), hallDTORequest.address().city(), hallDTORequest.address().country(), hallDTORequest.address().postalCode(), hallDTORequest.address().street()))
+                .andExpect(hall(hallBasePath(), null, hallDTOCreateRequest.name(), hallDTOCreateRequest.address().city(), hallDTOCreateRequest.address().country(), hallDTOCreateRequest.address().postalCode(), hallDTOCreateRequest.address().street()))
                 .andExpect(templatesDeleteHall(hallBasePath))
                 .andExpect(templatesUpdateHall(hallBasePath));
 
@@ -299,11 +299,11 @@ public class HallIntegrationTest {
     @WithMockUser(username = "user", roles = {"NO_USER"})
     public void createHall_WithoutRoleAdmin() throws Exception {
         //Arrange
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
         //Act & Assert
         mockMvc.perform(post(BASE_URI)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest)))
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest)))
                 .andExpect(status().isForbidden());
         verifyNumberOfHalls(2);
     }
@@ -312,11 +312,11 @@ public class HallIntegrationTest {
     @DisplayName("Create a new hall without authentication (Unauthorized)")
     public void createHall_WithoutAuthentication() throws Exception {
         //Arrange
-        HallDTORequest hallDTORequest = getHallDTORequest();
+        HallDTOCreateRequest hallDTOCreateRequest = getHallDTORequest();
         //Act & Assert
         mockMvc.perform(post(BASE_URI)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest)))
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest)))
                 .andExpect(status().isUnauthorized());
         verifyNumberOfHalls(2);
     }
@@ -326,7 +326,7 @@ public class HallIntegrationTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void createHall_WhenArgumentNotValid() throws Exception {
         //Arrange
-        HallDTORequest hallDTORequest = HallDTORequest.builder()
+        HallDTOCreateRequest hallDTOCreateRequest = HallDTOCreateRequest.builder()
                 .address(
                         AddressDTORequest.builder()
                                 .city("Hoenheim3")
@@ -339,7 +339,7 @@ public class HallIntegrationTest {
         //Act & Assert
         mockMvc.perform(post(BASE_URI)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(hallDTORequest)))
+                        .content(objectMapper.writeValueAsString(hallDTOCreateRequest)))
                 .andExpect(status().isBadRequest());
         verifyNumberOfHalls(2);
     }
@@ -355,7 +355,7 @@ public class HallIntegrationTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void updateHall_Success_WithValidData() throws Exception {
         // Arrange : Préparation du DTO contenant les données valides
-        HallDTORequest updatedHallDTO = getValidDTORequest();
+        HallDTOCreateRequest updatedHallDTO = getValidDTORequest();
         String updatedHallDTOJson = this.objectMapper.writeValueAsString(updatedHallDTO);
         Long existingHallId = hall1.getId(); // An existing hall preconfigured in setUp()
         var hallBasePath = hallBasePath();
@@ -364,15 +364,15 @@ public class HallIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedHallDTOJson))
                 .andExpect(status().isOk()) // Verifies a 200 status
-                .andExpect(hall(hallBasePath(),existingHallId, updatedHallDTO.name(), updatedHallDTO.address().city(), updatedHallDTO.address().country(), updatedHallDTO.address().postalCode(), updatedHallDTO.address().street()))
+                .andExpect(hall(hallBasePath(), existingHallId, updatedHallDTO.name(), updatedHallDTO.address().city(), updatedHallDTO.address().country(), updatedHallDTO.address().postalCode(), updatedHallDTO.address().street()))
                 .andExpect(templatesDeleteHall(hallBasePath))
                 .andExpect(templatesUpdateHall(hallBasePath));
         this.mockMvc.perform(get(BASE_URI + "/" + existingHallId))
                 .andExpect(status().isOk())
-                .andExpect(hall(hallBasePath(),existingHallId, updatedHallDTO.name(), updatedHallDTO.address().city(), updatedHallDTO.address().country(), updatedHallDTO.address().postalCode(), updatedHallDTO.address().street()))
+                .andExpect(hall(hallBasePath(), existingHallId, updatedHallDTO.name(), updatedHallDTO.address().city(), updatedHallDTO.address().country(), updatedHallDTO.address().postalCode(), updatedHallDTO.address().street()))
                 .andExpect(templatesDeleteHall(hallBasePath))
                 .andExpect(templatesUpdateHall(hallBasePath));
-        verifyIfHallExistWithId(hall2.getId(),hallBasePath());
+        verifyIfHallExistWithId(hall2.getId(), hallBasePath());
     }
 
     @Test
@@ -380,7 +380,7 @@ public class HallIntegrationTest {
     @WithMockUser(username = "user", roles = {"NO_USER"})
     public void updateHall_Fails_WithoutRoleAdmin() throws Exception {
         // Arrange : Préparation du DTO contenant les données valides
-        HallDTORequest updatedHallDTO = getValidDTORequest();
+        HallDTOCreateRequest updatedHallDTO = getValidDTORequest();
         String updatedHallDTOJson = this.objectMapper.writeValueAsString(updatedHallDTO);
         Long existingHallId = hall1.getId(); // Une salle existante préconfigurée dans setUp()
 
@@ -389,11 +389,11 @@ public class HallIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedHallDTOJson))
                 .andExpect(status().isForbidden()); // Verifies a 403 status for unauthorized role
-        verifyIfHallExistWithId(existingHallId,hallBasePath());
+        verifyIfHallExistWithId(existingHallId, hallBasePath());
     }
 
-    private static HallDTORequest getValidDTORequest() {
-        return HallDTORequest.builder()
+    private static HallDTOCreateRequest getValidDTORequest() {
+        return HallDTOCreateRequest.builder()
                 .name("Updated Hall Name")
                 .address(AddressDTORequest.builder()
                         .city("Updated City")
@@ -408,7 +408,7 @@ public class HallIntegrationTest {
     @DisplayName("Update a hall without authentication (Unauthorized)")
     public void updateHall_Fails_WithoutAuthentication() throws Exception {
         // Arrange: Preparing the DTO containing valid data
-        HallDTORequest updatedHallDTO = getValidDTORequest();
+        HallDTOCreateRequest updatedHallDTO = getValidDTORequest();
         String updatedHallDTOJson = this.objectMapper.writeValueAsString(updatedHallDTO);
         Long existingHallId = hall1.getId(); // Une salle existante préconfigurée dans setUp()
 
@@ -417,7 +417,7 @@ public class HallIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedHallDTOJson))
                 .andExpect(status().isUnauthorized()); // Vérifie un statut 401 pour utilisateur non authentifié
-        verifyIfHallExistWithId(existingHallId,hallBasePath());
+        verifyIfHallExistWithId(existingHallId, hallBasePath());
     }
 
     @Test
@@ -425,7 +425,7 @@ public class HallIntegrationTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void updateHall_Fails_WithInvalidData() throws Exception {
         // Arrange : Création d'un DTO avec des données non valides (par exemple, sans nom)
-        HallDTORequest invalidHallDTO = HallDTORequest.builder()
+        HallDTOCreateRequest invalidHallDTO = HallDTOCreateRequest.builder()
                 .name("Updated Hall Name")
                 .address(AddressDTORequest.builder()
                         .city("Updated City")
@@ -442,7 +442,7 @@ public class HallIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidHallDTOJson))
                 .andExpect(status().isBadRequest()); // Verifies a 400 status for invalid data
-        verifyIfHallExistWithId(existingHallId,hallBasePath());
+        verifyIfHallExistWithId(existingHallId, hallBasePath());
     }
 
     @Test
@@ -457,7 +457,7 @@ public class HallIntegrationTest {
                 .andExpect(status().isNoContent()); // Vérifie un statut 204 No Content
         this.mockMvc.perform(get(BASE_URI + "/" + existingHallId))
                 .andExpect(status().isNotFound());
-        verifyIfHallExistWithId(hall2.getId(),hallBasePath());
+        verifyIfHallExistWithId(hall2.getId(), hallBasePath());
     }
 
     @Test
@@ -470,7 +470,7 @@ public class HallIntegrationTest {
         // Act & Assert: Attempted deletion by a non-admin user
         this.mockMvc.perform(delete(BASE_URI + "/" + existingHallId))
                 .andExpect(status().isForbidden()); // Vérifie un statut 403 Forbidden
-        verifyIfHallExistWithId(existingHallId,hallBasePath());
+        verifyIfHallExistWithId(existingHallId, hallBasePath());
     }
 
     @Test
@@ -482,9 +482,8 @@ public class HallIntegrationTest {
         // Act & Assert: Tentative de suppression sans authentification
         this.mockMvc.perform(delete(BASE_URI + "/" + existingHallId))
                 .andExpect(status().isUnauthorized()); // Vérifie un statut 401 Unauthorized
-        verifyIfHallExistWithId(existingHallId,hallBasePath());
+        verifyIfHallExistWithId(existingHallId, hallBasePath());
     }
-
 
 
     @Test
@@ -500,14 +499,13 @@ public class HallIntegrationTest {
     }
 
 
-
-    private void verifyIfHallExistWithId(long existingHallId,String hallBasePath) throws Exception {
-        hallBasePath = (hallBasePath==null)? hallBasePath() : hallBasePath;
-        if(existingHallId == hall1.getId()) {
+    private void verifyIfHallExistWithId(long existingHallId, String hallBasePath) throws Exception {
+        hallBasePath = (hallBasePath == null) ? hallBasePath() : hallBasePath;
+        if (existingHallId == hall1.getId()) {
             this.mockMvc.perform(get(BASE_URI + "/" + existingHallId))
                     .andExpect(status().isOk())
                     .andExpect(hall1(hallBasePath));
-        } else if(existingHallId == hall2.getId()) {
+        } else if (existingHallId == hall2.getId()) {
             this.mockMvc.perform(get(BASE_URI + "/" + existingHallId))
                     .andExpect(status().isOk())
                     .andExpect(hall2(hallBasePath));
@@ -517,8 +515,8 @@ public class HallIntegrationTest {
 
     }
 
-    private static HallDTORequest getHallDTORequest() {
-        return HallDTORequest.builder()
+    private static HallDTOCreateRequest getHallDTORequest() {
+        return HallDTOCreateRequest.builder()
                 .name("Gymnase3")
                 .address(
                         AddressDTORequest.builder()
@@ -534,14 +532,15 @@ public class HallIntegrationTest {
     private String hallBasePath(int index) {
         return String.format("$._embedded.halls[%d]", index);
     }
+
     private String hallBasePath() {
         return "$";
     }
-    
-    
+
+
     private ResultMatcher hall(String hallBasePath, Long id, String name, String city, String country, String postalCode, String street) {
         return resultActions -> {
-            if(id != null) {
+            if (id != null) {
                 jsonPath(hallBasePath + ".id").value(id).match(resultActions);
                 jsonPath(hallBasePath + "._links.self.href").value("http://localhost/api/halls/" + id).match(resultActions);
             }
@@ -555,7 +554,6 @@ public class HallIntegrationTest {
             jsonPath(hallBasePath + "._links.halls.href").value("http://localhost/api/halls").match(resultActions);
         };
     }
-
 
 
     private ResultMatcher hall1(String hallBasePath) {
@@ -591,18 +589,18 @@ public class HallIntegrationTest {
     private ResultMatcher templatesCreateHall(String basePath) {
         var basePathTemplates = String.format("%s._templates.createHall", basePath);
         return resultActions -> {
-                    jsonPath(basePathTemplates + ".method").value("POST");
-                    jsonPath(basePathTemplates + ".target").value("http://localhost/api/halls").match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[0].name").value("address").match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[0].readOnly").value(true).match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[0].required").value(true).match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[1].name").value("name").match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[1].readOnly").value(true).match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[1].required").value(true).match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[1].max").value(50).match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[1].min").value(0).match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[1].regex").value("^(?=\\s*\\S).*$").match(resultActions);
-                    jsonPath(basePathTemplates + ".properties[1].type").value("range").match(resultActions);
+            jsonPath(basePathTemplates + ".method").value("POST");
+            jsonPath(basePathTemplates + ".target").value("http://localhost/api/halls").match(resultActions);
+            jsonPath(basePathTemplates + ".properties[0].name").value("address").match(resultActions);
+            jsonPath(basePathTemplates + ".properties[0].readOnly").value(true).match(resultActions);
+            jsonPath(basePathTemplates + ".properties[0].required").value(true).match(resultActions);
+            jsonPath(basePathTemplates + ".properties[1].name").value("name").match(resultActions);
+            jsonPath(basePathTemplates + ".properties[1].readOnly").value(true).match(resultActions);
+            jsonPath(basePathTemplates + ".properties[1].required").value(true).match(resultActions);
+            jsonPath(basePathTemplates + ".properties[1].max").value(50).match(resultActions);
+            jsonPath(basePathTemplates + ".properties[1].min").value(0).match(resultActions);
+            jsonPath(basePathTemplates + ".properties[1].regex").value("^(?=\\s*\\S).*$").match(resultActions);
+            jsonPath(basePathTemplates + ".properties[1].type").value("range").match(resultActions);
         };
     }
 

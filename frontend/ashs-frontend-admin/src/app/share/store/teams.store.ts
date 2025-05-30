@@ -1,14 +1,13 @@
 import {inject, Injectable, ResourceRef, signal} from '@angular/core';
 import {rxResource} from '@angular/core/rxjs-interop';
-import {HalFormService, ParamPage} from '@app/share/service/hal-form.service';
-import {iif, Observable, of, switchMap} from 'rxjs';
+import {HalFormService} from '@app/share/service/hal-form.service';
+import {Observable, of} from 'rxjs';
 import {AllHalResources, PaginatedHalResource} from '@app/share/model/hal/hal';
 import {Team} from '@app/share/model/team';
 import {Pagination} from '@app/share/model/hal/pagination';
 import {tap} from 'rxjs/operators';
 import {CreateTeamDTORequest} from '@app/share/service/dto/create-team-d-t-o-request';
 import {TrainingSession} from '@app/share/model/training-session';
-import {Coach} from '@app/share/model/coach';
 import {RoleCoach} from '@app/share/model/role-coach';
 import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-session-d-t-o';
 import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
@@ -16,6 +15,7 @@ import {TeamService} from '@app/share/service/team.service';
 import {NotificationService} from '@app/share/service/notification.service';
 import {Router} from '@angular/router';
 import {UpdateTeamDTORequest} from '@app/share/service/dto/update-team-d-t-o-request';
+import {PaginationOption} from '@app/share/service/pagination-option';
 
 /**
  * Store for managing teams data and operations
@@ -44,15 +44,7 @@ export class TeamsStore {
       request: () => {
         return this._paginationOption()
       },
-      loader: ({request}) => this.halFormService.root.pipe(
-        switchMap((root) =>
-          iif(
-            () => request == 'all',
-            this.halFormService.follow<AllHalResources<Team>>(root, "allTeams"),
-            this.halFormService.follow<PaginatedHalResource<Team>>(root, "teams", this.buildParamPage(request))
-          )
-        )
-      )
+      loader: ({request}) => this.teamService.getTeams(request)
     });
   }
 
@@ -62,8 +54,45 @@ export class TeamsStore {
    * Gets the teams resource
    * @returns The teams resource reference
    */
-  get teamsResource() {
+  private get teamsResource() {
     return this._teamsResource;
+  }
+
+  getTeamsHalResource() {
+    return this.teamsResource.value();
+  }
+
+  /**
+   * Gets the list of teams from the resource
+   * @returns Array of teams or empty array if resource is not available
+   */
+  getTeams(): Team[] {
+    const teamsHalResource = this.getTeamsHalResource();
+    if (teamsHalResource) {
+      return this.halFormService.unwrap<Team[]>(teamsHalResource, 'teams')
+    }
+    return [];
+  }
+
+  getTeamByUri(uri: string) {
+    const teams = this.getTeams();
+    return teams.find(t => t._links.self.href === uri);
+  }
+
+  reloadTeams() {
+    this.teamsResource.reload();
+  }
+
+  teamsResourceIsLoading() {
+    return this.teamsResource.isLoading();
+  }
+
+  getTeamsResourceStatus() {
+    return this.teamsResource.status();
+  }
+
+  getTeamsResourceError() {
+    return this.teamsResource.error();
   }
 
   /**
@@ -84,17 +113,6 @@ export class TeamsStore {
 
   // ===== DATA RETRIEVAL METHODS =====
 
-  /**
-   * Gets the list of teams from the resource
-   * @returns Array of teams or empty array if resource is not available
-   */
-  getTeams(): Team[] {
-    const teamsResource = this._teamsResource.value();
-    if (teamsResource) {
-      return this.halFormService.unwrap<Team[]>(teamsResource, 'teams')
-    }
-    return [];
-  }
 
   /**
    * Gets a specific team by URI
@@ -107,38 +125,6 @@ export class TeamsStore {
       request: () => uri,
       loader: ({request}) => team ? of(team) : this.halFormService.loadResource<Team>(request)
     })
-  }
-
-  /**
-   * Gets the training sessions for a team
-   * @param team The team to get training sessions for
-   * @returns Array of training sessions or empty array if not available
-   */
-  getTrainingSessions(team: Team) {
-    const trainingSessionResource = rxResource({
-      request: () => team,
-      loader: ({request}) => this.halFormService.follow<AllHalResources<TrainingSession>>(request, 'trainingSessions')
-    }).value();
-    if (trainingSessionResource) {
-      return this.halFormService.unwrap<TrainingSession[]>(trainingSessionResource, 'trainingSessions')
-    }
-    return [];
-  }
-
-  /**
-   * Gets the role coaches for a team
-   * @param team The team to get role coaches for
-   * @returns Array of role coaches or empty array if not available
-   */
-  getRoleCoaches(team: Team): RoleCoach[] {
-    const roleCoachResource = rxResource({
-      request: () => team,
-      loader: ({request}) => this.halFormService.follow<AllHalResources<Coach>>(request, 'roleCoaches')
-    }).value();
-    if (roleCoachResource) {
-      return this.halFormService.unwrap<RoleCoach[]>(roleCoachResource, 'roleCoaches')
-    }
-    return [];
   }
 
   /**
@@ -164,7 +150,7 @@ export class TeamsStore {
     trainingSessionsDTORequest: FormTrainingSessionDTO[],
     roleCoachesDTORequest: FormRoleCoachDTO[]
   ) {
-    const teamsResource = this._teamsResource.value();
+    const teamsResource = this.getTeamsHalResource();
     if (!teamsResource) {
       throw new Error("Team resource is undefined");
     }
@@ -343,22 +329,6 @@ export class TeamsStore {
   // ===== PRIVATE UTILITY METHODS =====
 
   /**
-   * Builds the pagination parameters for API requests
-   * @param request The pagination option
-   * @returns The pagination parameters
-   */
-  private buildParamPage(request: PaginationOption) {
-    let paramPage: ParamPage = {}
-    if (request !== 'all') {
-      paramPage = {
-        page: request.page,
-        size: request.size
-      }
-    }
-    return paramPage;
-  }
-
-  /**
    * Reloads the teams resource
    */
   private reloadTeamsResource() {
@@ -366,11 +336,3 @@ export class TeamsStore {
   }
 }
 
-/**
- * Type definition for pagination options
- * Can be either a page/size object or 'all' to retrieve all items
- */
-export type PaginationOption = {
-  size: number,
-  page: number,
-} | 'all'

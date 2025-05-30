@@ -62,12 +62,16 @@ export class ApiError {
    */
   public getMessageForField(field: string | undefined = undefined): string | undefined {
     if (!field) {
-      return 'Une erreur est survenue.'
+      return this.getGenericMessage();
     }
     const found = this._parsedDetails.find(detail => detail.field === field);
     if (!found) {
-      return 'Une erreur est survenue.'
+      return this.getGenericMessage();
     }
     return found?.message;
+  }
+
+  public getGenericMessage(): string {
+    return 'Une erreur est survenue.';
   }
 }

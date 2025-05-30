@@ -1,0 +1,16 @@
+/*
+ * Halls Component Styles
+ * Contains styling for the halls list view
+ */
+
+/* Table Cell
+ * ---------- */
+.mat-cell-hall {
+  cursor: pointer;
+}
+
+/* Action Button
+ * ------------ */
+.add-hall-button {
+  margin: 10px;
+}

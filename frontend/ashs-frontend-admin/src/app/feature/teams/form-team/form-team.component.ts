@@ -20,7 +20,7 @@ import {MatList, MatListItem} from '@angular/material/list';
 import {TimePipe} from '@app/share/pipe/time.pipe';
 import {
   AddRoleCoachDialogComponent
-} from '@app/feature/team/add-team/add-role-coach-dialog/add-role-coach-dialog.component';
+} from '@app/feature/teams/form-team/add-role-coach-dialog/add-role-coach-dialog.component';
 import {RoleToFrenchPipe} from '@app/share/pipe/role-to-french.pipe';
 import {CreateTeamDTORequest} from '@app/share/service/dto/create-team-d-t-o-request';
 import {TeamsStore} from '@app/share/store/teams.store';
@@ -32,7 +32,7 @@ import {Team} from '@app/share/model/team';
 import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-session-d-t-o';
 import {UpdateTeamDTORequest} from '@app/share/service/dto/update-team-d-t-o-request';
 import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
-import {tap} from 'rxjs/operators';
+import {MatProgressBar} from '@angular/material/progress-bar';
 
 
 @Component({
@@ -58,12 +58,13 @@ import {tap} from 'rxjs/operators';
     MatListItem,
     TimePipe,
     MatIconButton,
-    RoleToFrenchPipe
+    RoleToFrenchPipe,
+    MatProgressBar
   ],
   templateUrl: './form-team.component.html',
   styleUrl: './form-team.component.css'
 })
-export class FormTeam {
+export class FormTeamComponent {
   private readonly formBuild = inject(NonNullableFormBuilder);
   private readonly matDialog = inject(MatDialog);
   private readonly teamsStore = inject(TeamsStore);
@@ -80,11 +81,11 @@ export class FormTeam {
   constructor() {
     effect(() => this.teamStore.uri = this.uri());
     effect(() => {
-      const team = this.teamStore.teamResource.value();
+      const team = this.teamStore.getTeam();
       this.teamForm = this.createTeamForm(team);
     });
-    this.trainingSessionsSignal = linkedSignal(() => this.teamStore.trainingSessionResource.value() ?? [])
-    this.roleCoachesSignal = linkedSignal(() => this.teamStore.roleCoachResource.value() ?? [])
+    this.trainingSessionsSignal = linkedSignal(() => this.teamStore.getTrainingSession() ?? [])
+    this.roleCoachesSignal = linkedSignal(() => this.teamStore.getRoleCoach() ?? [])
     this.isCreateSignal = computed(() => this.uri() === undefined);
   }
 
@@ -144,14 +145,17 @@ export class FormTeam {
 
 
   submit() {
-    if (this.isCreateSignal()) {
-      this.createTeam();
-    } else {
-      this.updateTeam();
+    if (!this.teamForm.invalid) {
+      if (this.isCreateSignal()) {
+        this.createTeam();
+      } else {
+        this.updateTeam();
+      }
     }
   }
 
   createTeam() {
+
     this.teamsStore.createTeam(
       this.teamForm.getRawValue() as CreateTeamDTORequest,
       this.trainingSessionsSignal(),
@@ -167,7 +171,7 @@ export class FormTeam {
       this.teamForm.getRawValue() as UpdateTeamDTORequest,
       this.trainingSessionsSignal(),
       this.roleCoachesSignal()
-    ).pipe(tap(() => console.log("test"))).subscribe({
+    ).subscribe({
       next: () => this.notificationService.showSuccess(`L'équipe a été modifiée`),
       error: err => this.notificationService.showError(ApiError.of(err.error).getMessageForField('teamDTOCreateRequest'))
     })
