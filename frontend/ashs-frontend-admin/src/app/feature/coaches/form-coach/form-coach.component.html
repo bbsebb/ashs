@@ -1,1 +1,90 @@
-<p>form-coach works!</p>
+<h2>
+  <div class="title-container">
+    <mat-icon>person_add</mat-icon>
+    <span>Enregistrer un coach</span>
+  </div>
+</h2>
+
+<form [formGroup]="coachForm" (ngSubmit)="submit()">
+  <!-- Coach Information Section -->
+  <div class="form-section">
+    <h3>
+      <mat-icon>person</mat-icon>
+      Informations du coach
+    </h3>
+
+    <mat-form-field class="full-width">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="name">
+      @let nameControl = coachForm.get("name");
+      @if (hasError(nameControl)) {
+        <mat-error>{{ displayError(nameControl) }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="surname">
+      @let surnameControl = coachForm.get("surname");
+      @if (hasError(surnameControl)) {
+        <mat-error>{{ displayError(surnameControl) }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Contact Information Section -->
+  <div class="form-section">
+    <h3>
+      <mat-icon>contact_mail</mat-icon>
+      Coordonnées
+    </h3>
+
+    <div class="contact-fields">
+      <mat-form-field class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email">
+        @let emailControl = coachForm.get("email");
+        @if (hasError(emailControl)) {
+          <mat-error>{{ displayError(emailControl) }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Téléphone</mat-label>
+        <input matInput formControlName="phone">
+        @let phoneControl = coachForm.get("phone");
+        @if (hasError(phoneControl)) {
+          <mat-error>{{ displayError(phoneControl) }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="button-container">
+    <button mat-button type="button" [routerLink]="['/coaches']">
+      <mat-icon>arrow_back</mat-icon>
+      RETOUR
+    </button>
+    <button mat-flat-button type="submit"
+            [disabled]="coachForm.invalid || coachStore.coachResourceIsLoading() || isSubmitting()">
+      @if (isSubmitting()) {
+        <mat-progress-spinner
+          diameter="20"
+          mode="indeterminate"
+          style="vertical-align: middle"
+          [strokeWidth]="3">
+        </mat-progress-spinner>
+      } @else {
+        @if (isCreateSignal()) {
+          ENREGISTRER
+        } @else {
+          MODIFIER
+        }
+      }
+    </button>
+  </div>
+</form>

@@ -5,10 +5,6 @@ import {AllHalResources, PaginatedHalResource} from '@app/share/model/hal/hal';
 import {PaginationOption} from '@app/share/service/pagination-option';
 import {Hall} from '@app/share/model/hall';
 import {CreateHallDTORequest} from '@app/share/service/dto/create-hall-d-t-o-request';
-import {
-  ConfirmationDialogComponent
-} from '@app/share/component/dialog/confirmation-dialog/confirmation-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +15,7 @@ export class HallService {
     page: 0
   };
   private readonly halFormService = inject(HalFormService);
-  private readonly matDialog = inject(MatDialog);
+
 
   constructor() {
   }
@@ -44,14 +40,13 @@ export class HallService {
     return this.halFormService.doAction<Hall>(hallResource, 'createHall', createHallDTORequest);
   }
 
-  createDeleteConfirmation(hall: Hall) {
-    return this.matDialog.open(ConfirmationDialogComponent, {
-      data: {
-        title: 'Suppression',
-        content: `Etes-vous sur de vouloir supprimer : ${hall.name} ?`
-      },
-    });
+  updateHall(hall: Hall, updateHallDTORequest: CreateHallDTORequest) {
+    if (!this.halFormService.canAction(hall, 'updateHall')) {
+      throw new Error("L'action updateHall n'est pas disponible sur l'objet " + hall);
+    }
+    return this.halFormService.doAction<Hall>(hall, 'updateHall', updateHallDTORequest);
   }
+
 
   deleteTeam(hall: Hall) {
     if (!this.halFormService.canAction(hall, 'deleteHall')) {
@@ -59,4 +54,6 @@ export class HallService {
     }
     return this.halFormService.doAction<void>(hall, 'deleteHall');
   }
+
+
 }

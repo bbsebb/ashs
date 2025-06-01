@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, computed, effect, inject, input, signal, Signal, WritableSignal} from '@angular/core';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {displayError, hasError} from '@app/share/validator/form-error.util';
@@ -9,7 +9,11 @@ import {CreateHallDTORequest} from '@app/share/service/dto/create-hall-d-t-o-req
 import {HallsStore} from '@app/share/store/halls.store';
 import {ApiError} from '@app/share/model/api-error';
 import {NotificationService} from '@app/share/service/notification.service';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {Hall} from '@app/share/model/hall';
+import {HallStore} from '@app/share/store/hall.store';
+import {UpdateHallDTORequest} from '@app/share/service/dto/update-hall-d-t-o-request';
 
 @Component({
   selector: 'app-form-hall',
@@ -21,7 +25,9 @@ import {Router} from '@angular/router';
     MatButton,
     MatIcon,
     MatLabel,
-    MatDivider
+    MatDivider,
+    MatProgressSpinner,
+    RouterLink
   ],
   templateUrl: './form-hall.component.html',
   styleUrl: './form-hall.component.css'
@@ -29,26 +35,88 @@ import {Router} from '@angular/router';
 export class FormHallComponent {
   protected readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly hallsStore = inject(HallsStore);
+  protected readonly hallStore = inject(HallStore);
   private readonly notificationService = inject(NotificationService);
   private readonly router = inject(Router);
+  uri = input<string>();
+  isCreateSignal: Signal<boolean>;
+  isSubmitting: WritableSignal<boolean> = signal(false);
+  hallForm = this.createHallForm();
 
-  hallForm = this.formBuilder.group({
-    name: this.formBuilder.control<string>('', Validators.required),
-    address: this.formBuilder.group({
-      street: this.formBuilder.control<string>('', Validators.required),
-      city: this.formBuilder.control<string>('Hoenheim', Validators.required),
-      postalCode: this.formBuilder.control<string>('67800', Validators.required),
-      country: this.formBuilder.control<string>('France', Validators.required)
-    })
-  });
+  constructor() {
+    effect(() => this.hallStore.uri = this.uri());
+    this.isCreateSignal = computed(() => this.uri() === undefined);
+    effect(() => this.hallForm = this.createHallForm(this.hallStore.getHall()));
+  }
+
+  createHallForm(updatedHall?: Hall) {
+    const hall = {
+      name: updatedHall?.name ?? '',
+      address: {
+        street: updatedHall?.address?.street ?? '',
+        city: updatedHall?.address.city ?? 'Hoenheim',
+        postalCode: updatedHall?.address.postalCode ?? '67800',
+        country: updatedHall?.address.country ?? 'France'
+      }
+    }
+    return this.buildHallForm(hall);
+  }
+
+
+  buildHallForm(values: {
+    name: string,
+    address: { street: string, city: string, postalCode: string, country: string }
+  }) {
+    return this.formBuilder.group({
+      name: this.formBuilder.control<string>(values.name, [Validators.required, Validators.maxLength(50)]),
+      address: this.formBuilder.group({
+        street: this.formBuilder.control<string>(values.address.street, Validators.required),
+        city: this.formBuilder.control<string>(values.address.city, Validators.required),
+        postalCode: this.formBuilder.control<string>(values.address.postalCode, Validators.required),
+        country: this.formBuilder.control<string>(values.address.country, Validators.required)
+      })
+    });
+  }
+
 
   submit() {
     if (!this.hallForm.invalid) {
-      this.hallsStore.createHall(this.hallForm.getRawValue() as CreateHallDTORequest).subscribe({
-        next: () => this.notificationService.showSuccess(`La salle a été crée`),
-        error: err => this.notificationService.showError(ApiError.of(err.error).getMessageForField('hallDTOCreateRequest'))
-      });
+      if (this.isCreateSignal()) {
+        this.createHall();
+      } else {
+        this.updateHall();
+      }
+
     }
+  }
+
+  createHall() {
+    this.isSubmitting.set(true);
+    this.hallsStore.createHall(this.hallForm.getRawValue() as CreateHallDTORequest).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.notificationService.showSuccess(`La salle a été crée`);
+        this.goBack()
+      },
+      error: err => {
+        this.isSubmitting.set(false);
+        this.notificationService.showError(ApiError.of(err.error).getMessageForField('hallDTOCreateRequest'))
+      }
+    });
+  }
+
+  updateHall() {
+    this.isSubmitting.set(true);
+    this.hallStore.updateHall(this.hallForm.getRawValue() as UpdateHallDTORequest).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.notificationService.showSuccess(`La salle a été modifiée`);
+      },
+      error: err => {
+        this.isSubmitting.set(false);
+        this.notificationService.showError(ApiError.of(err.error).getGenericMessage())
+      }
+    });
   }
 
   protected readonly hasError = hasError;

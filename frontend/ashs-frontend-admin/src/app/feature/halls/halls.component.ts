@@ -1,4 +1,4 @@
-import {Component, effect, inject} from '@angular/core';
+import {Component, effect, inject, signal, WritableSignal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatFabButton, MatMiniFabButton} from '@angular/material/button';
 import {Hall} from '@app/share/model/hall';
@@ -18,7 +18,9 @@ import {
 import {HallsStore} from '@app/share/store/halls.store';
 import {MatProgressBar} from '@angular/material/progress-bar';
 import {LayoutService} from '@app/share/service/layout.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
+import {HallUiService} from '@app/share/service/hall-ui.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-halls',
@@ -38,6 +40,9 @@ import {ActivatedRoute, Router} from '@angular/router';
     MatMiniFabButton,
     MatProgressBar,
     MatNoDataRow,
+    MatProgressSpinner,
+    RouterLink,
+
   ],
   templateUrl: './halls.component.html',
   styleUrl: './halls.component.css'
@@ -45,10 +50,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class HallsComponent {
   layoutService = inject(LayoutService);
   hallsStore = inject(HallsStore);
-  router = inject(Router);
-  route = inject(ActivatedRoute);
+  private readonly hallUiService = inject(HallUiService);
   dataSource = [] as Hall[];
   displayedColumns: string[] = ['name', 'street', 'postalCode', 'city', 'country', 'update', 'delete', 'view'];
+  isDeleting: WritableSignal<boolean> = signal(false);
 
   constructor() {
     effect(() => this.dataSource = this.hallsStore.getHalls())
@@ -59,22 +64,15 @@ export class HallsComponent {
     });
   }
 
-  addHall() {
-    void this.router.navigate(['create'], {relativeTo: this.route});
-
-  }
-
-  viewHall(hall: Hall) {
-    void this.router.navigate([encodeURIComponent(hall._links.self.href)], {relativeTo: this.route});
-
-  }
 
   deleteHall(hall: Hall) {
-    this.hallsStore.deleteTeamWithConfirmation(hall)
+    this.isDeleting.set(true);
+    this.hallUiService.deleteTeamWithConfirmation(hall).subscribe({
+      error: () => this.isDeleting.set(false),
+      complete: () => this.isDeleting.set(false)
+    })
   }
 
-  updateHall(hall: Hall) {
-    void this.router.navigate([encodeURIComponent(hall._links.self.href), 'update'], {relativeTo: this.route});
 
-  }
+  protected readonly encodeURIComponent = encodeURIComponent;
 }

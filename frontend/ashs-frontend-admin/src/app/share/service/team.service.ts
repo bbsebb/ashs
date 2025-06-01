@@ -1,10 +1,5 @@
 import {inject, Injectable} from '@angular/core';
 import {Team} from '@app/share/model/team';
-import {
-  ConfirmationDialogComponent
-} from '@app/share/component/dialog/confirmation-dialog/confirmation-dialog.component';
-import {GenderPipe} from '@app/share/pipe/gender.pipe';
-import {CategoryPipe} from '@app/share/pipe/category.pipe';
 import {MatDialog} from '@angular/material/dialog';
 import {
   AddTrainingSessionInTeamDTORequest,
@@ -94,6 +89,9 @@ export class TeamService {
     roleCoachesDTORequest: FormRoleCoachDTO[],
     roleCoachesToDelete: RoleCoach[]
   ) {
+    if (!this.halFormService.canAction(team, 'updateTeam')) {
+      throw new Error("L'action updateTeam n'est pas disponible sur l'objet " + team);
+    }
     return this.updateTeam(team, teamDtoUpdateRequest).pipe(
       switchMap(team =>
         forkJoin({
@@ -148,18 +146,6 @@ export class TeamService {
       );
   }
 
-
-  createDeleteConfirmation(team: Team) {
-    const genderDisplay = new GenderPipe().transform(team.gender);
-    const categoryDisplay = new CategoryPipe().transform(team.category);
-
-    return this.matDialog.open(ConfirmationDialogComponent, {
-      data: {
-        title: 'Suppression',
-        content: `Etes-vous sur de vouloir supprimer : ${genderDisplay} ${categoryDisplay} ${team.teamNumber}  ?`
-      },
-    });
-  }
 
   private addTrainingSessions(team: Team, trainingSessionsDTORequest: AddTrainingSessionInTeamDTORequest[]): Observable<TrainingSession[]> {
     if (!this.halFormService.canAction(team, 'addTrainingSession')) {

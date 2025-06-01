@@ -74,13 +74,26 @@
   <mat-divider></mat-divider>
 
   <div class="button-container">
-    <button mat-button type="button" (click)="goBack()">
+    <button mat-button type="button" [routerLink]="['/halls']">
       <mat-icon>arrow_back</mat-icon>
       RETOUR
     </button>
     <button mat-flat-button type="submit"
-            [disabled]="hallForm.invalid">
-      ENREGISTRER
+            [disabled]="hallForm.invalid || hallStore.hallResourceIsLoading() || isSubmitting()">
+      @if (isSubmitting()) {
+        <mat-progress-spinner
+          diameter="20"
+          mode="indeterminate"
+          style="vertical-align: middle"
+          [strokeWidth]="3">
+        </mat-progress-spinner>
+      } @else {
+        @if (isCreateSignal()) {
+          ENREGISTRER
+        } @else {
+          MODIFIER
+        }
+      }
     </button>
   </div>
 </form>

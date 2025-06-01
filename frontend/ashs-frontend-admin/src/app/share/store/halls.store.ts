@@ -6,8 +6,6 @@ import {Hall} from '@app/share/model/hall';
 import {CreateHallDTORequest} from '@app/share/service/dto/create-hall-d-t-o-request';
 import {tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
-import {NotificationService} from '@app/share/service/notification.service';
-import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +14,7 @@ export class HallsStore {
   private readonly halFormService = inject(HalFormService);
   private readonly hallService = inject(HallService);
   private readonly _hallsResource;
-  private readonly notificationService = inject(NotificationService);
-  private readonly router = inject(Router);
+
 
   constructor() {
     this._hallsResource = rxResource({
@@ -65,34 +62,24 @@ export class HallsStore {
   createHall(hall: CreateHallDTORequest) {
     const hallsResource = this.hallsResource.value();
     if (!hallsResource) {
-      throw new Error(
-        "Halls resource is undefined"
-      )
+      throw new Error("Halls resource is undefined")
     }
     return this.hallService.createHall(hallsResource, hall).pipe(
-      tap(() => this.reloadHalls()) //TODO A optimiser en modifiant directement le store
+      tap((res) => this.hallsResource.update((hallsResource) => this.halFormService.addItemInEmbedded(hallsResource, 'halls', res))),
+      tap(() => this.reloadHalls())
     );
   }
 
-
-  deleteTeamWithConfirmation(hall: Hall) {
-    const matDialogRef = this.hallService.createDeleteConfirmation(hall);
-    matDialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        this.deleteHall(hall).subscribe({
-          next: () => {
-            this.notificationService.showSuccess(`La salle a été supprimée`)
-            this.router.navigate(['/halls'])
-          },
-          error: () => this.notificationService.showError('Une erreur est survenue lors de la suppression')
-        });
-      }
-    });
-
+  updateHall(hall: Hall, updateHallDTORequest: CreateHallDTORequest) {
+    return this.hallService.updateHall(hall, updateHallDTORequest).pipe(
+      tap(() => this.hallsResource.update((hallsResource) => this.halFormService.setItemInEmbedded(hallsResource, 'halls', hall))),
+      tap(() => this.reloadHalls())
+    )
   }
 
-  private deleteHall(hall: Hall): Observable<void> {
+  deleteHall(hall: Hall): Observable<void> {
     return this.hallService.deleteTeam(hall).pipe(
+      tap(() => this.hallsResource.update((hallsResource) => this.halFormService.deleteItemInEmbedded(hallsResource, 'halls', hall))),
       tap(() => this.reloadHalls())
     );
   }

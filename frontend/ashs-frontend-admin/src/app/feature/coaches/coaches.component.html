@@ -1,1 +1,97 @@
-<p>coaches works!</p>
+<button class="add-coach-button" mat-fab extended [routerLink]="['create']">
+  <mat-icon>add</mat-icon>
+  Ajouter un coach
+</button>
+<table mat-table [dataSource]="dataSource">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Nom</th>
+    <td mat-cell class="mat-cell-coach"
+        *matCellDef="let coach"
+        [routerLink]="[encodeURIComponent(coach._links.self.href)]">
+      {{ coach.name }}
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="surname">
+    <th mat-header-cell *matHeaderCellDef>Prénom</th>
+    <td mat-cell class="mat-cell-coach" *matCellDef="let coach">
+      {{ coach.surname }}
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef>Email</th>
+    <td mat-cell class="mat-cell-coach" *matCellDef="let coach">
+      {{ coach.email }}
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="phone">
+    <th mat-header-cell *matHeaderCellDef>Téléphone</th>
+    <td mat-cell class="mat-cell-coach" *matCellDef="let coach">
+      {{ coach.phone }}
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="update">
+    <th mat-header-cell *matHeaderCellDef>
+      @if (layoutService.isDesktop()) {
+        Mise à jour
+      }
+    </th>
+    <td mat-cell *matCellDef="let coach">
+      <button mat-mini-fab [routerLink]="[encodeURIComponent(coach._links.self.href), 'update']">
+        <mat-icon>edit_note</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="delete">
+    <th mat-header-cell *matHeaderCellDef>
+      @if (layoutService.isDesktop()) {
+        Suppression
+      }
+    </th>
+    <td mat-cell *matCellDef="let coach">
+      <button mat-mini-fab (click)="deleteCoach(coach)">
+        @if (isDeleting()) {
+          <mat-progress-spinner
+            diameter="20"
+            mode="indeterminate"
+            style="vertical-align: middle"
+            [strokeWidth]="3">
+          </mat-progress-spinner>
+        } @else {
+          <mat-icon>delete</mat-icon>
+        }
+      </button>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="view">
+    <th mat-header-cell *matHeaderCellDef>
+      @if (layoutService.isDesktop()) {
+        Voir
+      }
+    </th>
+    <td mat-cell *matCellDef="let coach">
+      <button mat-mini-fab [routerLink]="[encodeURIComponent(coach._links.self.href)]">
+        <mat-icon>visibility</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let coach; columns: displayedColumns"></tr>
+  <tr class="mat-row" *matNoDataRow>
+    @if (coachesStore.getCoachesResourceStatus() === 1) {
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
+        Une erreur est survenue.
+      </td>
+    } @else if (!coachesStore.coachesResourceIsLoading()) {
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
+        Aucun coach.
+      </td>
+    } @else {
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
+        Chargement en cours ...
+      </td>
+    }
+  </tr>
+</table>
+@if (coachesStore.coachesResourceIsLoading()) {
+  <mat-progress-bar mode="query"></mat-progress-bar>
+}

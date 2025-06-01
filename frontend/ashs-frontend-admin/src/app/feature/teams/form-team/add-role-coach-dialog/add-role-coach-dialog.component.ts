@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, signal, WritableSignal} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Role} from '@app/share/model/role';
 import {Coach} from '@app/share/model/coach';
@@ -27,6 +27,7 @@ import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
     ReactiveFormsModule,
     RoleToFrenchPipe,
     MatFormField,
+
   ],
   templateUrl: './add-role-coach-dialog.component.html',
   styleUrl: './add-role-coach-dialog.component.css'
@@ -34,7 +35,13 @@ import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
 export class AddRoleCoachDialogComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly matRef = inject(MatDialogRef);
-  readonly coachService = inject(CoachService);
+  private readonly coachService = inject(CoachService);
+  coaches: WritableSignal<Coach[]> = signal([]);
+
+  constructor() {
+    this.coachService.getCoaches().subscribe(coaches => this.coaches.set(coaches))
+  }
+
   addRoleCoachForm = this.formBuilder.group({
     role: this.formBuilder.control<Role>(Role.MAIN, Validators.required),
     coach: this.formBuilder.control<Coach | undefined>(undefined, Validators.required)

@@ -106,16 +106,25 @@
   }
   <mat-divider></mat-divider>
   <div class="button-container">
-    <button mat-button type="button" (click)="goBack()">
+    <button mat-button type="button" [routerLink]="'/teams'">
       <mat-icon>arrow_back</mat-icon>
       RETOUR
     </button>
     <button mat-flat-button type="submit"
-            [disabled]="teamForm.invalid || teamStore.teamResourceIsLoading() || teamStore.trainingSessionResourceIsLoading() || teamStore.roleCoachResourceIsLoading()">
-      @if (isCreateSignal()) {
-        CRÉER
+            [disabled]="teamForm.invalid || teamStore.teamResourceIsLoading() || teamStore.trainingSessionResourceIsLoading() || teamStore.roleCoachResourceIsLoading() || isSubmitting()">
+      @if (isSubmitting()) {
+        <mat-progress-spinner
+          diameter="20"
+          mode="indeterminate"
+          style="vertical-align: middle"
+          [strokeWidth]="3">
+        </mat-progress-spinner>
       } @else {
-        MODIFIER
+        @if (isCreateSignal()) {
+          ENREGISTRER
+        } @else {
+          MODIFIER
+        }
       }
     </button>
   </div>

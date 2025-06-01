@@ -13,12 +13,27 @@ import {AbstractControl, FormGroup} from '@angular/forms';
  * @returns A string containing the appropriate error message
  */
 export function displayError(field: AbstractControl | null): string {
+
   if (field?.hasError('required')) {
     return 'Ce champ est obligatoire';
   } else if (field?.hasError('email')) {
     return 'Email invalide';
   } else if (field?.hasError('invalidTimeSlot')) {
     return `L'heure de début doit être antérieure à l'heure de fin.`;
+  } else if (field?.hasError('maxlength')) {
+    const maxLength = field.errors?.['maxlength']?.requiredLength;
+    return `Ce champ ne doit pas dépasser ${maxLength} caractères`;
+  } else if (field?.hasError('min')) {
+    const min = field.errors?.['min']?.min;
+    return `Ce champ ne doit pas être inférieur à ${min}`;
+  } else if (field?.hasError('pattern')) {
+    // Check if it's a phone field (this is a simple heuristic, might need adjustment)
+    const controlName = field.parent?.controls ?
+      Object.keys(field.parent.controls).find(key => field.parent?.get(key) === field) : '';
+    if (controlName === 'phone') {
+      return 'Le numéro de téléphone doit contenir entre 10 et 15 chiffres, avec éventuellement un "+" au début';
+    }
+    return 'Format invalide';
   } else {
     return 'Erreur inconnue';
   }

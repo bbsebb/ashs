@@ -168,6 +168,51 @@ export class HalFormService {
     }
   }
 
+  deleteItemInEmbedded<R extends HalResource>(resource: R | undefined, embeddedName: string, itemToDelete: HalResource): R | undefined {
+    if (!resource) {
+      return resource;
+    }
+    const items = this.unwrap<HalResource[]>(resource, embeddedName);
+    const newEmbeddedItem = items.filter(i => i._links.self.href !== itemToDelete._links.self.href);
+    return {
+      ...resource,
+      _embedded: {
+        ...resource._embedded,
+        [embeddedName]: newEmbeddedItem
+      }
+    }
+  }
+
+  addItemInEmbedded<R extends HalResource>(resource: R | undefined, embeddedName: string, itemToAdd: HalResource): R | undefined {
+    if (!resource) {
+      return resource;
+    }
+    const items = this.unwrap<HalResource[]>(resource, embeddedName);
+    const newEmbeddedItem = [...items, itemToAdd];
+    return {
+      ...resource,
+      _embedded: {
+        ...resource._embedded,
+        [embeddedName]: newEmbeddedItem
+      }
+    }
+  }
+
+  setItemInEmbedded<R extends HalResource>(resource: R | undefined, embeddedName: string, itemToSet: HalResource): R | undefined {
+    if (!resource) {
+      return resource;
+    }
+    const items = this.unwrap<HalResource[]>(resource, embeddedName);
+    const newEmbeddedItem = items.map(i => i._links.self.href === itemToSet._links.self.href ? itemToSet : i);
+    return {
+      ...resource,
+      _embedded: {
+        ...resource._embedded,
+        [embeddedName]: newEmbeddedItem
+      }
+    }
+  }
+
   /**
    * Builds the pagination parameters for API requests
    * @returns The pagination parameters

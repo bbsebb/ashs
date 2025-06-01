@@ -1,0 +1,94 @@
+/*
+ * Coach Form Styles
+ * Contains styling for the coach creation/edit form
+ */
+
+/* Base Elements
+ * -------------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  margin: 20px;
+}
+
+h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  color: var(--mat-sys-secondary, #673ab7);
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+mat-divider {
+  margin: 10px 0;
+}
+
+/* Form Sections
+ * ------------- */
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.contact-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Buttons
+ * ------- */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+button[mat-flat-button] {
+  min-width: 120px;
+}
+
+button[mat-button] {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Responsive Styles
+ * ---------------- */
+@media (min-width: 600px) {
+  .contact-fields {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .contact-fields .full-width {
+    flex: 1 1 calc(50% - 16px);
+    min-width: 250px;
+  }
+}
+
+@media (min-width: 960px) {
+  .contact-fields .full-width {
+    flex: 1 1 calc(50% - 16px);
+  }
+}

@@ -1,4 +1,4 @@
-import {Component, effect, inject} from '@angular/core';
+import {Component, effect, inject, signal, WritableSignal} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -18,10 +18,12 @@ import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {Team} from '@app/share/model/team';
 import {CategoryPipe} from '@app/share/pipe/category.pipe';
 import {GenderPipe} from '@app/share/pipe/gender.pipe';
-import {ActivatedRoute, Router} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {MatIcon} from '@angular/material/icon';
 import {TeamsStore} from '@app/share/store/teams.store';
 import {LayoutService} from '@app/share/service/layout.service';
+import {TeamUiService} from '@app/share/service/team-ui.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-team',
@@ -43,7 +45,9 @@ import {LayoutService} from '@app/share/service/layout.service';
     GenderPipe,
     MatIcon,
     MatMiniFabButton,
-    MatFabButton
+    MatFabButton,
+    MatProgressSpinner,
+    RouterLink
   ],
   templateUrl: './teams.component.html',
   styleUrl: './teams.component.css',
@@ -52,36 +56,29 @@ import {LayoutService} from '@app/share/service/layout.service';
 export class TeamsComponent {
   layoutService = inject(LayoutService);
   teamsStore = inject(TeamsStore);
-  router = inject(Router);
-  route = inject(ActivatedRoute);
+  teamUiService = inject(TeamUiService);
   dataSource = [] as Team[];
   displayedColumns: string[] = ['team', 'update', 'delete', 'view'];
-
+  isDeleting: WritableSignal<boolean> = signal(false)
 
   constructor() {
     effect(() => this.dataSource = this.teamsStore.getTeams())
   }
 
-  addTeam() {
-    void this.router.navigate(['create'], {relativeTo: this.route});
-  }
 
   deleteTeam(team: Team) {
-    this.teamsStore.deleteTeamWithConfirmation(team)
+    this.isDeleting.set(true);
+    this.teamUiService.deleteTeamWithConfirmation(team).subscribe({
+      complete: () => this.isDeleting.set(false),
+      error: () => this.isDeleting.set(false)
+    })
   }
 
-
-  updateTeam(team: Team) {
-    void this.router.navigate([encodeURIComponent(team._links.self.href), 'update'], {relativeTo: this.route});
-  }
-
-  viewTeam(team: Team) {
-    void this.router.navigate([encodeURIComponent(team._links.self.href)], {relativeTo: this.route});
-  }
 
   handlePageEvent($event: PageEvent) {
     this.teamsStore.paginationOption = {size: $event.pageSize, page: $event.pageIndex};
   }
 
 
+  protected readonly encodeURIComponent = encodeURIComponent;
 }

@@ -4,7 +4,7 @@
     <mat-form-field>
       <mat-label>Entraineur</mat-label>
       <mat-select formControlName="coach">
-        @for (coach of coachService.coachesResource.value(); track coach.id) {
+        @for (coach of coaches(); track coach.id) {
           <mat-option [value]=coach>{{ coach.name }} {{ coach.surname }}</mat-option>
         }
       </mat-select>

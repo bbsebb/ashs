@@ -1,4 +1,4 @@
-<button class="add-team-button" mat-fab extended (click)="addTeam()">
+<button class="add-team-button" mat-fab extended [routerLink]="'create'">
   <mat-icon>add</mat-icon>
   Ajouter une équipe
 </button>
@@ -7,7 +7,7 @@
     <th mat-header-cell *matHeaderCellDef>Équipe</th>
     <td mat-cell class="mat-cell-team"
         *matCellDef="let team"
-        (click)="viewTeam(team)"> {{ team.category | category }} {{ team.gender | gender }} {{ team.teamNumber }}
+        [routerLink]="encodeURIComponent(team._links.self.href)"> {{ team.category | category }} {{ team.gender | gender }} {{ team.teamNumber }}
     </td>
   </ng-container>
   <ng-container matColumnDef="update">
@@ -17,7 +17,7 @@
       }
     </th>
     <td mat-cell *matCellDef="let team">
-      <button mat-mini-fab (click)="updateTeam(team)">
+      <button mat-mini-fab [routerLink]="[encodeURIComponent(team._links.self.href),'update']">
         <mat-icon>edit_note</mat-icon>
       </button>
     </td>
@@ -30,7 +30,16 @@
     </th>
     <td mat-cell *matCellDef="let team">
       <button mat-mini-fab (click)="deleteTeam(team)">
-        <mat-icon>delete</mat-icon>
+        @if (isDeleting()) {
+          <mat-progress-spinner
+            diameter="20"
+            mode="indeterminate"
+            style="vertical-align: middle"
+            [strokeWidth]="3">
+          </mat-progress-spinner>
+        } @else {
+          <mat-icon>delete</mat-icon>
+        }
       </button>
     </td>
   </ng-container>
@@ -41,7 +50,7 @@
       }
     </th>
     <td mat-cell *matCellDef="let team">
-      <button mat-mini-fab (click)="viewTeam(team)">
+      <button mat-mini-fab [routerLink]="encodeURIComponent(team._links.self.href)">
         <mat-icon>visibility</mat-icon>
       </button>
     </td>

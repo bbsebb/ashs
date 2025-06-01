@@ -4,6 +4,8 @@ import {rxResource} from '@angular/core/rxjs-interop';
 import {HallsStore} from '@app/share/store/halls.store';
 import {Hall} from '@app/share/model/hall';
 import {of} from 'rxjs';
+import {UpdateHallDTORequest} from '@app/share/service/dto/update-hall-d-t-o-request';
+import {tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -56,5 +58,15 @@ export class HallStore {
 
   getHallResourceError() {
     return this.hallResource.error();
+  }
+
+  updateHall(updateHallDTORequest: UpdateHallDTORequest) {
+    const hall = this.hallResource.value();
+    if (!hall) {
+      throw new Error("Hall resource is undefined");
+    }
+    return this.hallsStore.updateHall(hall, updateHallDTORequest).pipe(
+      tap(() => this.reloadHall()) //TODO A optimiser en modifiant directement le store
+    )
   }
 }

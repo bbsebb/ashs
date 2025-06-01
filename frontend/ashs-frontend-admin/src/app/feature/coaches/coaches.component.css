@@ -1,0 +1,9 @@
+.mat-cell-coach {
+  cursor: pointer;
+}
+
+/* Action Button
+ * ------------ */
+.add-coach-button {
+  margin: 10px;
+}

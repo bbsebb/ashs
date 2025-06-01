@@ -1,30 +1,61 @@
 import {inject, Injectable} from '@angular/core';
 import {HalFormService} from '@app/share/service/hal-form.service';
-import {rxResource} from '@angular/core/rxjs-interop';
-import {switchMap} from 'rxjs';
-import {HalResource} from '@app/share/model/hal/hal';
+import {iif, Observable, switchMap} from 'rxjs';
+import {AllHalResources, PaginatedHalResource} from '@app/share/model/hal/hal';
 import {map} from 'rxjs/operators';
 import {Coach} from '@app/share/model/coach';
+import {PaginationOption} from '@app/share/service/pagination-option';
+import {CreateCoachDTORequest} from '@app/share/service/dto/create-coach-d-t-o-request';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoachService {
-
-  private readonly gatewayService = inject(HalFormService);
-  private readonly _coachesResource = rxResource<Coach[], unknown>({
-    loader: (() => this.gatewayService.root.pipe(
-        switchMap(root => this.gatewayService.follow<HalResource<Coach>>(root, 'coaches')),
-        map(halResource => this.gatewayService.unwrap<Coach[]>(halResource, 'coaches'))
-      )
-    )
-  });
+  private static readonly PAGINATION_OPTION_DEFAULT: PaginationOption = {
+    size: 20,
+    page: 0
+  };
+  private readonly halFormService = inject(HalFormService);
 
   constructor() {
   }
 
+  getCoachesHalResource(paginationOption: PaginationOption = CoachService.PAGINATION_OPTION_DEFAULT) {
+    return this.halFormService.root.pipe(
+      switchMap((root) =>
+        iif(
+          () => paginationOption == 'all',
+          this.halFormService.follow<AllHalResources<Coach>>(root, "allCoaches"),
+          this.halFormService.follow<PaginatedHalResource<Coach>>(root, "coaches", this.halFormService.buildParamPage(paginationOption))
+        )
+      )
+    );
+  }
 
-  get coachesResource() {
-    return this._coachesResource;
+  getCoaches(paginationOption: PaginationOption = CoachService.PAGINATION_OPTION_DEFAULT): Observable<Coach[]> {
+    return this.getCoachesHalResource(paginationOption).pipe(
+      map(coaches => this.halFormService.unwrap<Coach[]>(coaches, 'coaches'))
+    )
+  }
+
+  createCoach(coachResource: AllHalResources<Coach> | PaginatedHalResource<Coach>, createCoachDTORequest: CreateCoachDTORequest) {
+    if (!this.halFormService.canAction(coachResource, 'createCoach')) {
+      throw new Error("L'action createCoach n'est pas disponible sur l'objet " + createCoachDTORequest);
+    }
+    return this.halFormService.doAction<Coach>(coachResource, 'createCoach', createCoachDTORequest);
+  }
+
+  updateCoach(coach: Coach, updateCoachDTORequest: CreateCoachDTORequest) {
+    if (!this.halFormService.canAction(coach, 'updateCoach')) {
+      throw new Error("L'action updateCoach n'est pas disponible sur l'objet " + coach);
+    }
+    return this.halFormService.doAction<Coach>(coach, 'updateCoach', updateCoachDTORequest);
+  }
+
+  deleteCoach(coach: Coach) {
+    if (!this.halFormService.canAction(coach, 'deleteCoach')) {
+      throw new Error("L'action deleteCoach n'est pas disponible sur l'objet " + coach);
+    }
+    return this.halFormService.doAction<void>(coach, 'deleteCoach');
   }
 }

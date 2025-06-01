@@ -12,8 +12,6 @@ import {RoleCoach} from '@app/share/model/role-coach';
 import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-session-d-t-o';
 import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
 import {TeamService} from '@app/share/service/team.service';
-import {NotificationService} from '@app/share/service/notification.service';
-import {Router} from '@angular/router';
 import {UpdateTeamDTORequest} from '@app/share/service/dto/update-team-d-t-o-request';
 import {PaginationOption} from '@app/share/service/pagination-option';
 
@@ -31,8 +29,7 @@ export class TeamsStore {
   };
   private readonly halFormService = inject(HalFormService);
   private readonly teamService = inject(TeamService);
-  private readonly notificationService = inject(NotificationService);
-  private readonly router = inject(Router);
+
   private readonly _paginationOption = signal<PaginationOption>(TeamsStore.PAGINATION_OPTION_DEFAULT)
   private readonly _teamsResource: ResourceRef<AllHalResources<Team> | PaginatedHalResource<Team> | undefined>;
 
@@ -79,9 +76,6 @@ export class TeamsStore {
     return teams.find(t => t._links.self.href === uri);
   }
 
-  reloadTeams() {
-    this.teamsResource.reload();
-  }
 
   teamsResourceIsLoading() {
     return this.teamsResource.isLoading();
@@ -155,7 +149,8 @@ export class TeamsStore {
       throw new Error("Team resource is undefined");
     }
     return this.teamService.createTeamWithTrainingSessionsAndRoleCoaches(teamsResource, teamDtoCreateRequest, trainingSessionsDTORequest, roleCoachesDTORequest).pipe(
-      tap(() => this.reloadTeamsResource()), //TODO A optimiser en modifiant directement le store
+      tap((res) => this.teamsResource.update(teamsResource => this.halFormService.addItemInEmbedded(teamsResource, 'teams', res.team))),
+      tap(() => this.reloadTeamsResource()),
     );
   }
 
@@ -175,9 +170,7 @@ export class TeamsStore {
              formTrainingSessionsDTO: FormTrainingSessionDTO[],
              roleCoaches: RoleCoach[],
              roleCoachesDTORequest: FormRoleCoachDTO[]) {
-    if (!this.halFormService.canAction(team, 'updateTeam')) {
-      throw new Error("L'action updateTeam n'est pas disponible sur l'objet " + team);
-    }
+
 
     // Use the helper methods to identify new and to-be-deleted training sessions
     const newTrainingSessions = this.findNewTrainingSessions(formTrainingSessionsDTO, trainingSessions);
@@ -189,7 +182,8 @@ export class TeamsStore {
 
     return this.teamService.updateTeamWithTrainingSessionsAndRoleCoaches(team, updateTeamDTORequest, newTrainingSessions, trainingSessionsToDelete, newRoleCoaches, roleCoachesToDelete)
       .pipe(
-        tap(() => this.reloadTeamsResource()) //TODO A optimiser en modifiant directement le store
+        tap((res) => this.teamsResource.update(teamsResource => this.halFormService.setItemInEmbedded(teamsResource, 'teams', res.team))),
+        tap(() => this.reloadTeamsResource())
       );
   }
 
@@ -202,39 +196,26 @@ export class TeamsStore {
     return this.teamService.deleteTeam(team).pipe(
       tap(() => {
         if (this.getTeams().length === 1) {
-          this._paginationOption.update((paginationOption) => {
-            if (paginationOption !== 'all') {
-              return {size: paginationOption.size, page: paginationOption.page - 1}
-            }
-            return paginationOption;
-          })
+          this.goToPreviousPage()
         } else {
-          this.reloadTeamsResource();
+          this.teamsResource.update((teamsResource) => this.halFormService.deleteItemInEmbedded(teamsResource, 'teams', team));
         }
-      })
+      }),
+      tap(() => this.reloadTeamsResource())
     );
   }
 
-  /**
-   * Deletes a team with confirmation dialog
-   * @param team The team to delete
-   */
-  deleteTeamWithConfirmation(team: Team) {
-    const matDialogRef = this.teamService.createDeleteConfirmation(team);
-    matDialogRef.afterClosed().subscribe(res => {
-      if (res) {
-        this.deleteTeam(team).subscribe({
-          next: () => {
-            this.notificationService.showSuccess(`L'équipe a été supprimée`)
-            this.router.navigate(['/teams'])
-          },
-          error: () => this.notificationService.showError('Une erreur est survenue lors de la suppression')
-        });
-      }
-    });
-  };
 
   // ===== HELPER METHODS =====
+
+  goToPreviousPage() {
+    this._paginationOption.update((paginationOption) => {
+      if (paginationOption !== 'all') {
+        return {size: paginationOption.size, page: paginationOption.page - 1}
+      }
+      return paginationOption;
+    })
+  }
 
   /**
    * Checks if a training session matches a form training session based on timeSlot and hall

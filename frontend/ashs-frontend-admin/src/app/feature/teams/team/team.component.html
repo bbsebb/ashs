@@ -59,18 +59,29 @@
     <mat-divider></mat-divider>
 
     <mat-card-actions>
-      <button mat-button (click)="goBack()">
+      <button mat-button [routerLink]="'../'">
         <mat-icon>arrow_back</mat-icon>
         RETOUR
       </button>
       <div>
-        <button (click)="updateTeam(team)" mat-button>
+        <button [routerLink]="['update']" mat-button>
           <mat-icon>edit</mat-icon>
           ÉDITER
         </button>
         <button mat-button (click)="deleteTeam(team)">
-          <mat-icon>delete</mat-icon>
-          SUPPRIMER
+          @if (isDeleting()) {
+            <mat-progress-spinner
+              diameter="20"
+              mode="indeterminate"
+              style="vertical-align: middle"
+              [strokeWidth]="3">
+            </mat-progress-spinner>
+          } @else {
+            <ng-container>
+              <mat-icon>delete</mat-icon>
+              SUPPRIMER
+            </ng-container>
+          }
         </button>
       </div>
     </mat-card-actions>

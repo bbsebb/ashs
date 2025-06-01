@@ -1,1 +1,71 @@
-<p>coach works!</p>
+@let coach = coachStore.getCoach();
+@if (!coachStore.coachResourceIsLoading() && coach) {
+
+  <mat-card class="coach-card">
+    <mat-card-header>
+      <mat-card-title>
+        <div class="title-container">
+          <mat-icon>person</mat-icon>
+          <span>{{ coach.name }} {{ coach.surname }}</span>
+        </div>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="subtitle-3">
+        <h3>
+          <mat-icon>contact_mail</mat-icon>
+          Coordonnées
+        </h3>
+      </div>
+
+      <div class="contact-item">
+        <div>
+          <mat-icon>email</mat-icon>
+          {{ coach.email }}
+        </div>
+        <div>
+          <mat-icon>phone</mat-icon>
+          {{ coach.phone }}
+        </div>
+      </div>
+
+    </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-actions>
+      <button mat-button [routerLink]="['../']">
+        <mat-icon>arrow_back</mat-icon>
+        RETOUR
+      </button>
+      <div>
+        <button [routerLink]="['update']" mat-button>
+          <mat-icon>edit</mat-icon>
+          ÉDITER
+        </button>
+        <button mat-button (click)="deleteCoach(coach)">
+          @if (isDeleting()) {
+            <mat-progress-spinner
+              diameter="20"
+              mode="indeterminate"
+              style="vertical-align: middle"
+              [strokeWidth]="3">
+            </mat-progress-spinner>
+          } @else {
+            <ng-container>
+              <mat-icon>delete</mat-icon>
+              SUPPRIMER
+            </ng-container>
+          }
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+} @else if (coachStore.coachResourceIsLoading()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+} @else {
+  <p>Le coach n'a pas été trouvé</p>
+}

@@ -1,4 +1,4 @@
-import {Component, computed, effect, inject, input, linkedSignal, signal, WritableSignal} from '@angular/core';
+import {Component, computed, effect, inject, input, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
@@ -12,7 +12,7 @@ import {MatDivider} from '@angular/material/divider';
 import {MatButton, MatFabButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {AddTrainingSessionDialogComponent} from './add-training-session/add-training-session-dialog.component';
 import {displayError, hasError} from '@app/share/validator/form-error.util';
 import {DayOfWeekPipe} from '@app/share/pipe/day-of-week.pipe';
@@ -33,6 +33,7 @@ import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-sessi
 import {UpdateTeamDTORequest} from '@app/share/service/dto/update-team-d-t-o-request';
 import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
 import {MatProgressBar} from '@angular/material/progress-bar';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 
 @Component({
@@ -59,7 +60,9 @@ import {MatProgressBar} from '@angular/material/progress-bar';
     TimePipe,
     MatIconButton,
     RoleToFrenchPipe,
-    MatProgressBar
+    MatProgressBar,
+    MatProgressSpinner,
+    RouterLink,
   ],
   templateUrl: './form-team.component.html',
   styleUrl: './form-team.component.css'
@@ -75,15 +78,13 @@ export class FormTeamComponent {
   trainingSessionsSignal: WritableSignal<FormTrainingSessionDTO[]> = signal([]);
   roleCoachesSignal: WritableSignal<FormRoleCoachDTO[]> = signal([]);
   teamForm = this.createTeamForm();
-  isCreateSignal;
+  isCreateSignal: Signal<boolean>;
+  isSubmitting: WritableSignal<boolean> = signal(false);
 
 
   constructor() {
     effect(() => this.teamStore.uri = this.uri());
-    effect(() => {
-      const team = this.teamStore.getTeam();
-      this.teamForm = this.createTeamForm(team);
-    });
+    effect(() => this.teamForm = this.createTeamForm(this.teamStore.getTeam()));
     this.trainingSessionsSignal = linkedSignal(() => this.teamStore.getTrainingSession() ?? [])
     this.roleCoachesSignal = linkedSignal(() => this.teamStore.getRoleCoach() ?? [])
     this.isCreateSignal = computed(() => this.uri() === undefined);
@@ -155,25 +156,39 @@ export class FormTeamComponent {
   }
 
   createTeam() {
-
+    this.isSubmitting.set(true);
     this.teamsStore.createTeam(
       this.teamForm.getRawValue() as CreateTeamDTORequest,
       this.trainingSessionsSignal(),
       this.roleCoachesSignal())
       .subscribe({
-        next: () => this.notificationService.showSuccess(`L'équipe a été crée`),
-        error: err => this.notificationService.showError(ApiError.of(err.error).getMessageForField('teamDTOCreateRequest'))
+        next: () => {
+          this.notificationService.showSuccess(`L'équipe a été crée`);
+          this.goBack();
+          this.isSubmitting.set(false);
+        },
+        error: err => {
+          this.notificationService.showError(ApiError.of(err.error).getMessageForField('teamDTOCreateRequest'));
+          this.isSubmitting.set(false);
+        }
       });
   }
 
   updateTeam() {
+    this.isSubmitting.set(true);
     this.teamStore.updateTeam(
       this.teamForm.getRawValue() as UpdateTeamDTORequest,
       this.trainingSessionsSignal(),
       this.roleCoachesSignal()
     ).subscribe({
-      next: () => this.notificationService.showSuccess(`L'équipe a été modifiée`),
-      error: err => this.notificationService.showError(ApiError.of(err.error).getMessageForField('teamDTOCreateRequest'))
+      next: () => {
+        this.notificationService.showSuccess(`L'équipe a été modifiée`);
+        this.isSubmitting.set(false);
+      },
+      error: err => {
+        this.notificationService.showError(ApiError.of(err.error).getMessageForField('teamDTOCreateRequest'));
+        this.isSubmitting.set(false);
+      }
     })
   }
 
@@ -182,6 +197,8 @@ export class FormTeamComponent {
   protected readonly displayError = displayError;
 
   goBack() {
-    this.router.navigate(['/teams']);
+    void this.router.navigate(['/teams']);
   }
+
+  protected readonly encodeURIComponent = encodeURIComponent;
 }
