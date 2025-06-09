@@ -43,6 +43,7 @@ export class HeaderComponent {
     this.showToolbar = computed(() => directionScroll() || scrollLimit());
   }
 
+
   // Création d'un flux observable pour la position de défilement de la fenêtre
   getScrollTop(scrollDispatcher: ScrollDispatcher): Observable<number> {
     return scrollDispatcher.scrolled().pipe(
