@@ -1,16 +1,13 @@
 import {inject, Injectable} from '@angular/core';
-import {Team} from '@app/share/model/team';
-import {GenderPipe} from '@app/share/pipe/gender.pipe';
-import {CategoryPipe} from '@app/share/pipe/category.pipe';
 import {
   ConfirmationDialogComponent
 } from '@app/share/component/dialog/confirmation-dialog/confirmation-dialog.component';
 import {NotificationService} from '@app/share/service/notification.service';
 import {Router} from '@angular/router';
-import {TeamsStore} from '@app/share/store/teams.store';
 import {MatDialog} from '@angular/material/dialog';
 import {catchError, EMPTY, switchMap} from 'rxjs';
 import {tap} from 'rxjs/operators';
+import {CategoryPipe, GenderPipe, Team, TeamsStore} from 'ngx-training';
 
 @Injectable({
   providedIn: 'root'

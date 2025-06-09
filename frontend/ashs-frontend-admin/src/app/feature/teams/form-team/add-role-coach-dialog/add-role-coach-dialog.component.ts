@@ -1,16 +1,15 @@
 import {Component, inject, signal, WritableSignal} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Role} from '@app/share/model/role';
-import {Coach} from '@app/share/model/coach';
+
 import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
 import {MatError, MatFormField, MatLabel} from '@angular/material/input';
-import {RoleToFrenchPipe} from '@app/share/pipe/role-to-french.pipe';
-import {displayError, hasError} from '@app/share/validator/form-error.util';
+
+import {displayError, hasError} from '@app/share/util/form-error.util';
 import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
-import {CoachService} from '@app/share/service/coach.service';
-import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
+import {Coach, CoachService, FormRoleCoachDTO, Role, RoleToFrenchPipe} from 'ngx-training';
+
 
 @Component({
   selector: 'app-add-role-coach-dialog',

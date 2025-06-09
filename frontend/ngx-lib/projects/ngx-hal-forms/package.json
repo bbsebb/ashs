@@ -1,0 +1,14 @@
+{
+  "name": "ngx-hal-forms",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/core": "^19.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "main": "./fesm2022/ngx-hal-forms.mjs",
+  "typings": "./index.d.ts",
+  "sideEffects": false
+}

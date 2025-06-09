@@ -77,7 +77,7 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let coach; columns: displayedColumns"></tr>
   <tr class="mat-row" *matNoDataRow>
-    @if (coachesStore.getCoachesResourceStatus() === 1) {
+    @if (coachesStore.coachesResourceStatus() === 1) {
       <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
         Une erreur est survenue.
       </td>

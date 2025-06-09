@@ -1,19 +1,14 @@
 import {Component, effect, inject, input, signal} from '@angular/core';
 import {MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {MatButton} from '@angular/material/button';
-import {CategoryPipe} from '../../../share/pipe/category.pipe';
-import {GenderPipe} from '../../../share/pipe/gender.pipe';
 import {MatProgressBar} from '@angular/material/progress-bar';
-import {DayOfWeekPipe} from '../../../share/pipe/day-of-week.pipe';
-import {TimePipe} from '../../../share/pipe/time.pipe';
 import {MatIcon} from '@angular/material/icon';
 import {MatDivider} from '@angular/material/divider';
 import {MatList, MatListItem} from '@angular/material/list';
 import {RouterLink} from '@angular/router';
-import {Team} from '@app/share/model/team';
-import {TeamStore} from '@app/share/store/team.store';
 import {TeamUiService} from '@app/share/service/team-ui.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {CategoryPipe, DayOfWeekPipe, GenderPipe, Team, TeamStore, TimePipe} from 'ngx-training';
 
 @Component({
   selector: 'app-team',

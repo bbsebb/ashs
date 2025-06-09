@@ -79,7 +79,7 @@
 @if (teamsStore.teamsResourceIsLoading()) {
   <mat-progress-bar mode="query"></mat-progress-bar>
 }
-@let pagination = teamsStore.getPagination();
+@let pagination = teamsStore.pagination();
 @if (pagination) {
   <mat-paginator
     [disabled]="teamsStore.teamsResourceIsLoading()"

@@ -5,10 +5,9 @@ import {MatProgressBar} from '@angular/material/progress-bar';
 import {MatIcon} from '@angular/material/icon';
 import {MatDivider} from '@angular/material/divider';
 import {RouterLink} from '@angular/router';
-import {Hall} from '@app/share/model/hall';
-import {HallStore} from '@app/share/store/hall.store';
 import {HallUiService} from '@app/share/service/hall-ui.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {Hall, HallStore} from 'ngx-training';
 
 @Component({
   selector: 'app-hall',

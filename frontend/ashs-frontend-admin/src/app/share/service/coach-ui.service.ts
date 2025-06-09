@@ -1,14 +1,14 @@
 import {inject, Injectable} from '@angular/core';
-import {Coach} from '@app/share/model/coach';
 import {
   ConfirmationDialogComponent
 } from '@app/share/component/dialog/confirmation-dialog/confirmation-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {NotificationService} from '@app/share/service/notification.service';
 import {Router} from '@angular/router';
-import {CoachesStore} from '@app/share/store/coaches.store';
+
 import {catchError, EMPTY, switchMap} from 'rxjs';
 import {tap} from 'rxjs/operators';
+import {Coach, CoachesStore} from 'ngx-training';
 
 @Injectable({
   providedIn: 'root'

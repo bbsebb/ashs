@@ -1,14 +1,13 @@
 import {inject, Injectable} from '@angular/core';
-import {Hall} from '@app/share/model/hall';
 import {
   ConfirmationDialogComponent
 } from '@app/share/component/dialog/confirmation-dialog/confirmation-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {NotificationService} from '@app/share/service/notification.service';
 import {Router} from '@angular/router';
-import {HallsStore} from '@app/share/store/halls.store';
 import {catchError, EMPTY, switchMap} from 'rxjs';
 import {tap} from 'rxjs/operators';
+import {Hall, HallsStore} from 'ngx-training';
 
 @Injectable({
   providedIn: 'root'

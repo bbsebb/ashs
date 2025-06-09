@@ -5,10 +5,9 @@ import {MatProgressBar} from '@angular/material/progress-bar';
 import {MatIcon} from '@angular/material/icon';
 import {MatDivider} from '@angular/material/divider';
 import {RouterLink} from '@angular/router';
-import {Coach} from '@app/share/model/coach';
-import {CoachStore} from '@app/share/store/coach.store';
 import {CoachUiService} from '@app/share/service/coach-ui.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {Coach, CoachStore} from 'ngx-training';
 
 @Component({
   selector: 'app-coach',

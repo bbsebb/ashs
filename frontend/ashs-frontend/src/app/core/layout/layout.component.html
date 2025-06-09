@@ -1,0 +1,14 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport
+               [attr.role]="isHandset() ? 'dialog' : 'navigation'"
+               [mode]="isHandset() ? 'over' : 'side'"
+               [opened]="!isHandset()">
+    <app-navigation></app-navigation>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <app-header [isHandset]="isHandset()" (opening)="drawer.toggle()"></app-header>
+    <div class="app-container">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

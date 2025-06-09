@@ -1,7 +1,6 @@
 import {Component, effect, inject, signal, WritableSignal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatFabButton, MatMiniFabButton} from '@angular/material/button';
-import {Coach} from '@app/share/model/coach';
 import {
   MatCell,
   MatCellDef,
@@ -15,12 +14,12 @@ import {
   MatRowDef,
   MatTable
 } from '@angular/material/table';
-import {CoachesStore} from '@app/share/store/coaches.store';
 import {MatProgressBar} from '@angular/material/progress-bar';
 import {LayoutService} from '@app/share/service/layout.service';
 import {RouterLink} from '@angular/router';
 import {CoachUiService} from '@app/share/service/coach-ui.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {Coach, CoachesStore} from 'ngx-training';
 
 @Component({
   selector: 'app-coaches',
@@ -55,7 +54,7 @@ export class CoachesComponent {
   isDeleting: WritableSignal<boolean> = signal(false);
 
   constructor() {
-    effect(() => this.dataSource = this.coachesStore.getCoaches())
+    effect(() => this.dataSource = this.coachesStore.coaches())
     effect(() => {
       if (!this.layoutService.isDesktop()) {
         this.displayedColumns = ['name', 'surname', 'update', 'delete', 'view'];

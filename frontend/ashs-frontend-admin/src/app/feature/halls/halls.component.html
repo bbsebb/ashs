@@ -83,7 +83,7 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let hall; columns: displayedColumns"></tr>
   <tr class="mat-row" *matNoDataRow>
-    @if (hallsStore.getHallsResourceStatus() === 1) {
+    @if (hallsStore.hallsResourceStatus() === 1) {
       <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
         Une erreur est survenue.
       </td>

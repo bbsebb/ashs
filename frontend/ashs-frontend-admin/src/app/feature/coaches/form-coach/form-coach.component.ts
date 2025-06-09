@@ -1,18 +1,15 @@
 import {Component, computed, effect, inject, input, signal, Signal, WritableSignal} from '@angular/core';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {displayError, hasError} from '@app/share/validator/form-error.util';
+import {displayError, hasError} from '@app/share/util/form-error.util';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatDivider} from '@angular/material/divider';
-import {CreateCoachDTORequest} from '@app/share/service/dto/create-coach-d-t-o-request';
-import {CoachesStore} from '@app/share/store/coaches.store';
 import {ApiError} from '@app/share/model/api-error';
 import {NotificationService} from '@app/share/service/notification.service';
 import {Router, RouterLink} from '@angular/router';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {Coach} from '@app/share/model/coach';
-import {CoachStore} from '@app/share/store/coach.store';
+import {Coach, CoachesStore, CoachStore, CreateCoachDTORequest} from 'ngx-training';
 
 @Component({
   selector: 'app-form-coach',
@@ -45,7 +42,7 @@ export class FormCoachComponent {
   constructor() {
     effect(() => this.coachStore.uri = this.uri());
     this.isCreateSignal = computed(() => this.uri() === undefined);
-    effect(() => this.coachForm = this.createCoachForm(this.coachStore.getCoach()));
+    effect(() => this.coachForm = this.createCoachForm(this.coachStore.coach()));
   }
 
   createCoachForm(updatedCoach?: Coach) {

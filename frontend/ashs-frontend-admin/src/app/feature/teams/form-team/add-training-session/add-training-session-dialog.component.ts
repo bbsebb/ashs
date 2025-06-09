@@ -2,16 +2,12 @@ import {Component, inject} from '@angular/core';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef} from '@angular/material/dialog';
 import {MatButton} from '@angular/material/button';
-import {DayOfWeek} from '@app/share/model/day-of-week';
-import {DayOfWeekPipe} from '@app/share/pipe/day-of-week.pipe';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {timeSlotValidator} from '@app/share/validator/time-slot.validator';
-import {displayError, hasError} from '@app/share/validator/form-error.util';
-import {Hall} from '@app/share/model/hall';
-import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-session-d-t-o';
-import {HallsStore} from '@app/share/store/halls.store';
+import {displayError, hasError} from '@app/share/util/form-error.util';
+import {DayOfWeek, DayOfWeekPipe, FormTrainingSessionDTO, Hall, HallsStore} from 'ngx-training';
 
 @Component({
   selector: 'app-add-training-session',

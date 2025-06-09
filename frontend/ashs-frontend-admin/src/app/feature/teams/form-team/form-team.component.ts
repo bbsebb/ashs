@@ -4,36 +4,38 @@ import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Gender} from '@app/share/model/gender';
-import {GenderPipe} from '@app/share/pipe/gender.pipe';
-import {Category} from '@app/share/model/category';
-import {CategoryPipe} from '@app/share/pipe/category.pipe';
 import {MatDivider} from '@angular/material/divider';
 import {MatButton, MatFabButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
 import {Router, RouterLink} from '@angular/router';
 import {AddTrainingSessionDialogComponent} from './add-training-session/add-training-session-dialog.component';
-import {displayError, hasError} from '@app/share/validator/form-error.util';
-import {DayOfWeekPipe} from '@app/share/pipe/day-of-week.pipe';
+import {displayError, hasError} from '@app/share/util/form-error.util';
 import {MatList, MatListItem} from '@angular/material/list';
-import {TimePipe} from '@app/share/pipe/time.pipe';
 import {
   AddRoleCoachDialogComponent
 } from '@app/feature/teams/form-team/add-role-coach-dialog/add-role-coach-dialog.component';
-import {RoleToFrenchPipe} from '@app/share/pipe/role-to-french.pipe';
-import {CreateTeamDTORequest} from '@app/share/service/dto/create-team-d-t-o-request';
-import {TeamsStore} from '@app/share/store/teams.store';
-import {RoleCoach} from '@app/share/model/role-coach';
 import {NotificationService} from '@app/share/service/notification.service';
-import {ApiError} from '@app/share/model/api-error';
-import {TeamStore} from '@app/share/store/team.store';
-import {Team} from '@app/share/model/team';
-import {FormTrainingSessionDTO} from '@app/share/service/dto/form-training-session-d-t-o';
-import {UpdateTeamDTORequest} from '@app/share/service/dto/update-team-d-t-o-request';
-import {FormRoleCoachDTO} from '@app/share/service/dto/form-role-coach-d-t-o';
 import {MatProgressBar} from '@angular/material/progress-bar';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {
+  Category,
+  CategoryPipe,
+  CreateTeamDTORequest,
+  DayOfWeekPipe,
+  FormRoleCoachDTO,
+  FormTrainingSessionDTO,
+  Gender,
+  GenderPipe,
+  RoleCoach,
+  RoleToFrenchPipe,
+  Team,
+  TeamsStore,
+  TeamStore,
+  TimePipe,
+  UpdateTeamDTORequest
+} from 'ngx-training';
+import {NgxApiError} from 'ngx-hal-forms';
 
 
 @Component({
@@ -84,9 +86,9 @@ export class FormTeamComponent {
 
   constructor() {
     effect(() => this.teamStore.uri = this.uri());
-    effect(() => this.teamForm = this.createTeamForm(this.teamStore.getTeam()));
-    this.trainingSessionsSignal = linkedSignal(() => this.teamStore.getTrainingSession() ?? [])
-    this.roleCoachesSignal = linkedSignal(() => this.teamStore.getRoleCoach() ?? [])
+    effect(() => this.teamForm = this.createTeamForm(this.teamStore.team()));
+    this.trainingSessionsSignal = linkedSignal(() => this.teamStore.trainingSession() ?? [])
+    this.roleCoachesSignal = linkedSignal(() => this.teamStore.roleCoach() ?? [])
     this.isCreateSignal = computed(() => this.uri() === undefined);
   }
 
@@ -168,7 +170,7 @@ export class FormTeamComponent {
           this.isSubmitting.set(false);
         },
         error: err => {
-          this.notificationService.showError(ApiError.of(err.error).getMessageForField('teamDTOCreateRequest'));
+          this.notificationService.showError(NgxApiError.of(err.error).getMessageForField('teamDTOCreateRequest'));
           this.isSubmitting.set(false);
         }
       });
@@ -186,7 +188,7 @@ export class FormTeamComponent {
         this.isSubmitting.set(false);
       },
       error: err => {
-        this.notificationService.showError(ApiError.of(err.error).getMessageForField('teamDTOCreateRequest'));
+        this.notificationService.showError(NgxApiError.of(err.error).getMessageForField('teamDTOCreateRequest'));
         this.isSubmitting.set(false);
       }
     })

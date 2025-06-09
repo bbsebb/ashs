@@ -1,19 +1,18 @@
 import {Component, computed, effect, inject, input, signal, Signal, WritableSignal} from '@angular/core';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {displayError, hasError} from '@app/share/validator/form-error.util';
+import {displayError, hasError} from '@app/share/util/form-error.util';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatDivider} from '@angular/material/divider';
-import {CreateHallDTORequest} from '@app/share/service/dto/create-hall-d-t-o-request';
-import {HallsStore} from '@app/share/store/halls.store';
-import {ApiError} from '@app/share/model/api-error';
+
+
 import {NotificationService} from '@app/share/service/notification.service';
 import {Router, RouterLink} from '@angular/router';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {Hall} from '@app/share/model/hall';
-import {HallStore} from '@app/share/store/hall.store';
-import {UpdateHallDTORequest} from '@app/share/service/dto/update-hall-d-t-o-request';
+import {CreateHallDTORequest, Hall, HallsStore, HallStore, UpdateHallDTORequest} from 'ngx-training';
+import {NgxApiError} from 'ngx-hal-forms';
+
 
 @Component({
   selector: 'app-form-hall',
@@ -46,7 +45,7 @@ export class FormHallComponent {
   constructor() {
     effect(() => this.hallStore.uri = this.uri());
     this.isCreateSignal = computed(() => this.uri() === undefined);
-    effect(() => this.hallForm = this.createHallForm(this.hallStore.getHall()));
+    effect(() => this.hallForm = this.createHallForm(this.hallStore.hall()));
   }
 
   createHallForm(updatedHall?: Hall) {
@@ -100,7 +99,7 @@ export class FormHallComponent {
       },
       error: err => {
         this.isSubmitting.set(false);
-        this.notificationService.showError(ApiError.of(err.error).getMessageForField('hallDTOCreateRequest'))
+        this.notificationService.showError(NgxApiError.of(err.error).getMessageForField('hallDTOCreateRequest'))
       }
     });
   }
@@ -114,7 +113,7 @@ export class FormHallComponent {
       },
       error: err => {
         this.isSubmitting.set(false);
-        this.notificationService.showError(ApiError.of(err.error).getGenericMessage())
+        this.notificationService.showError(NgxApiError.of(err.error).getGenericMessage())
       }
     });
   }

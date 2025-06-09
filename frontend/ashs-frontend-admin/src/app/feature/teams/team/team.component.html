@@ -1,4 +1,4 @@
-@let team = teamStore.getTeam();
+@let team = teamStore.team();
 @if (!teamStore.teamResourceIsLoading() && team) {
 
   <mat-card class="team-card">
@@ -21,7 +21,7 @@
         </h3>
       </div>
       <mat-list>
-        @for (trainingSession of teamStore.getTrainingSession(); track trainingSession.id) {
+        @for (trainingSession of teamStore.trainingSession(); track trainingSession.id) {
           <mat-list-item>
             <div class="training-session-item">
               <div>
@@ -45,9 +45,9 @@
         </h3>
       </div>
       <mat-list>
-        @for (roleCoach of teamStore.getRoleCoach(); track roleCoach.id) {
+        @for (roleCoach of teamStore.roleCoach(); track roleCoach.id) {
           <mat-list-item>
-            <a [routerLink]="['/coach']" class="coach-link">
+            <a [routerLink]="['/coach',roleCoach._links.self.href]" class="coach-link">
               <mat-icon>person</mat-icon>
               {{ roleCoach.role }} {{ roleCoach.coach.name }} {{ roleCoach.coach.surname }}
             </a>

@@ -15,12 +15,9 @@ import {
 import {MatProgressBar} from "@angular/material/progress-bar";
 import {MatFabButton, MatMiniFabButton} from '@angular/material/button';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {Team} from '@app/share/model/team';
-import {CategoryPipe} from '@app/share/pipe/category.pipe';
-import {GenderPipe} from '@app/share/pipe/gender.pipe';
+import {CategoryPipe, GenderPipe, Team, TeamsStore} from 'ngx-training';
 import {RouterLink} from '@angular/router';
 import {MatIcon} from '@angular/material/icon';
-import {TeamsStore} from '@app/share/store/teams.store';
 import {LayoutService} from '@app/share/service/layout.service';
 import {TeamUiService} from '@app/share/service/team-ui.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
@@ -62,7 +59,7 @@ export class TeamsComponent {
   isDeleting: WritableSignal<boolean> = signal(false)
 
   constructor() {
-    effect(() => this.dataSource = this.teamsStore.getTeams())
+    effect(() => this.dataSource = this.teamsStore.teams())
   }
 
 
