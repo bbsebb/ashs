@@ -5,4 +5,76 @@ mat-toolbar {
     container-background-color: var(--mat-sys-primary-container),
     container-text-color: var(--mat-sys-on-primary-container),
   ));
+
+  & {
+    position: sticky;
+    top: 0;
+    z-index: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  & {
+    .toolbar-left-menu,
+    .toolbar-right-menu {
+      flex: 0 0 auto; /* largeur selon le contenu */
+      min-width: 120px; /* ou width: 120px si nécessaire */
+    }
+
+    .toolbar-left-menu {
+      order: 1;
+    }
+
+    .toolbar-center-menu {
+      order: 2;
+      margin-inline: auto;
+    }
+
+    .toolbar-right-menu {
+      order: 3;
+    }
+  }
+}
+
+
+.logo {
+  & {
+    cursor: pointer;
+
+    border: 1px solid #000;
+    border-radius: 50%;
+    padding: 2px;
+    background-color: grey;
+    background-image: url('/logo.png');
+    background-size: cover; /* Ajustez selon le besoin pour remplir le conteneur */
+    background-position: center;
+    width: 55px; /* Assurez-vous que ces valeurs correspondent */
+    height: 55px; /* à la taille souhaitée pour l'image */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); // Ombre noire légèrement diffuse
+    transition: transform 0.3s ease, box-shadow 0.3s ease; // Animation douce pour l'ombre
+  }
+
+  &:hover {
+    transform: scale(1.1) translateY(7px);
+    // Intensifiez l'ombre au survol
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.75); // Ombre plus foncée et plus étendue
+  }
+}
+
+.banner {
+  & {
+    width: 100%; /* Assure que le conteneur prend toute la largeur */
+    max-width: 1200px;
+    height: 25vh; /* 15% de la hauteur de l'écran */
+    background-image: url('/banniere.png'); /* Remplacez par le chemin de votre image */
+    background-size: cover; /* Maintient le ratio d'aspect tout en s'assurant que l'image est entièrement visible */
+    background-position: center; /* Centre l'image dans le conteneur */
+    background-repeat: no-repeat; /* Empêche la répétition de l'image */
+    margin: 0 auto 0;
+  }
+
+  @media (min-width: 800px) {
+    min-height: 350px;
+  }
 }

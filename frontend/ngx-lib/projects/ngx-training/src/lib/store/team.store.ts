@@ -143,6 +143,7 @@ export class TeamStore {
   get roleCoach() {
     return this.roleCoachResource.value;
   }
+  
 
   reloadRoleCoach() {
     this.roleCoachResource.reload();

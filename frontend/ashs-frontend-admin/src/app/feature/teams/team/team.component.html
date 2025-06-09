@@ -37,6 +37,9 @@
           </mat-list-item>
         }
       </mat-list>
+      @if (teamStore.trainingSessionResourceIsLoading()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
       <mat-divider></mat-divider>
       <div class="subtitle-3">
         <h3>
@@ -47,7 +50,7 @@
       <mat-list>
         @for (roleCoach of teamStore.roleCoach(); track roleCoach.id) {
           <mat-list-item>
-            <a [routerLink]="['/coach',roleCoach._links.self.href]" class="coach-link">
+            <a [routerLink]="['/coaches',roleCoach.coach._links.self.href]" class="coach-link">
               <mat-icon>person</mat-icon>
               {{ roleCoach.role }} {{ roleCoach.coach.name }} {{ roleCoach.coach.surname }}
             </a>
@@ -56,6 +59,9 @@
       </mat-list>
     </mat-card-content>
 
+    @if (teamStore.roleCoachResourceIsLoading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
     <mat-divider></mat-divider>
 
     <mat-card-actions>

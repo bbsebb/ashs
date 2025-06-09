@@ -1,15 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 
 import {catchError, forkJoin, iif, Observable, of, switchMap, throwError} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {
-  AllHalResources,
-  HalResource,
-  NgxHalFormsService,
-  PaginatedHalResource,
-  PaginationOption,
-  unwrap
-} from 'ngx-hal-forms';
+import {AllHalResources, HalResource, NgxHalFormsService, PaginatedHalResource, PaginationOption} from 'ngx-hal-forms';
 import {Team} from '../model/team';
 import {CreateTeamDTORequest} from '../dto/create-team-d-t-o-request';
 import {FormTrainingSessionDTO} from '../dto/form-training-session-d-t-o';
@@ -205,10 +197,12 @@ export class TeamService implements ITeamService {
    * @returns Observable of training sessions array
    */
   getTrainingSessions(team: Team): Observable<TrainingSession[]> {
+    if (!this.halFormService.hasFollow(team, 'trainingSessionsList')) {
+      return of([])
+    }
     return this.halFormService
-      .follow<AllHalResources<TrainingSession>>(team, 'trainingSessions')
+      .follow<TrainingSession[]>(team, 'trainingSessionsList')
       .pipe(
-        map(resource => unwrap<TrainingSession[]>(resource, 'trainingSessions')),
         catchError(_ => of([])) // en cas d'erreur, renvoyer []
       );
   }
@@ -259,10 +253,12 @@ export class TeamService implements ITeamService {
    * @returns Observable of role coaches array
    */
   getRoleCoaches(team: Team): Observable<RoleCoach[]> {
+    if (!this.halFormService.hasFollow(team, 'roleCoachesList')) {
+      return of([])
+    }
     return this.halFormService
-      .follow<AllHalResources<RoleCoach>>(team, 'roleCoaches')
+      .follow<RoleCoach[]>(team, 'roleCoachesList')
       .pipe(
-        map(resource => unwrap<RoleCoach[]>(resource, 'roleCoaches')),
         catchError(_ => of([])) // en cas d'erreur, renvoyer []
       );
   }

@@ -23,9 +23,11 @@ management:
       probability: 1.0 # Définir à 100% (1.0) pour capturer toutes les requêtes
 
 
-
 logging:
   pattern:
     correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+  level:
+    org.springframework.boot.docker.compose: DEBUG
+
 
 

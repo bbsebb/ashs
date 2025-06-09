@@ -30,6 +30,6 @@ body {
 }
 
 .app-container {
-  height: calc(100vh - var(--toolbar-height, 64px));
+  min-height: calc(100vh - var(--toolbar-height, 64px));
 }
 
