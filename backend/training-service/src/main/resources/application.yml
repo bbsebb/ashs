@@ -3,11 +3,10 @@ spring:
     name: training-service
   config:
     import: configserver:http://localhost:8888
-  
+
 
 server:
   port: 8082 # Port de l'application pour éviter les conflits locaux
-
 
 
 

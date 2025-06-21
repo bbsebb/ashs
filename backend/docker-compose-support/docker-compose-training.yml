@@ -1,5 +1,5 @@
 services:
-  postgres: # Nom du service
+  postgres-training-service: # Nom du service
     image: postgres:17.4 # Image officielle PostgreSQL (version: 15)
     container_name: training-service-db # Nom du conteneur
     restart: always # Redémarre le conteneur automatiquement si nécessaire
@@ -12,5 +12,6 @@ services:
     volumes:
       - postgres_data_training_service:/var/lib/postgresql/data # Volume Docker pour persister les données
 
+
 volumes:
-  postgres_data_training_service: # Volume nommé pour persister la base de données, même après l'arrêt du conteneur
+  postgres_data_training_service:

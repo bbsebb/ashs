@@ -57,9 +57,6 @@ export class HallService implements IHallService {
    * @throws Error if the createHall action is not available
    */
   createHall(hallResource: AllHalResources<Hall> | PaginatedHalResource<Hall>, createHallDTORequest: CreateHallDTORequest) {
-    if (!this.halFormService.canAction(hallResource, 'createHall')) {
-      throw new Error("L'action createHall n'est pas disponible sur l'objet " + createHallDTORequest);
-    }
     return this.halFormService.doAction<Hall>(hallResource, 'createHall', createHallDTORequest);
   }
 
@@ -72,9 +69,6 @@ export class HallService implements IHallService {
    * @throws Error if the updateHall action is not available
    */
   updateHall(hall: Hall, updateHallDTORequest: UpdateHallDTORequest) {
-    if (!this.halFormService.canAction(hall, 'updateHall')) {
-      throw new Error("L'action updateHall n'est pas disponible sur l'objet " + hall);
-    }
     return this.halFormService.doAction<Hall>(hall, 'updateHall', updateHallDTORequest);
   }
 

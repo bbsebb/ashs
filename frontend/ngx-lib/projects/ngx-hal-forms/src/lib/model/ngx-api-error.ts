@@ -26,7 +26,7 @@ export class NgxApiError {
    * "champA: messageA, champB: messageB" → [{ field: "champA", message: "messageA" }, ...]
    */
   private parseDetails() {
-    if (!this.error.detail) {
+    if (!this.error || !this.error.detail) {
       this._parsedDetails = [];
       return;
     }

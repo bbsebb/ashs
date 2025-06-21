@@ -1,0 +1,65 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  margin-bottom: 24px;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--mat-primary-text);
+}
+
+.loading-container, .error-container, .empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: 16px;
+}
+
+.teams-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    flex: 1 0 300px;
+    max-width: 100%;
+  }
+}
+
+.team-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--mat-elevation-level3);
+  }
+
+  mat-card-content {
+    flex-grow: 1;
+    padding: 16px;
+  }
+
+  mat-card-actions {
+    padding: 8px 16px 16px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .teams-grid li {
+    flex-basis: 100%;
+  }
+}

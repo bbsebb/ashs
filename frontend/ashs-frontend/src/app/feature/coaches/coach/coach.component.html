@@ -1,0 +1,62 @@
+<main class="container">
+  <nav class="back-link">
+    <a mat-button routerLink="/coaches">
+      <mat-icon>arrow_back</mat-icon>
+      Retour à la liste des coachs
+    </a>
+  </nav>
+  @let coach = coachSignal();
+  @if (isLoading()) {
+    <section class="loading-container">
+      <mat-spinner></mat-spinner>
+    </section>
+  } @else if (error()) {
+    <section class="error-container">
+      <h2>Une erreur est survenue</h2>
+      <p>Impossible de charger les informations du coach.</p>
+      <button mat-raised-button (click)="reloadCoach()">Réessayer</button>
+    </section>
+  } @else if (!coach) {
+    <section class="error-container">
+      <h2>Coach non trouvé</h2>
+      <p>Le coach demandé n'existe pas ou a été supprimé.</p>
+      <button mat-raised-button routerLink="/coaches">Retour à la liste</button>
+    </section>
+  } @else {
+    <mat-card class="coach-detail-card">
+      <mat-card-header>
+        <mat-card-title>{{ coach.name }} {{ coach.surname }}</mat-card-title>
+        <mat-card-subtitle>Entraineur</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <section class="coach-info">
+          <section class="info-section">
+            <h3>Informations de contact</h3>
+            <mat-divider></mat-divider>
+
+            <dl class="info-item">
+              <mat-icon>email</mat-icon>
+              <div>
+                <dt class="label">Email</dt>
+                <dd class="value">{{ coach.email }}</dd>
+              </div>
+            </dl>
+
+            <dl class="info-item">
+              <mat-icon>phone</mat-icon>
+              <div>
+                <dt class="label">Téléphone</dt>
+                <dd class="value">{{ coach.phone }}</dd>
+              </div>
+            </dl>
+          </section>
+        </section>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button routerLink="/coaches">Retour à la liste</button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</main>

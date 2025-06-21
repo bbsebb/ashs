@@ -1,0 +1,29 @@
+mat-card {
+  max-width: 600px;
+  margin: 10% auto; // Centrer la carte dans la page
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Optionnel, selon le style désiré
+
+  mat-card-header {
+    text-align: center;
+  }
+
+  mat-form-field {
+    width: 100%; // Assure que les champs utilisent toute la largeur disponible
+    margin-bottom: 20px; // Espacement entre les champs de formulaire
+
+    &:last-child {
+      margin-bottom: 0; // Retire l'espacement pour le dernier champ
+    }
+  }
+
+  button {
+    margin-top: 20px;
+    width: 100%; // Bouton de soumission utilise toute la largeur
+  }
+}
+
+@media (max-width: 768px) {
+  mat-card {
+    margin: 20px; // Augmente l'espacement pour les petits écrans
+  }
+}

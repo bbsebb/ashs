@@ -2,10 +2,12 @@ import {Component, inject} from '@angular/core';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {NavigationComponent} from './navigation/navigation.component';
 import {HeaderComponent} from './header/header.component';
+import {FooterComponent} from './footer/footer.component';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {map, shareReplay} from 'rxjs';
 import {RouterOutlet} from '@angular/router';
+
 
 @Component({
   selector: 'app-layout',
@@ -17,6 +19,7 @@ import {RouterOutlet} from '@angular/router';
     NavigationComponent,
     HeaderComponent,
     RouterOutlet,
+    FooterComponent
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.scss'

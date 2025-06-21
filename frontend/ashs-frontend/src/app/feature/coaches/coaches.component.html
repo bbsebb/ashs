@@ -1,0 +1,37 @@
+<main class="container">
+  <h1>Nos entraineurs</h1>
+
+  @if (isLoading()) {
+    <section class="loading-container">
+      <mat-spinner></mat-spinner>
+    </section>
+  } @else if (error()) {
+    <section class="error-container">
+      <p>Une erreur est survenue lors du chargement des coachs.</p>
+      <button mat-raised-button color="primary" (click)="reloadCoaches()">Réessayer</button>
+    </section>
+  } @else if (coaches().length === 0) {
+    <section class="empty-container">
+      <p>Aucun coach disponible pour le moment.</p>
+    </section>
+  } @else {
+    <ul class="coaches-grid">
+      @for (coach of coaches(); track coach.id) {
+        <li>
+          <mat-card class="coach-card" [routerLink]="['/coaches', coach._links.self.href]">
+            <mat-card-header>
+              <mat-card-title>{{ coach.name }} {{ coach.surname }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p><strong>Email:</strong> {{ coach.email }}</p>
+              <p><strong>Téléphone:</strong> {{ coach.phone }}</p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-button color="primary" [routerLink]="['/coaches', coach._links.self.href]">Voir détails</button>
+            </mat-card-actions>
+          </mat-card>
+        </li>
+      }
+    </ul>
+  }
+</main>

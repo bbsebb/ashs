@@ -7,7 +7,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/contact-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/contact-service.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/discovery-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/discovery-service.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway-service.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/instagram-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/instagram-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/training-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/training-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/training-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/training-service.test.iml" />
     </modules>
   </component>
 </project>

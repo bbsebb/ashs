@@ -2,14 +2,7 @@ import {ApplicationConfig, inject, provideAppInitializer, provideZoneChangeDetec
 import {provideRouter, withComponentInputBinding} from '@angular/router';
 import {routes} from './app.routes';
 import {BASE_URL_CONFIG} from 'ngx-hal-forms';
-import {
-  COACH_SERVICE,
-  CoachStubService,
-  HALL_SERVICE,
-  HallStubService,
-  TEAM_SERVICE,
-  TeamStubService
-} from 'ngx-training';
+import {COACH_SERVICE, CoachService, HALL_SERVICE, HallService, TEAM_SERVICE, TeamService} from 'ngx-training';
 import {provideHttpClient} from '@angular/common/http';
 import {IconRegistryService} from './core/service/service/icon-registry.service';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
@@ -29,14 +22,14 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: TEAM_SERVICE,
-      useClass: TeamStubService
+      useClass: TeamService
     },
     {
       provide: COACH_SERVICE,
-      useClass: CoachStubService
+      useClass: CoachService
     },
     {
       provide: HALL_SERVICE,
-      useClass: HallStubService
+      useClass: HallService
     }]
 };

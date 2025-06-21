@@ -75,9 +75,6 @@ export class TeamService implements ITeamService {
     team: HalResource,
     teamDtoCreateRequest: CreateTeamDTORequest,
   ) {
-    if (!this.halFormService.canAction(team, 'createTeam')) {
-      throw new Error("L'action createTeam n'est pas disponible sur l'objet " + teamDtoCreateRequest);
-    }
     return this.halFormService.doAction<Team>(team, 'createTeam', teamDtoCreateRequest)
   }
 
@@ -90,9 +87,6 @@ export class TeamService implements ITeamService {
    * @throws Error if the updateTeam action is not available
    */
   updateTeam(team: Team, teamDtoUpdateRequest: CreateTeamDTORequest) {
-    if (!this.halFormService.canAction(team, 'updateTeam')) {
-      throw new Error("L'action updateTeam n'est pas disponible sur l'objet " + teamDtoUpdateRequest);
-    }
     return this.halFormService.doAction<Team>(team, 'updateTeam', teamDtoUpdateRequest);
   }
 
@@ -104,9 +98,6 @@ export class TeamService implements ITeamService {
    * @throws Error if the deleteTeam action is not available
    */
   deleteTeam(team: Team) {
-    if (!this.halFormService.canAction(team, 'deleteTeam')) {
-      throw new Error("L'action deleteTeam n'est pas disponible sur l'objet " + team);
-    }
     return this.halFormService.doAction<void>(team, 'deleteTeam');
   }
 
@@ -165,9 +156,6 @@ export class TeamService implements ITeamService {
     roleCoachesDTORequest: FormRoleCoachDTO[],
     roleCoachesToDelete: RoleCoach[]
   ) {
-    if (!this.halFormService.canAction(team, 'updateTeam')) {
-      throw new Error("L'action updateTeam n'est pas disponible sur l'objet " + team);
-    }
     return this.updateTeam(team, teamDtoUpdateRequest).pipe(
       switchMap(team =>
         forkJoin({
@@ -216,9 +204,6 @@ export class TeamService implements ITeamService {
    * @throws Error if the addTrainingSession action is not available
    */
   private addTrainingSessions(team: Team, trainingSessionsDTORequest: AddTrainingSessionInTeamDTORequest[]): Observable<TrainingSession[]> {
-    if (!this.halFormService.canAction(team, 'addTrainingSession')) {
-      throw new Error("L'action addTrainingSession n'est pas disponible sur l'objet " + team);
-    }
     const trainingObservables = trainingSessionsDTORequest.map(tsDTORequest =>
       this.halFormService.doAction<TrainingSession>(team, 'addTrainingSession', tsDTORequest)
     );
@@ -228,17 +213,18 @@ export class TeamService implements ITeamService {
   /**
    * Deletes training sessions
    *
-   * @param trainingSession - Array of training sessions to delete
+   * @param trainingSessions - Array of training sessions to delete
    * @returns Observable of deletion results
    * @throws Error if the deleteTrainingSession action is not available for any session
    */
-  private deleteTrainingSessions(trainingSession: TrainingSession[]) {
-    trainingSession.forEach(ts => {
+  private deleteTrainingSessions(trainingSessions: TrainingSession[]) {
+    for (const ts of trainingSessions) {
       if (!this.halFormService.canAction(ts, 'deleteTrainingSession')) {
-        throw new Error("L'action deleteTrainingSession n'est pas disponible sur l'objet " + ts);
+        return throwError(() => new Error("L'action deleteTrainingSession n'est pas disponible sur l'objet " + ts));
       }
-    })
-    const trainingSessionObservables = trainingSession.map(ts =>
+    }
+
+    const trainingSessionObservables = trainingSessions.map(ts =>
       this.halFormService.doAction<void>(ts, 'deleteTrainingSession')
     );
     return trainingSessionObservables.length ? forkJoin(trainingSessionObservables) : of([]);
@@ -272,9 +258,6 @@ export class TeamService implements ITeamService {
    * @throws Error if the addRoleCoach action is not available
    */
   private addRoleCoaches(team: Team, roleCoachesDTORequest: AddRoleCoachInTeamDTORequest[]): Observable<RoleCoach[]> {
-    if (!this.halFormService.canAction(team, 'addRoleCoach')) {
-      throw new Error("L'action addRoleCoach n'est pas disponible sur l'objet " + team);
-    }
     const roleCoachObservables = roleCoachesDTORequest.map(rcDTORequest =>
       this.halFormService.doAction<RoleCoach>(team, 'addRoleCoach', rcDTORequest)
     );
@@ -289,11 +272,11 @@ export class TeamService implements ITeamService {
    * @throws Error if the deleteRoleCoach action is not available for any coach
    */
   private deleteRoleCoaches(roleCoach: RoleCoach[]) {
-    roleCoach.forEach(rc => {
+    for (const rc of roleCoach) {
       if (!this.halFormService.canAction(rc, 'deleteRoleCoach')) {
-        throw new Error("L'action deleteRoleCoach n'est pas disponible sur l'objet " + rc);
+        return throwError(() => new Error("L'action deleteRoleCoach n'est pas disponible sur l'objet " + rc));
       }
-    })
+    }
     const roleCoachObservables = roleCoach.map(rc =>
       this.halFormService.doAction<void>(rc, 'deleteRoleCoach')
     );

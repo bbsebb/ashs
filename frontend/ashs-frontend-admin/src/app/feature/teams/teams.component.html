@@ -60,7 +60,7 @@
   <tr mat-row *matRowDef="let team; columns: displayedColumns"></tr>
 
   <tr class="mat-row" *matNoDataRow>
-    @if (teamsStore.getTeamsResourceStatus() === 1) {
+    @if (teamsStore.teamsResourceStatus() === 1) {
       <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align: center;">
         Une erreur est survenue.
       </td>

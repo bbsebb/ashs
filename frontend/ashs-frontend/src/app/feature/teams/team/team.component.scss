@@ -1,0 +1,167 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.back-link {
+  margin-bottom: 24px;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  text-align: center;
+  gap: 16px;
+}
+
+.team-detail-card {
+  width: 100%;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+
+  mat-card-header {
+    padding: 24px 24px 0;
+
+    mat-card-title {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    mat-card-subtitle {
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+  }
+
+  mat-card-content {
+    padding: 0 24px;
+    flex: 1;
+
+    .no-data-message {
+      padding: 16px 0;
+      color: var(--mat-secondary-text);
+      font-style: italic;
+    }
+  }
+
+  mat-card-actions {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.team-info {
+  margin: 24px 0;
+}
+
+.info-section {
+  margin-bottom: 32px;
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: var(--mat-primary-text);
+  }
+
+  mat-divider {
+    margin-bottom: 16px;
+  }
+
+  .coach-list, .training-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .coach-role {
+    font-weight: 500;
+    color: var(--mat-secondary-text);
+  }
+
+  .training-day {
+    font-weight: 500;
+    min-width: 100px;
+  }
+
+  .training-time {
+    color: var(--mat-secondary-text);
+    margin-right: 8px;
+  }
+
+  a {
+    color: var(--mat-primary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  mat-icon {
+    color: var(--mat-primary-color);
+  }
+
+  dt.label {
+    font-weight: 500;
+    color: var(--mat-secondary-text);
+    margin-bottom: 4px;
+  }
+
+  dd.value {
+    margin: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+  }
+
+  .team-detail-card {
+    mat-card-header {
+      padding: 16px 16px 0;
+    }
+
+    mat-card-content {
+      padding: 0 16px;
+    }
+
+    mat-card-actions {
+      padding: 8px 16px 16px;
+    }
+  }
+}

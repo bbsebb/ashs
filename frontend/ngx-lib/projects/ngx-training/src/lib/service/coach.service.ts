@@ -69,9 +69,6 @@ export class CoachService implements ICoachService {
    * @throws Error if the createCoach action is not available
    */
   createCoach(coachResource: AllHalResources<Coach> | PaginatedHalResource<Coach>, createCoachDTORequest: CreateCoachDTORequest) {
-    if (!this.halFormService.canAction(coachResource, 'createCoach')) {
-      throw new Error("L'action createCoach n'est pas disponible sur l'objet " + createCoachDTORequest);
-    }
     return this.halFormService.doAction<Coach>(coachResource, 'createCoach', createCoachDTORequest);
   }
 
@@ -84,9 +81,6 @@ export class CoachService implements ICoachService {
    * @throws Error if the updateCoach action is not available
    */
   updateCoach(coach: Coach, updateCoachDTORequest: CreateCoachDTORequest) {
-    if (!this.halFormService.canAction(coach, 'updateCoach')) {
-      throw new Error("L'action updateCoach n'est pas disponible sur l'objet " + coach);
-    }
     return this.halFormService.doAction<Coach>(coach, 'updateCoach', updateCoachDTORequest);
   }
 
@@ -98,9 +92,6 @@ export class CoachService implements ICoachService {
    * @throws Error if the deleteCoach action is not available
    */
   deleteCoach(coach: Coach) {
-    if (!this.halFormService.canAction(coach, 'deleteCoach')) {
-      throw new Error("L'action deleteCoach n'est pas disponible sur l'objet " + coach);
-    }
     return this.halFormService.doAction<void>(coach, 'deleteCoach');
   }
 

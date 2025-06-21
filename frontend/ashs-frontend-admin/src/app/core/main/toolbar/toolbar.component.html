@@ -11,4 +11,13 @@
 
   <a class="logo" routerLink="/"></a>
   <span>Administration ASHS</span>
+
+  <span class="spacer"></span>
+
+  @if (keycloakService.isAuthenticated()) {
+    <span class="username">{{ keycloakService.getUsername() }}</span>
+    <button mat-button (click)="logout()">Déconnexion</button>
+  } @else {
+    <button mat-button (click)="login()">Connexion</button>
+  }
 </mat-toolbar>

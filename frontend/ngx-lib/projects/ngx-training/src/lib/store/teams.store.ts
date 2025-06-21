@@ -85,16 +85,16 @@ export class TeamsStore {
   }
 
 
-  teamsResourceIsLoading() {
-    return this.teamsResource.isLoading();
+  get teamsResourceIsLoading() {
+    return this.teamsResource.isLoading;
   }
 
-  getTeamsResourceStatus() {
-    return this.teamsResource.status();
+  get teamsResourceStatus() {
+    return this.teamsResource.status;
   }
 
-  getTeamsResourceError() {
-    return this.teamsResource.error();
+  get teamsResourceError() {
+    return this.teamsResource.error;
   }
 
   /**

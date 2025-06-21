@@ -1,0 +1,37 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Contactez-nous</mat-card-title>
+  </mat-card-header>
+  <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" #formDirective="ngForm">
+    <mat-card-content>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Nom</mat-label>
+        <input matInput type="text" formControlName="name">
+        <mat-error>{{ getFormControlErrorText(contactForm.controls['name']) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email">
+        <mat-error>{{ getFormControlErrorText(contactForm.controls['email']) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Message</mat-label>
+        <textarea matInput type="text" formControlName="message"></textarea>
+        <mat-error>{{ getFormControlErrorText(contactForm.controls['message']) }}</mat-error>
+      </mat-form-field>
+
+
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit" [disabled]="disabledSubmitButton()">Envoyer</button>
+    </mat-card-actions>
+  </form>
+  <mat-card-footer>
+    @if (showProgressBar()) {
+      <mat-progress-bar mode="query"></mat-progress-bar>
+    }
+  </mat-card-footer>
+</mat-card>

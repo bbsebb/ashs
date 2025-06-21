@@ -37,7 +37,7 @@ dependencies {
     implementation("com.github.loki4j:loki-logback-appender:1.6.0")
 
     // General Utilities
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+
 
     //Testing
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

@@ -1,0 +1,78 @@
+<main class="container">
+  <nav class="back-link">
+    <a mat-button routerLink="/halls">
+      <mat-icon>arrow_back</mat-icon>
+      Retour à la liste des salles
+    </a>
+  </nav>
+  @let hall = hallSignal();
+  @if (isLoading()) {
+    <section class="loading-container">
+      <mat-spinner></mat-spinner>
+    </section>
+  } @else if (error()) {
+    <section class="error-container">
+      <h2>Une erreur est survenue</h2>
+      <p>Impossible de charger les informations de la salle.</p>
+      <button mat-raised-button (click)="reloadHall()">Réessayer</button>
+    </section>
+  } @else if (!hall) {
+    <section class="error-container">
+      <h2>Salle non trouvée</h2>
+      <p>La salle demandée n'existe pas ou a été supprimée.</p>
+      <button mat-raised-button routerLink="/halls">Retour à la liste</button>
+    </section>
+  } @else {
+    <mat-card class="hall-detail-card">
+      <mat-card-header>
+        <mat-card-title>{{ hall.name }}</mat-card-title>
+        <mat-card-subtitle>Salle</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <section class="hall-info">
+          <section class="info-section">
+            <h3>Informations d'adresse</h3>
+            <mat-divider></mat-divider>
+
+            <dl class="info-item">
+              <mat-icon>location_on</mat-icon>
+              <div>
+                <dt class="label">Rue</dt>
+                <dd class="value">{{ hall.address.street }}</dd>
+              </div>
+            </dl>
+
+            <dl class="info-item">
+              <mat-icon>location_city</mat-icon>
+              <div>
+                <dt class="label">Ville</dt>
+                <dd class="value">{{ hall.address.city }}</dd>
+              </div>
+            </dl>
+
+            <dl class="info-item">
+              <mat-icon>markunread_mailbox</mat-icon>
+              <div>
+                <dt class="label">Code postal</dt>
+                <dd class="value">{{ hall.address.postalCode }}</dd>
+              </div>
+            </dl>
+
+            <dl class="info-item">
+              <mat-icon>public</mat-icon>
+              <div>
+                <dt class="label">Pays</dt>
+                <dd class="value">{{ hall.address.country }}</dd>
+              </div>
+            </dl>
+          </section>
+        </section>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button routerLink="/halls">Retour à la liste</button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</main>

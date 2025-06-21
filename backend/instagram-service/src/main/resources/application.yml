@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: instagram-service
+  config:
+    import: configserver:http://localhost:8888
+
+server:
+  port: 8083
+
+facebook:
+  api:
+    url: https://graph.facebook.com/v23.0

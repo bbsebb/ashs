@@ -1,0 +1,99 @@
+<main class="container">
+  <nav class="back-link">
+    <a mat-button routerLink="/teams">
+      <mat-icon>arrow_back</mat-icon>
+      Retour à la liste des équipes
+    </a>
+  </nav>
+  @let team = teamSignal();
+  @if (isTeamLoading()) {
+    <section class="loading-container">
+      <mat-spinner></mat-spinner>
+    </section>
+  } @else if (teamError()) {
+    <section class="error-container">
+      <h2>Une erreur est survenue</h2>
+      <p>Impossible de charger les informations de l'équipe.</p>
+      <button mat-raised-button (click)="reloadTeam()">Réessayer</button>
+    </section>
+  } @else if (!team) {
+    <section class="error-container">
+      <h2>Équipe non trouvée</h2>
+      <p>L'équipe demandée n'existe pas ou a été supprimée.</p>
+      <button mat-raised-button routerLink="/teams">Retour à la liste</button>
+    </section>
+  } @else {
+    <mat-card class="team-detail-card">
+      <mat-card-header>
+        <mat-card-title>{{ team.category | category }} {{ team.teamNumber }} {{ team.gender | gender }}</mat-card-title>
+        <mat-card-subtitle>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        @let roleCoaches = roleCoachesSignal();
+        @if (isRoleCoachesLoading()) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        } @else if (roleCoachesError()) {
+          <section class="error-container">
+            <h2>Une erreur est survenue</h2>
+            <p>Une erreur est survenue dans le chargement des entraîneurs</p>
+            <button mat-raised-button (click)="reloadRoleCoaches()">Réessayer</button>
+          </section>
+        } @else if (!roleCoaches || roleCoaches.length === 0) {
+          <p class="no-data-message">Aucun entraîneur associé à l'équipe pour l'instant.</p>
+        } @else {
+          <section class="info-section role-coaches-section">
+            <h3>Entraîneurs</h3>
+            <mat-divider></mat-divider>
+            <ul class="coach-list">
+              @for (roleCoach of roleCoaches; track roleCoach._links.self.href) {
+                <li>
+                  <span class="coach-role">{{ roleCoach.role | roleToFrench }} :</span>
+                  <a [routerLink]="['/coaches', roleCoach.coach._links.self.href]">
+                    {{ roleCoach.coach.name }} {{ roleCoach.coach.surname }}
+                  </a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+        @let trainingSessions = trainingSessionsSignal();
+        @if (isTrainingSessionsLoading()) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        } @else if (trainingSessionsError()) {
+          <section class="error-container">
+            <h2>Une erreur est survenue</h2>
+            <p>Une erreur est survenue dans le chargement des créneaux d'entraînement</p>
+            <button mat-raised-button (click)="reloadTrainingSessions()">Réessayer</button>
+          </section>
+        } @else if (!trainingSessions || trainingSessions.length === 0) {
+          <p class="no-data-message">Aucun créneau d'entraînement associé à l'équipe pour l'instant.</p>
+        } @else {
+          <section class="info-section training-sessions-section">
+            <h3>Créneaux d'entraînement</h3>
+            <mat-divider></mat-divider>
+            <ul class="training-list">
+              @for (trainingSession of trainingSessions; track trainingSession._links.self.href) {
+                <li>
+                  <span class="training-day">{{ trainingSession.timeSlot.dayOfWeek | dayOfWeekToFrench }}</span>
+                  <span class="training-time">{{ trainingSession.timeSlot.startTime | timeFormat }}
+                    - {{ trainingSession.timeSlot.endTime | timeFormat }}</span>
+                  <span class="training-location">
+                    <a [routerLink]="['/halls', trainingSession.hall._links.self.href]">
+                      {{ trainingSession.hall.name }}
+                    </a>
+                  </span>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button routerLink="/teams">Retour à la liste</button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</main>

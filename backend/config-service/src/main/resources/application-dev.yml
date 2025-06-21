@@ -4,9 +4,6 @@ spring:
       server:
         native:
           search-locations: file:///C:/Users/bbseb/Documents/programmation/temp/ashs/backend/configuration
-  docker:
-    compose:
-      file: ./observability/compose.yml
 management:
   zipkin:
     tracing:

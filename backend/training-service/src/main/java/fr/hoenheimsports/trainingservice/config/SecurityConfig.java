@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -24,9 +23,11 @@ public class SecurityConfig {
     public SecurityConfig(SimpleJwtFilter simpleJwtFilter) {
         this.simpleJwtFilter = simpleJwtFilter;
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
                 .csrf(AbstractHttpConfigurer::disable) // Désactiver CSRF avec l'API moderne
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -37,7 +38,8 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable) // Désactiver l'authentification HTTP Basic
                 .formLogin(AbstractHttpConfigurer::disable)
-                .addFilterBefore(simpleJwtFilter, UsernamePasswordAuthenticationFilter.class); // Désactiver le formulaire de connexion
+                // .addFilterBefore(simpleJwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2ResourceServer(resourceServer -> resourceServer.jwt(jwtDecoder -> jwtDecoder.jwtAuthenticationConverter(new SimpleKeycloakJwtAuthenticationConverter()))); // Désactiver le formulaire de connexion
 
         return http.build();
 

@@ -1,5 +1,5 @@
 <mat-toolbar [@toolbarAnimation]="showToolbar()? 'open':'close'">
-  <div class="toolbar-left-menu">@if (isHandset()) {
+  <nav class="toolbar-left-menu">@if (isHandset()) {
     <button
       type="button"
       aria-label="Toggle sidenav"
@@ -21,13 +21,13 @@
        aria-label="icon-button with instagram icon">
       <mat-icon [svgIcon]="'instagram'">instagram</mat-icon>
     </a>
-  </div>
+  </nav>
 
 
   <a class="toolbar-center-menu logo" routerLink="/home">
   </a>
-  <div class="toolbar-right-menu">
-  </div>
+  <nav class="toolbar-right-menu">
+  </nav>
 </mat-toolbar>
 
-<div class="banner"></div>
+<section class="banner"></section>

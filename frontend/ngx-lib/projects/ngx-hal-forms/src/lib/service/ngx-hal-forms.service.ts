@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {PaginationOption} from '../model/ngx-pagination-option.type';
-import {delay, forkJoin, Observable, ReplaySubject} from 'rxjs';
+import {delay, forkJoin, Observable, ReplaySubject, throwError} from 'rxjs';
 import {AllHalResources, HalLink, HalResource, PaginatedHalResource} from '../model/ngx-hal.model';
 import {HttpClient} from '@angular/common/http';
 import {BASE_URL_CONFIG} from '../config/base-url.config';
@@ -10,7 +10,7 @@ import {BASE_URL_CONFIG} from '../config/base-url.config';
 })
 export class NgxHalFormsService {
 
-
+  private _rootService = new Map<string, ReplaySubject<HalResource>>();
   private _root: ReplaySubject<HalResource> = new ReplaySubject<HalResource>(1);
   private readonly baseUrl = inject(BASE_URL_CONFIG).baseUrl // 'http://localhost:8082/api';
   private readonly http = inject(HttpClient);
@@ -97,7 +97,7 @@ export class NgxHalFormsService {
 
   public doAction<T extends HalResource | HalResource[] | void>(resource: HalResource, actionName: string, payload?: any): Observable<T> {
     if (!this.canAction(resource, actionName)) {
-      throw new Error("The action " + actionName + " is not defined in the resource " + resource + "");
+      return throwError(() => new Error("The action " + actionName + " is not defined in the resource " + resource + ""));
     }
     const url = (resource._templates![actionName].target) ?? resource._links["self"].href;
     const template = resource._templates![actionName];
