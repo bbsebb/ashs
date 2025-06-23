@@ -1,18 +1,20 @@
 import {inject, Injectable} from '@angular/core';
 import {PaginationOption} from '../model/ngx-pagination-option.type';
-import {delay, forkJoin, Observable, ReplaySubject, throwError} from 'rxjs';
+import {delay, forkJoin, MonoTypeOperatorFunction, Observable, ReplaySubject, throwError} from 'rxjs';
 import {AllHalResources, HalLink, HalResource, PaginatedHalResource} from '../model/ngx-hal.model';
 import {HttpClient} from '@angular/common/http';
 import {BASE_URL_CONFIG} from '../config/base-url.config';
+import {DELAY} from '../config/delay.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NgxHalFormsService {
 
-  private _rootService = new Map<string, ReplaySubject<HalResource>>();
+
   private _root: ReplaySubject<HalResource> = new ReplaySubject<HalResource>(1);
   private readonly baseUrl = inject(BASE_URL_CONFIG).baseUrl // 'http://localhost:8082/api';
+  private readonly delay = inject(DELAY);
   private readonly http = inject(HttpClient);
   private readonly header = {
     headers: {
@@ -20,7 +22,12 @@ export class NgxHalFormsService {
     }
   };
 
+  private simulateDelay<T>(ms: number = this.delay): MonoTypeOperatorFunction<T> {
+    return delay(ms);
+  }
+
   constructor() {
+
     this.loadRoot().subscribe({
       next: r => this.root = r,
       error: err => this._root.error(err)   // 🔥 transmet l'erreur à root
@@ -47,7 +54,7 @@ export class NgxHalFormsService {
   }
 
   public loadResource<T extends HalResource>(href: string): Observable<T> {
-    return this.http.get<T>(href, this.header);
+    return this.http.get<T>(href, this.header).pipe(this.simulateDelay());
   }
 
   public hasFollow(resource: HalResource | PaginatedHalResource<HalResource>, linkName: string): boolean {
@@ -66,12 +73,12 @@ export class NgxHalFormsService {
           this.addParams(params, url);
           return this.http.get(url.toString(), this.header);
         }
-      )).pipe(delay(2000)) as Observable<T>;
+      )).pipe(this.simulateDelay()) as Observable<T>;
     }
     const url = this.createUrl(resource._links[linkName]);
     this.addParams(params, url);
 
-    return this.http.get<T>(url.toString(), this.header).pipe(delay(2000));
+    return this.http.get<T>(url.toString(), this.header).pipe(this.simulateDelay());
   }
 
   private createUrl(halLink: HalLink): URL {
@@ -105,13 +112,13 @@ export class NgxHalFormsService {
     switch (method) {
       case 'POST':
         return this.http.post<T>(url, payload, this.header)
-          .pipe(delay(2000));
+          .pipe(this.simulateDelay());
       case 'PUT':
         return this.http.put<T>(url, payload, this.header)
-          .pipe(delay(2000));
+          .pipe(this.simulateDelay());
       case 'DELETE':
         return this.http.delete<T>(url, this.header)
-          .pipe(delay(2000));
+          .pipe(this.simulateDelay());
       default:
         throw new Error("The method " + method + " is not defined in the resource " + resource + "");
     }

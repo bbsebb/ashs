@@ -52,6 +52,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     runtimeOnly("org.springframework.boot:spring-boot-docker-compose")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    //swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
     // Logging
     implementation("com.github.loki4j:loki-logback-appender:1.6.0")
     // MapStruct Core

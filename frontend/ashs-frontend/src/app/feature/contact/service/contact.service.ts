@@ -1,15 +1,19 @@
 import {inject, Injectable} from '@angular/core';
 import {EmailDTORequest} from './email-d-t-o-request';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {Observable, switchMap} from 'rxjs';
 import {IContactService} from './i-contact.service';
+import {HalResource, NgxHalFormsService} from 'ngx-hal-forms';
 
 @Injectable()
 export class ContactService implements IContactService {
-  private readonly httpClient = inject(HttpClient);
+  private readonly halFormsService = inject(NgxHalFormsService);
+  private readonly root = this.halFormsService.root
 
 
   sendEmail(emailRequest: EmailDTORequest): Observable<void> {
-    return this.httpClient.post<void>('http://localhost:8081/sendEmail', emailRequest);
+    return this.root.pipe(
+      switchMap(root => this.halFormsService.follow<HalResource>(root, 'contact')),
+      switchMap(contact => this.halFormsService.doAction<void>(contact, 'sendEmail', emailRequest))
+    )
   }
 }

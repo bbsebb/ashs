@@ -1,5 +1,5 @@
 import {rxResource} from '@angular/core/rxjs-interop';
-import {computed, inject, Injectable, Signal} from '@angular/core';
+import {computed, effect, inject, Injectable, Signal} from '@angular/core';
 import {tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {addItemInEmbedded, deleteItemInEmbedded, setItemInEmbedded, unwrap} from 'ngx-hal-forms';
@@ -20,6 +20,14 @@ export class CoachesStore {
     this._coachesResource = rxResource({
       loader: () => this.coachService.getCoachesHalResource('all')
     })
+    effect(() => {
+      const error = this.coachesResource.error()
+      if (error)
+        console.error(
+          "erreur dans le chargement de la ressource 'coaches' : ",
+          error
+        )
+    });
   }
 
   get coachesResource() {

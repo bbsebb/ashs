@@ -20,6 +20,8 @@ public class AttachmentEntity {
 
     private String mediaType;
 
+    private String type;
+
     @Embedded
     private MediaEmbeddable media;
 

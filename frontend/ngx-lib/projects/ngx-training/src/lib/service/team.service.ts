@@ -53,11 +53,12 @@ export class TeamService implements ITeamService {
    */
   getTeams(paginationOption: PaginationOption = TeamService.PAGINATION_OPTION_DEFAULT): Observable<AllHalResources<Team> | PaginatedHalResource<Team>> {
     return this.halFormService.root.pipe(
-      switchMap((root) =>
+      switchMap(root => this.halFormService.follow<PaginatedHalResource<Team>>(root, "teams", this.halFormService.buildParamPage(paginationOption))),
+      switchMap((teamsRoot) =>
         iif(
           () => paginationOption == 'all',
-          this.halFormService.follow<AllHalResources<Team>>(root, "allTeams"),
-          this.halFormService.follow<PaginatedHalResource<Team>>(root, "teams", this.halFormService.buildParamPage(paginationOption))
+          this.halFormService.follow<AllHalResources<Team>>(teamsRoot, "allTeams"),
+          of(teamsRoot)
         )
       )
     );

@@ -59,9 +59,9 @@ export class ContactComponent {
 
   constructor() {
     this.contactForm = this.formBuilder.group({
-      name: this.formBuilder.control<string>('', Validators.required),
+      name: this.formBuilder.control<string>('', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]),
       email: this.formBuilder.control<string>('', [Validators.required, Validators.email]),
-      message: this.formBuilder.control<string>('', Validators.required),
+      message: this.formBuilder.control<string>('', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]),
     });
   }
 
@@ -74,14 +74,12 @@ export class ContactComponent {
       // Envoi du formulaire
       this.contactService.sendEmail(emailRequest).subscribe(
         {
-          next: () => {
-          },
           error: () => {
             this.notificationService.showError('Une erreur est survenue lors de l\'envoi du message');
             this.disabledSubmitButton.set(false);
             this.showProgressBar.set(false);
           },
-          complete: () => {
+          next: () => {
             this.contactForm.reset();
             this.formDirective().resetForm();
             this.contactForm.markAsPristine();
@@ -91,16 +89,20 @@ export class ContactComponent {
             this.showProgressBar.set(false);
           }
         });
-
     }
   }
 
   getFormControlErrorText(ctrl: AbstractControl): string {
-    console.log(ctrl);
     if (ctrl.hasError('required')) {
       return "Ce champ est obligatoire";
     } else if (ctrl.hasError('email')) {
       return "Adresse email invalide";
+    } else if (ctrl.hasError('minlength')) {
+      const minlength = ctrl.errors?.['minlength']?.requiredLength;
+      return `Il faut ${minlength} caractères minimum `;
+    } else if (ctrl.hasError('maxlength')) {
+      const maxlength = ctrl.errors?.['maxlength']?.requiredLength;
+      return `Il faut ${maxlength} caractères maximum `;
     } else {
       return "Ce champs contient une erreur";
     }

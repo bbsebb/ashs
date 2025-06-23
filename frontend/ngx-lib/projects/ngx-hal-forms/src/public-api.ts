@@ -13,5 +13,6 @@ export * from './lib/model/ngx-hal-form-model';
 export * from './lib/model/ngx-pagination-option.type';
 
 export * from './lib/config/base-url.config';
+export * from './lib/config/delay.config';
 
 export * from './lib/builder';

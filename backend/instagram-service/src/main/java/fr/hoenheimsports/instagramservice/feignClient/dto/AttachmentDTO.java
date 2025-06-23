@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public record AttachmentDTO(
         @JsonProperty("media_type") String mediaType,
+        String type,
         MediaDTO media,
         @JsonProperty("subattachments") SubAttachmentsDTO subAttachments
 ) {

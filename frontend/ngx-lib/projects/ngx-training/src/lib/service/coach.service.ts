@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {iif, Observable, switchMap} from 'rxjs';
+import {iif, Observable, of, switchMap} from 'rxjs';
 import {AllHalResources, NgxHalFormsService, PaginatedHalResource, PaginationOption, unwrap} from 'ngx-hal-forms';
 import {map} from 'rxjs/operators';
 import {Coach} from '../model/coach';
@@ -38,11 +38,12 @@ export class CoachService implements ICoachService {
    */
   getCoachesHalResource(paginationOption: PaginationOption = CoachService.PAGINATION_OPTION_DEFAULT) {
     return this.halFormService.root.pipe(
-      switchMap((root) =>
+      switchMap((root) => this.halFormService.follow<PaginatedHalResource<Coach>>(root, "coaches", this.halFormService.buildParamPage(paginationOption))),
+      switchMap((coachesRoot) =>
         iif(
           () => paginationOption == 'all',
-          this.halFormService.follow<AllHalResources<Coach>>(root, "allCoaches"),
-          this.halFormService.follow<PaginatedHalResource<Coach>>(root, "coaches", this.halFormService.buildParamPage(paginationOption))
+          this.halFormService.follow<AllHalResources<Coach>>(coachesRoot, "allCoaches"),
+          of(coachesRoot)
         )
       )
     );

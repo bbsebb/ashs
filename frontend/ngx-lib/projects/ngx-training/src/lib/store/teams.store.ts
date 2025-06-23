@@ -1,4 +1,4 @@
-import {computed, inject, Injectable, ResourceRef, Signal, signal} from '@angular/core';
+import {computed, effect, inject, Injectable, ResourceRef, Signal, signal} from '@angular/core';
 import {rxResource} from '@angular/core/rxjs-interop';
 import {Observable} from 'rxjs';
 import {
@@ -49,6 +49,14 @@ export class TeamsStore {
         return this._paginationOption()
       },
       loader: ({request}) => this.teamService.getTeams(request)
+    });
+    effect(() => {
+      const error = this.teamsResource.error()
+      if (error)
+        console.error(
+          "erreur dans le chargement de la ressource 'coaches' : ",
+          error
+        )
     });
   }
 

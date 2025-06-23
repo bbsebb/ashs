@@ -1,15 +1,10 @@
 package fr.hoenheimsports.contactservice.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@Profile("!test")
 public class SecurityConfig {
-    @Bean
+/*    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
@@ -21,5 +16,5 @@ public class SecurityConfig {
                         .allowCredentials(true); // Cookies autorisés
             }
         };
-    }
+    }*/
 }

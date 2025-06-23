@@ -10,19 +10,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
 @Profile("!test")
 public class SecurityConfig {
-    private final SimpleJwtFilter simpleJwtFilter;
+/*    private final SimpleJwtFilter simpleJwtFilter;
 
     public SecurityConfig(SimpleJwtFilter simpleJwtFilter) {
         this.simpleJwtFilter = simpleJwtFilter;
-    }
+    }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,7 +42,7 @@ public class SecurityConfig {
         return http.build();
 
     }
-
+/*
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -57,7 +55,7 @@ public class SecurityConfig {
                         .allowCredentials(true); // Cookies autorisés
             }
         };
-    }
+    }*/
 
 
 }

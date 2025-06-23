@@ -21,6 +21,7 @@ repositories {
 dependencies {
     // Spring Boot Core
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.hateoas:spring-hateoas")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 

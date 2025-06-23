@@ -21,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     {
       provide: BASE_URL_CONFIG,
-      useValue: {baseUrl: 'http://localhost:8082/api'}
+      useValue: {baseUrl: 'http://localhost:8080/api'}
     },
     {
       provide: TEAM_SERVICE,

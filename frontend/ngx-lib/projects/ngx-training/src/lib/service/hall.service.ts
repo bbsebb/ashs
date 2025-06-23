@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {iif, Observable, switchMap} from 'rxjs';
+import {iif, Observable, of, switchMap} from 'rxjs';
 import {AllHalResources, NgxHalFormsService, PaginatedHalResource, PaginationOption} from 'ngx-hal-forms';
 import {UpdateHallDTORequest} from '../dto/update-hall-d-t-o-request';
 import {Hall} from '../model/hall';
@@ -38,11 +38,12 @@ export class HallService implements IHallService {
    */
   getHalls(paginationOption: PaginationOption = HallService.PAGINATION_OPTION_DEFAULT) {
     return this.halFormService.root.pipe(
-      switchMap((root) =>
+      switchMap((root) => this.halFormService.follow<PaginatedHalResource<Hall>>(root, "halls", this.halFormService.buildParamPage(paginationOption))),
+      switchMap((hallsRoot) =>
         iif(
           () => paginationOption == 'all',
-          this.halFormService.follow<AllHalResources<Hall>>(root, "allHalls"),
-          this.halFormService.follow<PaginatedHalResource<Hall>>(root, "halls", this.halFormService.buildParamPage(paginationOption))
+          this.halFormService.follow<AllHalResources<Hall>>(hallsRoot, "allHalls"),
+          of(hallsRoot)
         )
       )
     );
