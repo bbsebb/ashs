@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {SubAttachmentEntityMapper.class, MediaEmbeddableMapper.class, PostEntityMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {SubAttachmentEntityMapper.class, MediaEmbeddableMapper.class, FeedEntityMapper.class})
 public interface AttachmentEntityMapper {
     AttachmentEntity toEntity(AttachmentDTO attachmentDTO);
 

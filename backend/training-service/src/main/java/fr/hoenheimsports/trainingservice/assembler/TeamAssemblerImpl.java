@@ -75,7 +75,7 @@ public class TeamAssemblerImpl extends AbstractAssembler<Team, EntityModel<TeamD
         Link teamsLink = linkTo(methodOn(TeamControllerImpl.class).getTeams(null)).withRel("teams");
         Link selfLink = linkTo(methodOn(TeamControllerImpl.class).getTeamById(teamDTOResponse.id()))
                 .withSelfRel()
-                .andAffordances(createTeamAffordances(teamDTOResponse));
+                .andAffordances(createAffordance(teamDTOResponse));
 
         entityModel.add(selfLink, teamsLink);
         entityModel.add(trainingSessionLinks);
@@ -91,7 +91,7 @@ public class TeamAssemblerImpl extends AbstractAssembler<Team, EntityModel<TeamD
      * @param teamDTOResponse The team DTO for which to create affordances
      * @return List of affordances available for the team
      */
-    private List<Affordance> createTeamAffordances(TeamDTOResponse teamDTOResponse) {
+    private List<Affordance> createAffordance(TeamDTOResponse teamDTOResponse) {
         List<Affordance> affordances = new ArrayList<>();
         if (userSecurityService.hasRole(ADMIN_ROLE)) {
             affordances.add(afford(methodOn(TeamControllerImpl.class).deleteTeam(teamDTOResponse.id())));
@@ -114,7 +114,7 @@ public class TeamAssemblerImpl extends AbstractAssembler<Team, EntityModel<TeamD
         // Add links to the collection
         Link selfLink = linkTo(methodOn(TeamControllerImpl.class).getAllTeams())
                 .withSelfRel()
-                .andAffordances(createCollectionAffordances());
+                .andAffordances(createAffordance());
 
         collectionModel.add(selfLink);
         collectionModel.add(getTemplatedAndPagedLink(linkTo(methodOn(TeamControllerImpl.class).getTeams(null)).toUri().toString()));
@@ -128,10 +128,11 @@ public class TeamAssemblerImpl extends AbstractAssembler<Team, EntityModel<TeamD
 
         PagedModel<EntityModel<TeamDTOResponse>> pagedModel = super.toPagedModel(pageTeams, TeamDTOResponse.class);
         // Add affordances and links to the paged model
-        Link selfLink = linkTo(methodOn(TeamControllerImpl.class).getTeams(null))
-                .withSelfRel()
-                .andAffordances(createCollectionAffordances());
-        pagedModel.add(selfLink);
+        if (!pagedModel.hasLink("self")) {
+            pagedModel.add(linkTo(methodOn(TeamControllerImpl.class).getTeams(pageTeams.getPageable())).withSelfRel());
+        }
+        pagedModel.mapLink(IanaLinkRelations.SELF, (link) -> link.andAffordances(createAffordance()));
+
         pagedModel.add(getTemplatedAndPagedLink(linkTo(methodOn(TeamControllerImpl.class).getTeams(null)).toUri().toString()));
         pagedModel.add(linkTo(methodOn(TeamControllerImpl.class).getAllTeams()).withRel("allTeams"));
 
@@ -144,7 +145,7 @@ public class TeamAssemblerImpl extends AbstractAssembler<Team, EntityModel<TeamD
      *
      * @return List of affordances available for team collections
      */
-    private List<Affordance> createCollectionAffordances() {
+    private List<Affordance> createAffordance() {
         List<Affordance> affordances = new ArrayList<>();
         if (userSecurityService.hasRole(ADMIN_ROLE)) {
             affordances.add(afford(methodOn(TeamControllerImpl.class).createTeam(null)));

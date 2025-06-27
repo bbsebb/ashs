@@ -63,10 +63,11 @@ public class HallAssemblerImpl extends AbstractAssembler<Hall, EntityModel<HallD
     public PagedModel<EntityModel<HallDTOResponse>> toPagedModel(@NonNull Page<Hall> pageHalls) {
         PagedModel<EntityModel<HallDTOResponse>> pagedModel = super.toPagedModel(pageHalls, HallDTOResponse.class);
         // Add affordances and links to the paged model
-        Link selfLink = linkTo(methodOn(HallControllerImpl.class).getHalls(null))
-                .withSelfRel()
-                .andAffordances(createAffordance());
-        pagedModel.add(selfLink);
+        if (!pagedModel.hasLink("self")) {
+            pagedModel.add(linkTo(methodOn(HallControllerImpl.class).getHalls(pageHalls.getPageable())).withSelfRel());
+        }
+        pagedModel.mapLink(IanaLinkRelations.SELF, (link) -> link.andAffordances(createAffordance()));
+
         pagedModel.add(getTemplatedAndPagedLink(linkTo(methodOn(HallControllerImpl.class).getHalls(null)).toUri().toString()));
         pagedModel.add(linkTo(methodOn(HallControllerImpl.class).getAllHalls()).withRel("allHalls"));
 

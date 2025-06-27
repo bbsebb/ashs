@@ -10,3 +10,7 @@ server:
 facebook:
   api:
     url: https://graph.facebook.com/v23.0
+
+logging:
+  level:
+    feign: DEBUG

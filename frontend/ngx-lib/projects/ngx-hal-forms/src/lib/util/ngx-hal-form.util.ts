@@ -36,7 +36,10 @@ export function addLink<T extends HalResource>(resource: T, linkName: string, hr
   return resource;
 }
 
-export function hasPagination<T extends HalResource>(resource: AllHalResources<T> | PaginatedHalResource<T>): resource is PaginatedHalResource<T> {
+export function hasPagination<T extends HalResource>(resource: AllHalResources<T> | PaginatedHalResource<T> | undefined): resource is PaginatedHalResource<T> {
+  if (!resource) {
+    return false;
+  }
   return (resource as Pagination).page !== undefined;
 }
 

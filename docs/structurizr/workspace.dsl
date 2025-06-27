@@ -35,7 +35,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
                     description "View for teams"
                     technology "Angular"
                 }
-                instagramService = component "instagram-service" {
+                feedService = component "instagram-service" {
                     description "service who retrieves data from the API"
                     technology "Angular"
                 }
@@ -85,7 +85,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
                     description "Manage for teams"
                     technology "Angular"
                 }
-                instagramService = component "instagram-service" {
+                feedService = component "instagram-service" {
                     description "service who retrieves data from the API"
                     technology "Angular"
                 }
@@ -125,7 +125,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
                 tags "spring spring-cloud backend config"
             }
 
-            instagramService = container "instagram-service" {
+            feedService = container "instagram-service" {
                 description "Retrieves and processes Instagram posts for display on the website."
                 technology "Spring"
                 tags "spring spring-cloud backend"
@@ -134,7 +134,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
                     technology "Spring MVC REST"
                     tags "spring mvc rest controller"
                 }
-                instagramService = component "instagramService" {
+                feedService = component "feedService" {
                     description "Service for instagram"
                     technology "Spring"
                     tags "spring service"
@@ -205,7 +205,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
         instagram = softwareSystem "Instagram API" "Provides instagram data and services"
         googleMap = softwareSystem "Google Maps API" "Provides mapping data and services"
         emailProvider = softwareSystem "SMTP provider" "Provides sending email with gmail"
-        
+
         gitHubConfigRepo = softwareSystem "GitHub Configuration Repository" "Hosts configuration files for the Config Service"
 
 
@@ -219,7 +219,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
         publicUser -> ss.publicFrontend.trainingSessionView "view training sessions"
         publicUser -> ss.publicFrontend.teamView "view team"
         //Inside
-        ss.publicFrontend.instagramView -> ss.publicFrontend.instagramService "Uses"
+        ss.publicFrontend.instagramView -> ss.publicFrontend.feedService "Uses"
         ss.publicFrontend.contactForm -> ss.publicFrontend.contactService "Uses"
         ss.publicFrontend.hallView -> ss.publicFrontend.hallService "Uses"
         ss.publicFrontend.trainingSessionView -> ss.publicFrontend.trainingSessionService "Uses"
@@ -227,7 +227,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
         ss.publicFrontend.teamView -> ss.publicFrontend.teamService "Uses"
 
         //Inside to API or providers
-        ss.publicFrontend.instagramService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
+        ss.publicFrontend.feedService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
         ss.publicFrontend.hallService -> googleMap "Uses"
         ss.publicFrontend.hallService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
         ss.publicFrontend.trainingSessionService -> ss.gatewayService "makes API calls to" "HTTPS HAL" "api-call"
@@ -244,14 +244,14 @@ workspace "ASHS" "Handball Club Management and Information System" {
         adminUser -> ss.adminFrontend.trainingSessionManager "view training sessions"
         adminUser -> ss.adminFrontend.teamManager "view team"
         //Inside
-        ss.adminFrontend.instagramManager -> ss.adminFrontend.instagramService "Uses"
+        ss.adminFrontend.instagramManager -> ss.adminFrontend.feedService "Uses"
         ss.adminFrontend.hallManager -> ss.adminFrontend.hallService "Uses"
         ss.adminFrontend.trainingSessionManager -> ss.adminFrontend.trainingSessionService "Uses"
         ss.adminFrontend.coachManager -> ss.adminFrontend.coachService "Uses"
         ss.adminFrontend.teamManager -> ss.adminFrontend.teamService "Uses"
         //Inside to API or providers
         ss.adminFrontend -> ss.authProvider "Authenticates and authorizes" "JWT" "auth"
-        ss.adminFrontend.instagramService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
+        ss.adminFrontend.feedService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
         ss.adminFrontend.hallService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
         ss.adminFrontend.trainingSessionService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
         ss.adminFrontend.coachService -> ss.gatewayService "makes API calls to" "HTTPS JSON" "api-call"
@@ -259,18 +259,18 @@ workspace "ASHS" "Handball Club Management and Information System" {
 
 
         //backend
-        ss.gatewayService -> ss.instagramService.instagramController "Routes requests to"
+        ss.gatewayService -> ss.feedService.instagramController "Routes requests to"
         ss.gatewayService -> ss.contactService.emailController "Routes requests to"
         ss.gatewayService -> ss.trainingService.trainingController "Routes requests to"
 
         ss.gatewayService -> ss.discoveryService "Registers and discovers services from"
         ss.gatewayService -> ss.configService "Fetches configurations from"
 
-        ss.instagramService -> ss.discoveryService "Registers itself to"
-        ss.instagramService -> ss.configService "Fetches configurations from"
-        ss.instagramService.instagramController -> ss.instagramService.instagramService "Uses"
-        ss.instagramService.instagramService -> ss.instagramService.instagramRepository "Uses"
-        ss.instagramService.instagramRepository -> ss.dbInstagram "Reads from and write to" "SQL"
+        ss.feedService -> ss.discoveryService "Registers itself to"
+        ss.feedService -> ss.configService "Fetches configurations from"
+        ss.feedService.instagramController -> ss.feedService.feedService "Uses"
+        ss.feedService.feedService -> ss.feedService.instagramRepository "Uses"
+        ss.feedService.instagramRepository -> ss.dbInstagram "Reads from and write to" "SQL"
 
         ss.contactService -> ss.discoveryService "Registers itself to"
         ss.contactService -> ss.configService "Fetches configurations from"
@@ -287,7 +287,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
         // Linking the config service to the GitHub repository
         ss.configService -> gitHubConfigRepo "Fetches configuration files from"
         ss.contactService.emailService -> emailProvider "uses to send email"
-        ss.instagramService.instagramService -> instagram "Uses"
+        ss.feedService.feedService -> instagram "Uses"
     }
 
     views {
@@ -302,7 +302,7 @@ workspace "ASHS" "Handball Club Management and Information System" {
         }
 
 
-        component ss.instagramService "Diagram3" {
+        component ss.feedService "Diagram3" {
             include *
             autolayout
         }

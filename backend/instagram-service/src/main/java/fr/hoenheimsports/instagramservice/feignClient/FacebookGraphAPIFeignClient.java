@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "facebook-graph-api", url = "${facebook.api.url}")
-public interface FacebookGraphAPI {
+public interface FacebookGraphAPIFeignClient {
 
     @GetMapping("/me")
     String getMe(@RequestParam("access_token") String accessToken);

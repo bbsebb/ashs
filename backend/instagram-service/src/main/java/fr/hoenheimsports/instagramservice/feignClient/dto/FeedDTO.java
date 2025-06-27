@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param message     Le message texte de la publication (peut être nul).
  * @param attachments Les pièces jointes associées à la publication.
  */
-public record PostDTO(
+public record FeedDTO(
         String id,
         @JsonProperty("created_time") String createdTime,
         String message,

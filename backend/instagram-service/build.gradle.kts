@@ -34,6 +34,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("io.micrometer:micrometer-tracing-bridge-brave")
     implementation("io.zipkin.reporter2:zipkin-reporter-brave")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")

@@ -8,6 +8,6 @@ import java.util.List;
  * @param data La liste des publications (posts).
  */
 public record GraphApiResponse(
-        List<PostDTO> data
+        List<FeedDTO> data
 ) {
 }

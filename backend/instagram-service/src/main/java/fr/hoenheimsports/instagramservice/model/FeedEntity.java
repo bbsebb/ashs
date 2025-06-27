@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor // Constructeur sans arguments requis par JPA
 @Entity
 @Table(name = "posts")
-public class PostEntity {
+public class FeedEntity {
 
     @Id
     private String graphApiId;
@@ -28,17 +28,17 @@ public class PostEntity {
     // On exclut les collections des méthodes equals, hashCode et toString pour éviter les problèmes de performance et les récursions infinies.
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AttachmentEntity> attachments = new ArrayList<>();
 
     // Les méthodes utilitaires pour gérer la relation bidirectionnelle sont toujours nécessaires.
     public void addAttachment(AttachmentEntity attachment) {
         attachments.add(attachment);
-        attachment.setPost(this);
+        attachment.setFeed(this);
     }
 
     public void removeAttachment(AttachmentEntity attachment) {
         attachments.remove(attachment);
-        attachment.setPost(null);
+        attachment.setFeed(null);
     }
 }

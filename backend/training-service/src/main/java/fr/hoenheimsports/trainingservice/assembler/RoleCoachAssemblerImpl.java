@@ -43,7 +43,8 @@ public class RoleCoachAssemblerImpl extends AbstractAssembler<RoleCoach, EntityM
     public PagedModel<EntityModel<RoleCoachDTOResponse>> toPagedModel(@NonNull Page<RoleCoach> page) {
         PagedModel<EntityModel<RoleCoachDTOResponse>> pagedModel = super.toPagedModel(page, RoleCoachDTOResponse.class);
         // Add affordances and links to the paged model
-        pagedModel.mapLink(LinkRelation.of("self"), (link -> link.andAffordances(this.createAffordance())));
+
+        pagedModel.mapLink(IanaLinkRelations.SELF, (link -> link.andAffordances(this.createAffordance())));
 
         return pagedModel;
     }

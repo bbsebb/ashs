@@ -24,13 +24,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @Component
 public class CoachAssemblerImpl extends AbstractAssembler<Coach, EntityModel<CoachDTOResponse>> implements CoachAssembler {
     public static final String ADMIN_ROLE = "ADMIN";
-    private final PagedResourcesAssembler<Coach> pagedResourcesAssembler;
     private final CoachMapper coachMapper;
     private final UserSecurityService userSecurityService;
 
     public CoachAssemblerImpl(PagedResourcesAssembler<Coach> pagedResourcesAssembler, CoachMapper coachMapper, UserSecurityService userSecurityService) {
         super(pagedResourcesAssembler);
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.coachMapper = coachMapper;
         this.userSecurityService = userSecurityService;
     }
@@ -64,10 +62,13 @@ public class CoachAssemblerImpl extends AbstractAssembler<Coach, EntityModel<Coa
     public PagedModel<EntityModel<CoachDTOResponse>> toPagedModel(@NonNull Page<Coach> pageCoaches) {
         PagedModel<EntityModel<CoachDTOResponse>> pagedModel = super.toPagedModel(pageCoaches, CoachDTOResponse.class);
         // Add affordances and links to the paged model
-        Link selfLink = linkTo(methodOn(CoachControllerImpl.class).getAllCoaches())
-                .withSelfRel()
-                .andAffordances(createAffordance());
-        pagedModel.add(selfLink);
+
+
+        if (!pagedModel.hasLink("self")) {
+            pagedModel.add(linkTo(methodOn(CoachControllerImpl.class).getCoaches(pageCoaches.getPageable())).withSelfRel());
+        }
+        pagedModel.mapLink(IanaLinkRelations.SELF, (link) -> link.andAffordances(createAffordance()));
+
         pagedModel.add(getTemplatedAndPagedLink(linkTo(methodOn(CoachControllerImpl.class).getCoaches(null)).toUri().toString()));
         pagedModel.add(linkTo(methodOn(CoachControllerImpl.class).getAllCoaches()).withRel("allCoaches"));
 

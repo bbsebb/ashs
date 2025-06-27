@@ -21,7 +21,7 @@ public class APiRootController {
         root.add(Link.of(baseUrl + "/training-service" + "/api/halls").withRel("halls"));
         root.add(Link.of(baseUrl + "/training-service" + "/api/training-sessions").withRel("training-sessions"));
         root.add(Link.of(baseUrl + "/contact-service" + "/api").withRel("contact"));
-        root.add(Link.of(baseUrl + "/instagram-service" + "/api").withRel("instagram"));
+        root.add(Link.of(baseUrl + "/instagram-service" + "/api/feeds").withRel("instagram"));
 
         return Mono.just(root);
     }

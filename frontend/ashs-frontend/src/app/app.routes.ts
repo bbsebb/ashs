@@ -1,5 +1,4 @@
 import {Routes} from '@angular/router';
-import {TestComponent} from './feature/test/test.component';
 import {MentionsLegalesComponent} from './feature/legals/mentions-legales/mentions-legales.component';
 import {RgpdComponent} from './feature/legals/rgpd/rgpd.component';
 import {PageNotFoundComponent} from './feature/page-not-found/page-not-found.component';
@@ -10,10 +9,11 @@ import {HallComponent} from './feature/halls/hall/hall.component';
 import {TeamsComponent} from './feature/teams/teams.component';
 import {TeamComponent} from './feature/teams/team/team.component';
 import {ContactComponent} from './feature/contact/contact.component';
+import {InstagramComponent} from '@app/feature/instagram/instagram.component';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
-  {path: 'home', component: TestComponent},
+  {path: 'home', component: InstagramComponent},
   {
     path: 'coaches',
     children: [

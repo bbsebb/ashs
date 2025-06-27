@@ -1,1 +1,4 @@
-<p>instagram works!</p>
+<button mat-button (click)="next()">Next</button>
+@for (feed of feedsSignal(); track feed.graphApiId) {
+  <app-feed [feed]="feed"></app-feed>
+}

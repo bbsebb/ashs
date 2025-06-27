@@ -69,10 +69,11 @@ public class TrainingSessionAssemblerImpl extends AbstractAssembler<TrainingSess
     public PagedModel<EntityModel<TrainingSessionDTOResponse>> toPagedModel(@NonNull Page<TrainingSession> pageTrainingSessions) {
         PagedModel<EntityModel<TrainingSessionDTOResponse>> pagedModel = super.toPagedModel(pageTrainingSessions, TrainingSessionDTOResponse.class);
         // Add affordances and links to the paged model
-        Link selfLink = linkTo(methodOn(TrainingSessionControllerImpl.class).getTrainingSessions(null))
-                .withSelfRel()
-                .andAffordances(createAffordance());
-        pagedModel.add(selfLink);
+        if (!pagedModel.hasLink("self")) {
+            pagedModel.add(linkTo(methodOn(TrainingSessionControllerImpl.class).getTrainingSessions(pageTrainingSessions.getPageable())).withSelfRel());
+        }
+        pagedModel.mapLink(IanaLinkRelations.SELF, (link) -> link.andAffordances(createAffordance()));
+
         pagedModel.add(getTemplatedAndPagedLink(linkTo(methodOn(TrainingSessionControllerImpl.class).getTrainingSessions(null)).toUri().toString()));
         pagedModel.add(linkTo(methodOn(TrainingSessionControllerImpl.class).getAllTrainingSessions()).withRel("allTrainingSessions"));
 
