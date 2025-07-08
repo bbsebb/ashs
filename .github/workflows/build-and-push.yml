@@ -65,7 +65,7 @@ jobs:
         with:
           context: ${{ matrix.module }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ github.repository_owner }}/ashs-${{ env.MODULE_NAME }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/ashs-${{ env.MODULE_NAME }}:staging-${{ github.sha }}
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -130,9 +130,11 @@ jobs:
           }
           EOF
 
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.app }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ github.repository_owner }}/ashs-${{ env.APP_NAME }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/ashs-${{ env.APP_NAME }}:staging-${{ github.sha }}
+
