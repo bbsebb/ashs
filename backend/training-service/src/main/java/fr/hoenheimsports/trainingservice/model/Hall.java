@@ -17,25 +17,25 @@ import java.util.Objects;
 
 /**
  * Represents a hall entity used within the training service domain.
- *
+ * <p>
  * This class is annotated with JPA and Lombok annotations:
  * - {@code @Entity}: Marks this class as a JPA entity for database persistence.
  * - {@code @Getter} and {@code @Setter}: Lombok annotations to auto-generate getter and setter methods.
  * - {@code @ToString}: Generates a string representation of the object, excluding lazy-loading issues.
  * - {@code @NoArgsConstructor} and {@code @AllArgsConstructor}: Used for generating constructors.
  * - {@code @Builder}: Provides the builder pattern for creating objects.
- *
+ * <p>
  * Fields:
  * - `id`: The unique identifier for this hall, generated automatically.
  * - `name`: The name of the hall, which is mandatory and limited to 50 characters.
  * - `address`: An embedded {@link Address} object representing the hall's physical location.
- *
+ * <p>
  * Validation:
  * - The `name` field must not be blank and cannot exceed 50 characters to ensure data integrity.
- *
+ * <p>
  * Overrides:
  * - The `equals` and `hashCode` methods are overridden to ensure proper equality checks and hashing.
- *   These implementations respect Hibernate proxy behavior for entity comparisons.
+ * These implementations respect Hibernate proxy behavior for entity comparisons.
  */
 @Entity
 @Getter
@@ -58,7 +58,7 @@ public class Hall {
     @Valid
     private Address address;
 
-    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @Builder.Default
     @Valid
@@ -72,7 +72,7 @@ public class Hall {
 
     public void removeTrainingSession(@NonNull TrainingSession trainingSession) {
         Assert.notNull(trainingSession, "TrainingSession must not be null");
-        if(trainingSessions.remove(trainingSession)) {
+        if (trainingSessions.remove(trainingSession)) {
             trainingSession.setHall(null);
         }
     }

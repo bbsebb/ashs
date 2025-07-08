@@ -1,0 +1,20 @@
+.error-card {
+  background-color: var(--mat-sys-error-container); /* Bleu clair (primary.light) */
+  color: var(--mat-sys-on-error-container);
+  border-left: 4px solid #90caf9; /* Bleu (primary.main) */
+  margin: 16px 0;
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+}
+
+mat-icon {
+  margin-right: 16px;
+}
+
+.error-text {
+  font-size: 16px;
+  color: #333;
+}

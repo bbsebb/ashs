@@ -22,13 +22,14 @@ public class SimpleKeycloakJwtAuthenticationConverter implements Converter<Jwt, 
 
     private Collection<? extends GrantedAuthority> extractRealmRoles(Jwt jwt) {
         // Extrait la liste de rôles depuis le claim "realm_access.roles"
-        var realmRoles = (List<String>) jwt.getClaimAsMap("realm_access").get("roles");
-
-        // Ajoute le préfixe "ROLE_" requis par Spring Security
-        if (realmRoles != null && !realmRoles.isEmpty()) {
-            return realmRoles.stream()
+        var realmRoles = jwt.getClaimAsMap("realm_access").get("roles");
+        if (realmRoles instanceof List<?> realmRolesList && !realmRolesList.isEmpty()) {
+            // Ajoute le préfixe "ROLE_" requis par Spring Security
+            return realmRolesList.stream()
+                    .map(role -> (String) role)
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toSet());
+
         }
         return List.of(); // Retourne une liste vide si aucun rôle n'est trouvé
     }

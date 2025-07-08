@@ -101,6 +101,39 @@
           }
         }
       }
+    },
+    "ngx-logger": {
+      "projectType": "library",
+      "root": "projects/ngx-logger",
+      "sourceRoot": "projects/ngx-logger/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-logger/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-logger/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-logger/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/ngx-logger/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
     }
   },
   "cli": {

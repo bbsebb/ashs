@@ -8,6 +8,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {RouterLink} from '@angular/router';
 import {CategoryPipe, DayOfWeekPipe, GenderPipe, RoleToFrenchPipe, TeamStore, TimePipe} from 'ngx-training';
 import {MatProgressBar} from '@angular/material/progress-bar';
+import {NGX_LOGGER} from 'ngx-logger';
 
 @Component({
   selector: 'app-team',
@@ -31,12 +32,19 @@ import {MatProgressBar} from '@angular/material/progress-bar';
 })
 export class TeamComponent {
   private teamStore = inject(TeamStore);
+  private logger = inject(NGX_LOGGER);
   uri = input<string>();
 
   constructor() {
+    this.logger.debug('Initialisation du composant Team');
+
     effect(() => {
-      this.teamStore.uri = this.uri();
+      const currentUri = this.uri();
+      this.logger.debug('Effet déclenché pour la mise à jour de l\'URI', { uri: currentUri });
+      this.teamStore.uri = currentUri;
     });
+
+    this.logger.debug('Signaux initialisés: teamSignal, isLoading, error');
   }
 
   teamSignal = this.teamStore.team;
@@ -50,14 +58,20 @@ export class TeamComponent {
   trainingSessionsError = this.teamStore.trainingSessionResourceError;
 
   reloadTeam() {
+    this.logger.info('Rechargement des données de l\'équipe');
     this.teamStore.reloadTeam();
+    this.logger.debug('Demande de rechargement de l\'équipe envoyée au store');
   }
 
   reloadRoleCoaches() {
+    this.logger.info('Rechargement des données des coachs de l\'équipe');
     this.teamStore.reloadRoleCoach();
+    this.logger.debug('Demande de rechargement des coachs envoyée au store');
   }
 
   reloadTrainingSessions() {
+    this.logger.info('Rechargement des données des séances d\'entraînement');
     this.teamStore.reloadTrainingSession();
+    this.logger.debug('Demande de rechargement des séances envoyée au store');
   }
 }

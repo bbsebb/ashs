@@ -1,5 +1,6 @@
 package fr.hoenheimsports.trainingservice.assembler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
@@ -12,11 +13,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+@Slf4j
 public abstract class AbstractAssembler<T, D extends RepresentationModel<?>> implements RepresentationModelAssembler<T, D> {
     protected final PagedResourcesAssembler<T> pagedResourcesAssembler;
 
     protected AbstractAssembler(PagedResourcesAssembler<T> pagedResourcesAssembler) {
         this.pagedResourcesAssembler = pagedResourcesAssembler;
+        log.debug("Initialisation de AbstractAssembler avec PagedResourcesAssembler");
     }
 
     /**
@@ -27,11 +30,15 @@ public abstract class AbstractAssembler<T, D extends RepresentationModel<?>> imp
      */
     public <R> PagedModel<D> toPagedModel(Page<T> page, Class<R> dtoClass) {
         Assert.notNull(page, "Page must not be null!");
+        log.debug("Conversion d'une page en PagedModel pour la classe {}", dtoClass.getSimpleName());
+        log.debug("Informations de la page: numéro={}, taille={}, éléments totaux={}", 
+                page.getNumber(), page.getSize(), page.getTotalElements());
 
         PagedModel<D> pagedModel;
 
         // Handle empty pages by creating an empty wrapper
         if (page.isEmpty()) {
+            log.debug("La page est vide, création d'un wrapper vide pour {}", dtoClass.getSimpleName());
             EmbeddedWrapper emptyWrapper = new EmbeddedWrappers(false)
                     .emptyCollectionOf(dtoClass);
 
@@ -48,9 +55,11 @@ public abstract class AbstractAssembler<T, D extends RepresentationModel<?>> imp
                     )
             );
             pagedModel = emptyPagedModel;
-
+            log.debug("PagedModel vide créé avec succès");
         } else {
+            log.debug("Conversion de {} éléments avec pagedResourcesAssembler", page.getNumberOfElements());
             pagedModel = pagedResourcesAssembler.toModel(page, this);
+            log.debug("PagedModel créé avec succès contenant {} éléments", page.getNumberOfElements());
         }
         return pagedModel;
     }
@@ -62,10 +71,12 @@ public abstract class AbstractAssembler<T, D extends RepresentationModel<?>> imp
      * @return A Link with pagination template variables
      */
     public Link getTemplatedAndPagedLink(String uri) {
+        log.debug("Création d'un lien paginé templated pour l'URI: {}", uri);
         UriTemplate uriTemplate = UriTemplate.of(uri)
                 .with("page", TemplateVariable.VariableType.REQUEST_PARAM)
                 .with("size", TemplateVariable.VariableType.REQUEST_PARAM)
                 .with("sort", TemplateVariable.VariableType.REQUEST_PARAM);
+        log.debug("Lien paginé templated créé avec succès: {}", uriTemplate);
         return Link.of(uriTemplate, "page");
     }
 
@@ -78,13 +89,18 @@ public abstract class AbstractAssembler<T, D extends RepresentationModel<?>> imp
 
     public <R> CollectionModel<D> toCollectionModel(Iterable<? extends T> entities, Class<R> dtoClass) {
         Assert.notNull(entities, "Entities must not be null!");
+        log.debug("Conversion d'une collection d'entités en CollectionModel pour la classe {}", dtoClass.getSimpleName());
+
         List<D> models = StreamSupport.stream(entities.spliterator(), false) //
                 .map(this::toModel) //
                 .toList();
+        log.debug("Conversion de {} entités en modèles", models.size());
+
         CollectionModel<D> collectionModel;
 
         // Handle empty collections by creating an empty wrapper
         if (models.isEmpty()) {
+            log.debug("La collection est vide, création d'un wrapper vide pour {}", dtoClass.getSimpleName());
             EmbeddedWrapper emptyWrapper = new EmbeddedWrappers(false)
                     .emptyCollectionOf(dtoClass);
 
@@ -93,8 +109,11 @@ public abstract class AbstractAssembler<T, D extends RepresentationModel<?>> imp
             CollectionModel<D> emptyModel =
                     (CollectionModel<D>) (CollectionModel<?>) CollectionModel.of(Collections.singletonList(emptyWrapper));
             collectionModel = emptyModel;
+            log.debug("CollectionModel vide créé avec succès");
         } else {
+            log.debug("Création d'un CollectionModel avec {} éléments", models.size());
             collectionModel = CollectionModel.of(models);
+            log.debug("CollectionModel créé avec succès");
         }
         return collectionModel;
     }

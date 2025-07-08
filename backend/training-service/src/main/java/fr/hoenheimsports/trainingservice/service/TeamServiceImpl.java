@@ -4,6 +4,7 @@ import fr.hoenheimsports.trainingservice.exception.TeamAlreadyExistsException;
 import fr.hoenheimsports.trainingservice.model.*;
 import fr.hoenheimsports.trainingservice.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.util.Objects;
  * {@link EntityNotFoundException} when an operation involves a non-existing entity.</p>
  */
 @Service
+@Slf4j
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
@@ -51,7 +53,12 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public Team createTeam(Team team) {
+        log.info("Création d'une nouvelle équipe: {}/{}/{}", 
+                team.getGender(), team.getCategory(), team.getTeamNumber());
+
         if (isNotUniqueTeam(team)) {
+            log.warn("Tentative de création d'une équipe déjà existante: {}/{}/{}", 
+                    team.getGender(), team.getCategory(), team.getTeamNumber());
             var messageError = """
                     Team already exists with combinaison of
                      Gender : %s
@@ -60,7 +67,10 @@ public class TeamServiceImpl implements TeamService {
                     """.formatted(team.getGender(), team.getCategory(), team.getTeamNumber());
             throw new TeamAlreadyExistsException(messageError);
         }
-        return teamRepository.save(team);
+
+        Team savedTeam = teamRepository.save(team);
+        log.info("Équipe créée avec succès, ID: {}", savedTeam.getId());
+        return savedTeam;
     }
 
     /**
@@ -72,8 +82,15 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public Team getTeamById(Long id) {
-        return teamRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
+        log.debug("Recherche de l'équipe avec l'ID: {}", id);
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Équipe introuvable avec l'ID: {}", id);
+                    return new EntityNotFoundException("Team not found with id: " + id);
+                });
+        log.debug("Équipe trouvée: {}/{}/{}", 
+                team.getGender(), team.getCategory(), team.getTeamNumber());
+        return team;
     }
 
     /**
@@ -84,7 +101,11 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public Page<Team> getTeams(Pageable pageable) {
-        return teamRepository.findAll(pageable);
+        log.debug("Récupération des équipes paginées: page={}, taille={}, tri={}", 
+                pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+        Page<Team> teams = teamRepository.findAll(pageable);
+        log.debug("Nombre d'équipes récupérées: {}", teams.getNumberOfElements());
+        return teams;
     }
 
 
@@ -95,7 +116,10 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
     public List<Team> getTeams() {
-        return teamRepository.findAll();
+        log.debug("Récupération de toutes les équipes");
+        List<Team> teams = teamRepository.findAll();
+        log.debug("Nombre total d'équipes récupérées: {}", teams.size());
+        return teams;
     }
 
     /**
@@ -109,12 +133,27 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public Team updateTeam(Long id, Team updatedTeam) {
+        log.info("Mise à jour de l'équipe avec l'ID: {}", id);
+        log.debug("Nouvelles informations: genre={}, catégorie={}, numéro={}", 
+                updatedTeam.getGender(), updatedTeam.getCategory(), updatedTeam.getTeamNumber());
+
         Team team = teamRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Tentative de mise à jour d'une équipe inexistante, ID: {}", id);
+                    return new EntityNotFoundException("Team not found with id: " + id);
+                });
+
+        log.debug("Équipe trouvée pour mise à jour: {}/{}/{}", 
+                team.getGender(), team.getCategory(), team.getTeamNumber());
+
         if (areEqual(team, updatedTeam)) {
+            log.debug("Aucune modification nécessaire, les données sont identiques");
             return team;
         }
+
         if (isNotUniqueTeam(updatedTeam)) {
+            log.warn("Tentative de mise à jour vers une équipe déjà existante: {}/{}/{}", 
+                    updatedTeam.getGender(), updatedTeam.getCategory(), updatedTeam.getTeamNumber());
             var messageError = """
                     Team already exists with combinaison of
                      Gender : %s
@@ -127,7 +166,10 @@ public class TeamServiceImpl implements TeamService {
         team.setTeamNumber(updatedTeam.getTeamNumber());
         team.setGender(updatedTeam.getGender());
         team.setCategory(updatedTeam.getCategory());
-        return teamRepository.save(team);
+
+        Team savedTeam = teamRepository.save(team);
+        log.info("Équipe mise à jour avec succès, ID: {}", savedTeam.getId());
+        return savedTeam;
     }
 
     private static boolean areEqual(Team team1, Team team2) {
@@ -153,10 +195,26 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public TrainingSession addTrainingSession(Long teamId, Long hallId, TrainingSession trainingSession) {
+        log.info("Ajout d'une séance d'entraînement à l'équipe ID: {} dans la salle ID: {}", teamId, hallId);
+
+        if (trainingSession.getTimeSlot() != null) {
+            log.debug("Détails de la séance: jour={}, heure de début={}, heure de fin={}", 
+                    trainingSession.getTimeSlot().getDayOfWeek(), 
+                    trainingSession.getTimeSlot().getStartTime(), 
+                    trainingSession.getTimeSlot().getEndTime());
+        }
+
         Team team = getTeamById(teamId);
         Hall hall = hallService.getHallById(hallId);
+
+        log.debug("Association de la séance à l'équipe: {}/{}/{}", 
+                team.getGender(), team.getCategory(), team.getTeamNumber());
         team.addTrainingSession(trainingSession);
+
+        log.debug("Association de la séance à la salle: {}", hall.getName());
         hall.addTrainingSession(trainingSession);
+
+        log.info("Séance d'entraînement ajoutée avec succès");
         return trainingSession;
     }
 
@@ -164,9 +222,17 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public RoleCoach addRoleCoach(Long teamId, Long coachId, Role role) {
+        log.info("Ajout d'un rôle de coach ({}) à l'équipe ID: {} pour le coach ID: {}", role, teamId, coachId);
+
         Team team = getTeamById(teamId);
+        log.debug("Équipe trouvée: {}/{}/{}", team.getGender(), team.getCategory(), team.getTeamNumber());
+
         Coach coach = coachService.getCoachById(coachId);
-        return roleCoachService.createRoleCoach(role, coach, team);
+        log.debug("Coach trouvé: {} {}", coach.getName(), coach.getSurname());
+
+        RoleCoach roleCoach = roleCoachService.createRoleCoach(role, coach, team);
+        log.info("Rôle de coach ajouté avec succès, ID: {}", roleCoach.getId());
+        return roleCoach;
     }
 
 
@@ -179,19 +245,28 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @Transactional
     public void deleteTeam(Long id) {
+        log.info("Suppression de l'équipe avec l'ID: {}", id);
         if (!teamRepository.existsById(id)) {
+            log.warn("Tentative de suppression d'une équipe inexistante, ID: {}", id);
             throw new EntityNotFoundException("Team not found with id: " + id);
         }
         teamRepository.deleteById(id);
+        log.info("Équipe supprimée avec succès, ID: {}", id);
     }
 
     private boolean isNotUniqueTeam(Team team) {
+        log.debug("Vérification de l'unicité de l'équipe: {}/{}/{}", 
+                team.getGender(), team.getCategory(), team.getTeamNumber());
         return isNotUniqueTeam(team.getGender(), team.getCategory(), team.getTeamNumber());
     }
 
     @Override
     public boolean isNotUniqueTeam(Gender gender, Category category, int teamNumber) {
-        return teamRepository.existsByGenderAndCategoryAndTeamNumber(gender, category, teamNumber);
+        log.debug("Vérification de l'unicité de l'équipe avec les paramètres: genre={}, catégorie={}, numéro={}", 
+                gender, category, teamNumber);
+        boolean exists = teamRepository.existsByGenderAndCategoryAndTeamNumber(gender, category, teamNumber);
+        log.debug("Résultat de la vérification d'unicité: équipe {} existante", exists ? "déjà" : "non");
+        return exists;
     }
 
 

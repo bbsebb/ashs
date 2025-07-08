@@ -74,6 +74,7 @@ export class TeamsStore {
     return this.teamsResource.value;
   }
 
+
   /**
    * Gets the list of teams from the resource
    * @returns Array of teams or empty array if resource is not available

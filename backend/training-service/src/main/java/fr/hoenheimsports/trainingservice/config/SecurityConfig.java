@@ -2,7 +2,6 @@ package fr.hoenheimsports.trainingservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,13 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
-@Profile("!test")
 public class SecurityConfig {
-/*    private final SimpleJwtFilter simpleJwtFilter;
-
-    public SecurityConfig(SimpleJwtFilter simpleJwtFilter) {
-        this.simpleJwtFilter = simpleJwtFilter;
-    }*/
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,26 +29,9 @@ public class SecurityConfig {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable) // Désactiver l'authentification HTTP Basic
                 .formLogin(AbstractHttpConfigurer::disable)
-                // .addFilterBefore(simpleJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2ResourceServer(resourceServer -> resourceServer.jwt(jwtDecoder -> jwtDecoder.jwtAuthenticationConverter(new SimpleKeycloakJwtAuthenticationConverter()))); // Désactiver le formulaire de connexion
 
         return http.build();
 
     }
-/*
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200") // Origine autorisée
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Méthodes HTTP permises
-                        .allowedHeaders("*") // Autorisation pour tous les headers
-                        .allowCredentials(true); // Cookies autorisés
-            }
-        };
-    }*/
-
-
 }

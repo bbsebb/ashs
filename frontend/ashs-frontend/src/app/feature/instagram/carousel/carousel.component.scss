@@ -1,0 +1,44 @@
+
+app-media {
+  border-top-right-radius: var(--mdc-elevated-card-container-shape, var(--mat-sys-corner-medium));
+  border-top-left-radius: var(--mdc-elevated-card-container-shape, var(--mat-sys-corner-medium));
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  top: 0;
+  left: 0;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 1;
+  position: absolute;
+}
+
+app-media.active {
+  opacity: 1;
+  z-index: 2;
+  position: relative;
+}
+
+
+.carousel-control {
+  position: absolute;
+  top: 10%;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  mat-icon {
+    color: white;
+    filter: drop-shadow(0 0 3px white);
+  }
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}

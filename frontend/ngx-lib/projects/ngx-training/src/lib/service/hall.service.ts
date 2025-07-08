@@ -5,6 +5,7 @@ import {UpdateHallDTORequest} from '../dto/update-hall-d-t-o-request';
 import {Hall} from '../model/hall';
 import {CreateHallDTORequest} from '../dto/create-hall-d-t-o-request';
 import {IHallService} from './i-hall.service';
+import {NGX_LOGGER, NgxLoggerService} from 'ngx-logger';
 
 /**
  * Service for managing hall resources.
@@ -27,7 +28,13 @@ export class HallService implements IHallService {
    */
   private readonly halFormService = inject(NgxHalFormsService);
 
+  /**
+   * Logger service
+   */
+  private readonly logger = inject(NGX_LOGGER);
+
   constructor() {
+    this.logger.debug('HallService initialized');
   }
 
   /**
@@ -37,15 +44,25 @@ export class HallService implements IHallService {
    * @returns Observable of paginated or all hall resources
    */
   getHalls(paginationOption: PaginationOption = HallService.PAGINATION_OPTION_DEFAULT) {
+    this.logger.debug('Getting halls', { paginationOption });
+
     return this.halFormService.root.pipe(
-      switchMap((root) => this.halFormService.follow<PaginatedHalResource<Hall>>(root, "halls", this.halFormService.buildParamPage(paginationOption))),
-      switchMap((hallsRoot) =>
-        iif(
-          () => paginationOption == 'all',
-          this.halFormService.follow<AllHalResources<Hall>>(hallsRoot, "allHalls"),
-          of(hallsRoot)
-        )
-      )
+      switchMap((root) => {
+        this.logger.debug('Following halls link from root');
+        return this.halFormService.follow<PaginatedHalResource<Hall>>(root, "halls", this.halFormService.buildParamPage(paginationOption));
+      }),
+      switchMap((hallsRoot) => {
+        if (paginationOption === 'all') {
+          this.logger.debug('Getting all halls');
+          return this.halFormService.follow<AllHalResources<Hall>>(hallsRoot, "allHalls");
+        } else {
+          this.logger.debug('Using paginated halls', {
+            page: paginationOption.page,
+            size: paginationOption.size
+          });
+          return of(hallsRoot);
+        }
+      })
     );
   }
 
@@ -58,6 +75,11 @@ export class HallService implements IHallService {
    * @throws Error if the createHall action is not available
    */
   createHall(hallResource: AllHalResources<Hall> | PaginatedHalResource<Hall>, createHallDTORequest: CreateHallDTORequest) {
+    this.logger.debug('Creating new hall', {
+      name: createHallDTORequest.name,
+      address: createHallDTORequest.address
+    });
+
     return this.halFormService.doAction<Hall>(hallResource, 'createHall', createHallDTORequest);
   }
 
@@ -70,6 +92,12 @@ export class HallService implements IHallService {
    * @throws Error if the updateHall action is not available
    */
   updateHall(hall: Hall, updateHallDTORequest: UpdateHallDTORequest) {
+    this.logger.debug('Updating hall', {
+      hallId: hall._links?.self?.href,
+      name: updateHallDTORequest.name,
+      address: updateHallDTORequest.address
+    });
+
     return this.halFormService.doAction<Hall>(hall, 'updateHall', updateHallDTORequest);
   }
 
@@ -81,9 +109,18 @@ export class HallService implements IHallService {
    * @throws Error if the deleteHall action is not available
    */
   deleteHall(hall: Hall) {
+    this.logger.debug('Deleting hall', {
+      hallId: hall._links?.self?.href,
+      name: hall.name
+    });
+
     if (!this.halFormService.canAction(hall, 'deleteHall')) {
+      this.logger.error("Cannot delete hall - action not available", {
+        hallId: hall._links?.self?.href
+      });
       throw new Error("L'action deleteHall n'est pas disponible sur l'objet " + hall);
     }
+
     return this.halFormService.doAction<void>(hall, 'deleteHall');
   }
 
@@ -94,6 +131,8 @@ export class HallService implements IHallService {
    * @returns Observable of the hall
    */
   getHall(uri: string): Observable<Hall> {
+    this.logger.debug('Getting hall by URI', { uri });
+
     return this.halFormService.loadResource<Hall>(uri);
   }
 }

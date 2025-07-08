@@ -1,5 +1,3 @@
-apiVersion: 1
-
 datasources:
   - name: My-Prometheus
     type: prometheus
@@ -41,7 +39,7 @@ datasources:
     apiVersion: 1
     jsonData:
       derivedFields:
-        -   datasourceUid: tempo
-            matcherRegex: \[.+,(.+?),
-            name: TraceID
-            url: $${__value.raw}
+        - datasourceUid: tempo
+          matcherRegex: \[.+,(.+?),
+          name: TraceID
+          url: $${__value.raw}

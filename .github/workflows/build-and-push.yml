@@ -1,0 +1,138 @@
+name: Build and Push Docker Images
+
+permissions:
+  contents: read
+  packages: write
+on:
+  push:
+    branches: [ staging ]
+  pull_request:
+    branches: [ staging ]
+  workflow_dispatch:
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [
+          "backend/config-service",
+          "backend/contact-service",
+          "backend/discovery-service",
+          "backend/facebook-service",
+          "backend/gateway-service",
+          "backend/training-service"
+        ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 24
+        uses: actions/setup-java@v4
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Extract module name
+        run: echo "MODULE_NAME=$(basename ${{ matrix.module }})" >> $GITHUB_ENV
+
+      - name: Build with Gradle
+        working-directory: ${{ matrix.module }}
+        run: ./gradlew bootJar
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Dockerfile for backend module
+        run: |
+          cat > ${{ matrix.module }}/Dockerfile << 'EOF'
+          FROM eclipse-temurin:24-jre-alpine
+          WORKDIR /app
+          COPY build/libs/*.jar app.jar
+          ENTRYPOINT ["java", "-jar", "app.jar"]
+          EOF
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.module }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ github.repository_owner }}/ashs-${{ env.MODULE_NAME }}:latest
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [
+          "frontend/ashs-frontend",
+          "frontend/ashs-frontend-admin"
+        ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+
+      - name: Extract app name
+        run: echo "APP_NAME=$(basename ${{ matrix.app }})" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.app }}
+        run: npm ci
+
+      - name: Build Angular app
+        working-directory: ${{ matrix.app }}
+        run: npm run build -- --configuration production
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Dockerfile for frontend app
+        run: |
+          cat > ${{ matrix.app }}/Dockerfile << 'EOF'
+          FROM nginx:alpine
+          COPY dist/**/browser /usr/share/nginx/html
+          COPY nginx.conf /etc/nginx/conf.d/default.conf
+          EXPOSE 80
+          CMD ["nginx", "-g", "daemon off;"]
+          EOF
+
+          cat > ${{ matrix.app }}/nginx.conf << 'EOF'
+          server {
+            listen 80;
+            server_name localhost;
+            root /usr/share/nginx/html;
+            index index.html;
+          
+            location / {
+              try_files \$uri \$uri/ /index.html;
+            }
+          }
+          EOF
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.app }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ github.repository_owner }}/ashs-${{ env.APP_NAME }}:latest

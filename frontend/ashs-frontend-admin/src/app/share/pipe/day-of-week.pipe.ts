@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {DayOfWeek} from '../model/day-of-week';
+import {DayOfWeek} from 'ngx-training';
 
 
 @Pipe({

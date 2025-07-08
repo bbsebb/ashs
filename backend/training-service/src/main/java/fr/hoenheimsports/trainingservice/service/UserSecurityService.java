@@ -9,5 +9,5 @@ public interface UserSecurityService {
      * @param role the name of the role to check (without the "ROLE_" prefix)
      * @return true if the user has the specified role, false otherwise
      */
-    public boolean hasRole(String role);
+    boolean hasRole(String role);
 }

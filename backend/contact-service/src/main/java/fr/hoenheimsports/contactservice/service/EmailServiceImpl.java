@@ -5,8 +5,7 @@ import fr.hoenheimsports.contactservice.exception.EmailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,21 +13,39 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of the {@link EmailService} interface responsible for sending emails.
- * This service uses the {@link JavaMailSender} for email composition and delivery.
- * It also adds a security warning message in the email body to notify the recipient about the sender.
+ * Implementation of the EmailService interface responsible for sending emails.
+ * 
+ * <p>This service uses the JavaMailSender for email composition and delivery.
+ * It adds a security warning message in the email body to notify the recipient 
+ * about the sender's identity for security purposes.</p>
+ * 
+ * @since 1.0
  */
 @Service
 @RefreshScope
+@Slf4j
 public class EmailServiceImpl implements EmailService {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
+
+    /**
+     * The mail sender service used to send emails.
+     */
     private final JavaMailSender javaMailSender;
+
+    /**
+     * The recipient email address configured in the application properties.
+     */
     @Value("${custom.contact.email}")
     private String to;
 
+    /**
+     * Constructs a new EmailServiceImpl with the specified JavaMailSender.
+     * 
+     * @param javaMailSender The mail sender service to use for sending emails
+     */
     public EmailServiceImpl(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
+        log.debug("Initialisation du service d'envoi d'emails avec JavaMailSender");
     }
 
     /**
@@ -43,6 +60,9 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendEmail(@NonNull EmailRequest emailRequest) {
+        log.info("Traitement d'une demande d'envoi d'email de {} <{}>", emailRequest.name(), emailRequest.email());
+        log.debug("Contenu du message: longueur={} caractères", emailRequest.message().length());
+
         var name = emailRequest.name();
         var from = emailRequest.email();
         var message = emailRequest.message();
@@ -50,24 +70,28 @@ public class EmailServiceImpl implements EmailService {
                 """
                         Attention : ce message a été écrit par %s (%s).
                         Merci de ne pas cliquer sur 'Répondre' pour répondre directement à cet email.
-                        
+
                         """,
                 name, from
         );
         var subject = "Notification de formulaire de contact de : " + name;
 
-        logger.info("Préparation de l'envoi de l'e-mail. Destinataire: {}, Sujet: {}", to, name);
+        log.debug("Création du message avec avertissement de sécurité");
+        log.info("Préparation de l'envoi de l'e-mail à {}", to);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
+            log.debug("Configuration du message: destinataire={}, sujet={}", to, subject);
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(warningMessage + message, false);
+
+            log.debug("Envoi du message via JavaMailSender");
             javaMailSender.send(mimeMessage);
-            logger.info("E-mail envoyé avec succès à {}", to);
+            log.info("E-mail envoyé avec succès à {}", to);
         } catch (MessagingException e) {
-            logger.error("Erreur lors de l'envoi de l'e-mail à {} : {}", to, e.getMessage(), e);
-            throw new EmailException(e);
+            log.error("Erreur lors de l'envoi de l'e-mail à {} : {}", to, e.getMessage(), e);
+            throw new EmailException(e, to, subject, message);
         }
     }
 }

@@ -6,6 +6,8 @@ import {COACH_SERVICE, CoachService, HALL_SERVICE, HallService, TEAM_SERVICE, Te
 import {provideHttpClient} from '@angular/common/http';
 import {IconRegistryService} from './core/service/service/icon-registry.service';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import {environment} from '@environments/environment';
+import {NGX_LOGGER, NgxConsoleLoggerService} from 'ngx-logger';
 
 
 export const appConfig: ApplicationConfig = {
@@ -18,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(IconRegistryService).addInstagramIcon()),
     {
       provide: BASE_URL_CONFIG,
-      useValue: {baseUrl: 'http://localhost:8080/api'}
+      useValue: {baseUrl: environment.baseUrl}
     },
     {
       provide: TEAM_SERVICE,
@@ -32,5 +34,10 @@ export const appConfig: ApplicationConfig = {
       provide: HALL_SERVICE,
       useClass: HallService
     },
+    {
+      provide: NGX_LOGGER,
+      useClass: NgxConsoleLoggerService
+    },
+
     {provide: DELAY, useValue: 0}]
 };

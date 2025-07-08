@@ -6,8 +6,7 @@ import {
   HalResource,
   PaginatedHalResource
 } from '../model/ngx-hal.model';
-import { HalFormsDocument, HalFormsTemplate } from '../model/ngx-hal-form-model';
-import { Pagination } from '../model/ngx-pagination.model';
+import {HalFormsTemplate} from '../model/ngx-hal-form-model';
 
 /**
  * Builder pour créer un objet HalLink.
@@ -115,13 +114,13 @@ export class HalLinkBuilder {
 
     return {
       href: this._href,
-      ...(this._templated !== undefined && { templated: this._templated }),
-      ...(this._type && { type: this._type }),
-      ...(this._deprecation && { deprecation: this._deprecation }),
-      ...(this._name && { name: this._name }),
-      ...(this._profile && { profile: this._profile }),
-      ...(this._title && { title: this._title }),
-      ...(this._hreflang && { hreflang: this._hreflang }),
+      ...(this._templated !== undefined && {templated: this._templated}),
+      ...(this._type && {type: this._type}),
+      ...(this._deprecation && {deprecation: this._deprecation}),
+      ...(this._name && {name: this._name}),
+      ...(this._profile && {profile: this._profile}),
+      ...(this._title && {title: this._title}),
+      ...(this._hreflang && {hreflang: this._hreflang}),
       ...this._customProps
     };
   }
@@ -265,7 +264,7 @@ export class HalResourceBuilder<T = {}> {
    * @param properties Objet contenant les propriétés
    */
   properties(properties: Partial<T>): this {
-    this._properties = { ...this._properties, ...properties };
+    this._properties = {...this._properties, ...properties};
     return this;
   }
 
@@ -277,21 +276,19 @@ export class HalResourceBuilder<T = {}> {
       throw new Error('links are required for HalResource');
     }
 
-    const resource: HalResource<T> = {
+    return {
       _links: this._links,
-      ...(this._embedded && { _embedded: this._embedded }),
-      ...(this._templates && { _templates: this._templates }),
+      ...(this._embedded && {_embedded: this._embedded}),
+      ...(this._templates && {_templates: this._templates}),
       ...this._properties as T
     } as HalResource<T>;
-
-    return resource;
   }
 }
 
 /**
  * Builder pour créer un objet AllHalResources.
  */
-export class AllHalResourcesBuilder<T extends HalResource = HalResource> extends HalResourceBuilder<{}> {
+export class AllHalResourcesBuilder<T extends HalResource = HalResource> extends HalResourceBuilder {
   private _embeddedResources: Record<string, T[]> = {};
 
   /**
@@ -310,12 +307,10 @@ export class AllHalResourcesBuilder<T extends HalResource = HalResource> extends
   override build(): AllHalResources<T> {
     const baseResource = super.build();
 
-    const allResources: AllHalResources<T> = {
+    return {
       ...baseResource,
       _embedded: this._embeddedResources
     };
-
-    return allResources;
   }
 }
 
@@ -405,11 +400,9 @@ export class PaginatedHalResourceBuilder<T extends HalResource> extends AllHalRe
 
     const allResources = super.build();
 
-    const paginatedResource: PaginatedHalResource<T> = {
+    return {
       ...allResources,
       page: this._page
     };
-
-    return paginatedResource;
   }
 }

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {AllHalResources, PaginatedHalResource, PaginationOption} from 'ngx-hal-forms';
 import {Hall, HallBuilder} from '../../model/hall';
-import {Address, AddressBuilder} from '../../model/address';
+import {AddressBuilder} from '../../model/address';
 import {CreateHallDTORequest} from '../../dto/create-hall-d-t-o-request';
 import {UpdateHallDTORequest} from '../../dto/update-hall-d-t-o-request';
 import {IHallService} from '../i-hall.service';

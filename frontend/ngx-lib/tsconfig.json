@@ -18,6 +18,9 @@
       ],
       "ngx-training": [
         "./dist/ngx-training"
+      ],
+      "ngx-logger": [
+        "./dist/ngx-logger"
       ]
     },
     "skipLibCheck": true,

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { NGX_LOGGER } from 'ngx-logger';
 
 @Component({
   selector: 'app-test',
@@ -7,5 +8,9 @@ import { Component } from '@angular/core';
   styleUrl: './test.component.scss'
 })
 export class TestComponent {
+  private readonly logger = inject(NGX_LOGGER);
 
+  constructor() {
+    this.logger.debug('Initialisation du composant Test');
+  }
 }

@@ -1,4 +1,5 @@
 package fr.hoenheimsports.trainingservice.model;
+
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -12,13 +13,13 @@ import lombok.NoArgsConstructor;
  * Represents an address entity with details such as street, city, postal code, and country.
  * This class is marked as {@link Embeddable}, meaning it can be embedded
  * within other entities as part of their persistence mapping.
- *
+ * <p>
  * Validations are provided for each attribute to ensure compliance with specific business rules:
  * - `street`: Mandatory, with a maximum length of 100 characters.
  * - `city`: Mandatory, with a maximum length of 50 characters.
  * - `postalCode`: Must follow a defined pattern of exactly 5 digits.
  * - `country`: Mandatory, with a maximum length of 50 characters.
- *
+ * <p>
  * This class uses Lombok annotations for boilerplate code reduction:
  * - {@link Data} for generated getters, setters, equals, hashCode, and toString methods.
  * - {@link NoArgsConstructor} for creating a no-argument constructor.

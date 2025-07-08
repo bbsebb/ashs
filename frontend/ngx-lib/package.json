@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:libs": "ng build ngx-hal-forms && ng build ngx-training && ng build ngx-notification",
+    "build:libs": "ng build ngx-hal-forms && ng build ngx-training && ng build ngx-notification && ng build ngx-logger",
+    "pack:libs": "powershell -Command \"Get-ChildItem dist -Directory | ForEach-Object { Push-Location $_.FullName; npm pack -force; Pop-Location }\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

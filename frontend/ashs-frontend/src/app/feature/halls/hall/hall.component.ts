@@ -7,6 +7,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
 import {RouterLink} from '@angular/router';
 import {HallStore} from 'ngx-training';
+import {NGX_LOGGER} from 'ngx-logger';
 
 @Component({
   selector: 'app-hall',
@@ -24,12 +25,19 @@ import {HallStore} from 'ngx-training';
 })
 export class HallComponent {
   private hallStore = inject(HallStore);
+  private logger = inject(NGX_LOGGER);
   uri = input<string>();
 
   constructor() {
+    this.logger.debug('Initialisation du composant Hall');
+
     effect(() => {
-      this.hallStore.uri = this.uri();
+      const currentUri = this.uri();
+      this.logger.debug('Effet déclenché pour la mise à jour de l\'URI', { uri: currentUri });
+      this.hallStore.uri = currentUri;
     });
+
+    this.logger.debug('Signaux initialisés: hallSignal, isLoading, error');
   }
 
   hallSignal = this.hallStore.hall;
@@ -37,6 +45,8 @@ export class HallComponent {
   error = this.hallStore.hallResourceError;
 
   reloadHall() {
+    this.logger.info('Rechargement des données de la salle');
     this.hallStore.reloadHall();
+    this.logger.debug('Demande de rechargement de la salle envoyée au store');
   }
 }

@@ -1,29 +1,21 @@
 @let feed = feedSignal();
-<p>{{ feed.graphApiId }}</p>
-<mat-card class="instagram-card"> <!--[class.multi-instagram-card]="!isDialog"-->
+@let attachment = attachmentSignal();
+<mat-card class="feed-card"> <!--[class.multi-instagram-card]="!isDialog"-->
 
-
-  <img mat-card-image class="active" [src]="feed.attachments[0].media.image.src" alt="Instagram media">
-
-
+  @if (attachment.type === 'album') {
+    <app-carousel [subAttachments]="attachment.subAttachments">
+    </app-carousel>
+  } @else {
+    <app-media [type]="attachment.type" [media]="attachment.media">
+    </app-media>
+  }
   <mat-card-content>
     <p class="texte-multilignes">
       {{ feed.message }}
-      <!--      @if (!isDialog && (media.caption | truncate: 100 : true); as result) {
-              {{ result.text }}
-              @if (result.isTruncated) {
-                <a href="" (click)="openDialog()">... Voir plus</a>
-              }
-            } @else {
-              {{ media.caption }}
-            }-->
-
     </p>
   </mat-card-content>
   <mat-card-actions>
     Posté le {{ feed.createdTime | formatDate }}
-    <!--    @if (!isDialog) {
-          <button mat-button (click)="openDialog()">Voir</button>
-        }-->
+    <button mat-button (click)="openDialog()">VOIR</button>
   </mat-card-actions>
 </mat-card>

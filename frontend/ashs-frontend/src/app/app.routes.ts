@@ -9,11 +9,11 @@ import {HallComponent} from './feature/halls/hall/hall.component';
 import {TeamsComponent} from './feature/teams/teams.component';
 import {TeamComponent} from './feature/teams/team/team.component';
 import {ContactComponent} from './feature/contact/contact.component';
-import {InstagramComponent} from '@app/feature/instagram/instagram.component';
+import {FacebookMediaComponent} from '@app/feature/instagram/facebook-media.component';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
-  {path: 'home', component: InstagramComponent},
+  {path: 'home', component: FacebookMediaComponent},
   {
     path: 'coaches',
     children: [

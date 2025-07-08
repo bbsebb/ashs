@@ -3,6 +3,7 @@ package fr.hoenheimsports.trainingservice.service;
 import fr.hoenheimsports.trainingservice.model.Coach;
 import fr.hoenheimsports.trainingservice.repository.CoachRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.List;
  * and throws a {@link EntityNotFoundException} when no matching entity is found.</p>
  */
 @Service
+@Slf4j
 public class CoachServiceImpl implements CoachService {
 
     private final CoachRepository coachRepository;
@@ -49,7 +51,11 @@ public class CoachServiceImpl implements CoachService {
      */
     @Override
     public Coach createCoach(Coach coach) {
-        return coachRepository.save(coach);
+        log.info("Création d'un nouveau coach: {} {}", coach.getName(), coach.getSurname());
+        log.debug("Détails du coach: email={}, téléphone={}", coach.getEmail(), coach.getPhone());
+        Coach savedCoach = coachRepository.save(coach);
+        log.info("Coach créé avec succès, ID: {}", savedCoach.getId());
+        return savedCoach;
     }
 
     /**
@@ -61,8 +67,14 @@ public class CoachServiceImpl implements CoachService {
      */
     @Override
     public Coach getCoachById(Long id) {
-        return coachRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Coach introuvable avec l'id : " + id));
+        log.debug("Recherche du coach avec l'ID: {}", id);
+        Coach coach = coachRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Coach introuvable avec l'ID: {}", id);
+                    return new EntityNotFoundException("Coach introuvable avec l'id : " + id);
+                });
+        log.debug("Coach trouvé: {} {}", coach.getName(), coach.getSurname());
+        return coach;
     }
 
     /**
@@ -73,7 +85,11 @@ public class CoachServiceImpl implements CoachService {
      */
     @Override
     public Page<Coach> getCoaches(Pageable pageable) {
-        return coachRepository.findAll(pageable);
+        log.debug("Récupération des coachs paginés: page={}, taille={}, tri={}", 
+                pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+        Page<Coach> coaches = coachRepository.findAll(pageable);
+        log.debug("Nombre de coachs récupérés: {}", coaches.getNumberOfElements());
+        return coaches;
     }
 
     /**
@@ -83,7 +99,10 @@ public class CoachServiceImpl implements CoachService {
      */
     @Override
     public List<Coach> getAllCoaches() {
-        return coachRepository.findAll();
+        log.debug("Récupération de tous les coachs");
+        List<Coach> coaches = coachRepository.findAll();
+        log.debug("Nombre total de coachs récupérés: {}", coaches.size());
+        return coaches;
     }
 
 
@@ -98,13 +117,26 @@ public class CoachServiceImpl implements CoachService {
     @Override
     @Transactional
     public Coach updateCoach(Long id, Coach updatedCoach) {
+        log.info("Mise à jour du coach avec l'ID: {}", id);
+        log.debug("Nouvelles informations: nom={}, prénom={}, email={}, téléphone={}", 
+                updatedCoach.getName(), updatedCoach.getSurname(), 
+                updatedCoach.getEmail(), updatedCoach.getPhone());
+
         Coach coach = coachRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Coach introuvable avec l'id : " + id));
+                .orElseThrow(() -> {
+                    log.warn("Tentative de mise à jour d'un coach inexistant, ID: {}", id);
+                    return new EntityNotFoundException("Coach introuvable avec l'id : " + id);
+                });
+
+        log.debug("Coach trouvé pour mise à jour: {} {}", coach.getName(), coach.getSurname());
         coach.setName(updatedCoach.getName());
         coach.setSurname(updatedCoach.getSurname());
         coach.setEmail(updatedCoach.getEmail());
         coach.setPhone(updatedCoach.getPhone());
-        return coachRepository.save(coach);
+
+        Coach savedCoach = coachRepository.save(coach);
+        log.info("Coach mis à jour avec succès, ID: {}", savedCoach.getId());
+        return savedCoach;
     }
 
     /**
@@ -115,9 +147,12 @@ public class CoachServiceImpl implements CoachService {
      */
     @Override
     public void deleteCoach(Long id) {
+        log.info("Suppression du coach avec l'ID: {}", id);
         if (!coachRepository.existsById(id)) {
+            log.warn("Tentative de suppression d'un coach inexistant, ID: {}", id);
             throw new EntityNotFoundException("Coach introuvable avec l'id : " + id);
         }
         coachRepository.deleteById(id);
+        log.info("Coach supprimé avec succès, ID: {}", id);
     }
 }

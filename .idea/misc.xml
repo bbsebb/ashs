@@ -5,8 +5,8 @@
     <file type="web" url="file://$PROJECT_DIR$/backend/config-service" />
     <file type="web" url="file://$PROJECT_DIR$/backend/contact-service" />
     <file type="web" url="file://$PROJECT_DIR$/backend/discovery-service" />
+    <file type="web" url="file://$PROJECT_DIR$/backend/facebook-service" />
     <file type="web" url="file://$PROJECT_DIR$/backend/gateway-service" />
-    <file type="web" url="file://$PROJECT_DIR$/backend/instagram-service" />
     <file type="web" url="file://$PROJECT_DIR$/backend/training-service" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="openjdk-24" project-jdk-type="JavaSDK">

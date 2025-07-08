@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: facebook-service
+  config:
+    import: configserver:http://localhost:8888
+
+server:
+  port: 8083
+
+facebook:
+  api:
+    url: https://graph.facebook.com/v23.0
+    client-id: 1405073150683153
+    client-secret: a8c8e442c4a0b983804be2a0b5ff508f
+
+logging:
+  level:
+    feign: DEBUG
+
+
+

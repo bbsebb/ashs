@@ -13,7 +13,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD}) // Appliqué sur un champs
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IsRole {
-;
     String message() default "Valeur pour le champs doit être role valide ";
 
     Class<?>[] groups() default {};

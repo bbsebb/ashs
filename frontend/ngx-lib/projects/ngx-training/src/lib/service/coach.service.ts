@@ -1,10 +1,11 @@
 import {inject, Injectable} from '@angular/core';
-import {iif, Observable, of, switchMap} from 'rxjs';
+import {Observable, of, switchMap} from 'rxjs';
 import {AllHalResources, NgxHalFormsService, PaginatedHalResource, PaginationOption, unwrap} from 'ngx-hal-forms';
 import {map} from 'rxjs/operators';
 import {Coach} from '../model/coach';
 import {CreateCoachDTORequest} from '../dto/create-coach-d-t-o-request';
 import {ICoachService} from './i-coach.service';
+import {NGX_LOGGER} from 'ngx-logger';
 
 /**
  * Service for managing coach resources.
@@ -27,7 +28,13 @@ export class CoachService implements ICoachService {
    */
   private readonly halFormService = inject(NgxHalFormsService);
 
+  /**
+   * Logger service
+   */
+  private readonly logger = inject(NGX_LOGGER);
+
   constructor() {
+    this.logger.debug('CoachService initialized');
   }
 
   /**
@@ -37,15 +44,25 @@ export class CoachService implements ICoachService {
    * @returns Observable of paginated or all coach HAL resources
    */
   getCoachesHalResource(paginationOption: PaginationOption = CoachService.PAGINATION_OPTION_DEFAULT) {
+    this.logger.debug('Getting coaches HAL resource', {paginationOption});
+
     return this.halFormService.root.pipe(
-      switchMap((root) => this.halFormService.follow<PaginatedHalResource<Coach>>(root, "coaches", this.halFormService.buildParamPage(paginationOption))),
-      switchMap((coachesRoot) =>
-        iif(
-          () => paginationOption == 'all',
-          this.halFormService.follow<AllHalResources<Coach>>(coachesRoot, "allCoaches"),
-          of(coachesRoot)
-        )
-      )
+      switchMap((root) => {
+        this.logger.debug('Following coaches link from root');
+        return this.halFormService.follow<PaginatedHalResource<Coach>>(root, "coaches", this.halFormService.buildParamPage(paginationOption));
+      }),
+      switchMap((coachesRoot) => {
+        if (paginationOption === 'all') {
+          this.logger.debug('Getting all coaches');
+          return this.halFormService.follow<AllHalResources<Coach>>(coachesRoot, "allCoaches");
+        } else {
+          this.logger.debug('Using paginated coaches', {
+            page: paginationOption.page,
+            size: paginationOption.size
+          });
+          return of(coachesRoot);
+        }
+      })
     );
   }
 
@@ -56,8 +73,14 @@ export class CoachService implements ICoachService {
    * @returns Observable of coaches array
    */
   getCoaches(paginationOption: PaginationOption = CoachService.PAGINATION_OPTION_DEFAULT): Observable<Coach[]> {
+    this.logger.debug('Getting coaches list', {paginationOption});
+
     return this.getCoachesHalResource(paginationOption).pipe(
-      map(coaches => unwrap<Coach[]>(coaches, 'coaches'))
+      map(coaches => {
+        const coachesList = unwrap<Coach[]>(coaches, 'coaches');
+        this.logger.debug('Unwrapped coaches list', {count: coachesList.length});
+        return coachesList;
+      })
     )
   }
 
@@ -70,6 +93,12 @@ export class CoachService implements ICoachService {
    * @throws Error if the createCoach action is not available
    */
   createCoach(coachResource: AllHalResources<Coach> | PaginatedHalResource<Coach>, createCoachDTORequest: CreateCoachDTORequest) {
+    this.logger.debug('Creating new coach', {
+      firstName: createCoachDTORequest.name,
+      lastName: createCoachDTORequest.surname,
+      email: createCoachDTORequest.email
+    });
+
     return this.halFormService.doAction<Coach>(coachResource, 'createCoach', createCoachDTORequest);
   }
 
@@ -82,6 +111,13 @@ export class CoachService implements ICoachService {
    * @throws Error if the updateCoach action is not available
    */
   updateCoach(coach: Coach, updateCoachDTORequest: CreateCoachDTORequest) {
+    this.logger.debug('Updating coach', {
+      coachId: coach._links?.self?.href,
+      firstName: updateCoachDTORequest.name,
+      lastName: updateCoachDTORequest.surname,
+      email: updateCoachDTORequest.email
+    });
+
     return this.halFormService.doAction<Coach>(coach, 'updateCoach', updateCoachDTORequest);
   }
 
@@ -93,6 +129,12 @@ export class CoachService implements ICoachService {
    * @throws Error if the deleteCoach action is not available
    */
   deleteCoach(coach: Coach) {
+    this.logger.debug('Deleting coach', {
+      coachId: coach._links?.self?.href,
+      firstName: coach.name,
+      lastName: coach.surname
+    });
+
     return this.halFormService.doAction<void>(coach, 'deleteCoach');
   }
 
@@ -103,6 +145,8 @@ export class CoachService implements ICoachService {
    * @returns Observable of the coach
    */
   getCoach(uri: string): Observable<Coach> {
+    this.logger.debug('Getting coach by URI', {uri});
+
     return this.halFormService.loadResource<Coach>(uri);
   }
 }

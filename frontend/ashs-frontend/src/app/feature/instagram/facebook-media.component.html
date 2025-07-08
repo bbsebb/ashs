@@ -1,0 +1,26 @@
+@if (isLoadingSignal()) {
+  <mat-spinner></mat-spinner>
+} @else if (errorSignal()) {
+  <app-generic-error></app-generic-error>
+} @else {
+  <div class="feeds-container">
+    @for (feed of feedsSignal(); track feed.graphApiId) {
+      <app-feed [feed]="feed"></app-feed>
+    } @empty {
+      <p>Aucun média actuellement</p>
+    }
+  </div>
+}
+@let pagination = paginationSignal();
+@if (pagination) {
+  <mat-paginator
+    class="demo-paginator"
+    [disabled]="isLoadingSignal()"
+    [length]="pagination.page.totalElements"
+    [pageIndex]="pagination.page.number"
+    [pageSize]="pagination.page.size"
+    [pageSizeOptions]="[1,5,10,20]"
+    (page)="handlePageEvent($event)"
+    aria-label="Select page">
+  </mat-paginator>
+}

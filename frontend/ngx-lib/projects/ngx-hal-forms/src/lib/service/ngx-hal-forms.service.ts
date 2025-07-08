@@ -5,6 +5,7 @@ import {AllHalResources, HalLink, HalResource, PaginatedHalResource} from '../mo
 import {HttpClient} from '@angular/common/http';
 import {BASE_URL_CONFIG} from '../config/base-url.config';
 import {DELAY} from '../config/delay.config';
+import {NGX_LOGGER, NgxLoggerService} from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class NgxHalFormsService {
   private readonly baseUrl = inject(BASE_URL_CONFIG).baseUrl // 'http://localhost:8082/api';
   private readonly delay = inject(DELAY);
   private readonly http = inject(HttpClient);
+  private readonly logger = inject(NGX_LOGGER);
   private readonly header = {
     headers: {
       Accept: 'application/prs.hal-forms+json', // Ou 'application/prs.hal-forms+json' si HAL-FORMS est attendu
@@ -27,10 +29,21 @@ export class NgxHalFormsService {
   }
 
   constructor() {
+    this.logger.debug('Initialisation du service NgxHalFormsService');
+    this.logger.debug('URL de base configurée:', this.baseUrl);
+    this.logger.debug('Délai configuré:', this.delay);
 
+    this.logger.info('Chargement de la ressource racine HAL');
     this.loadRoot().subscribe({
-      next: r => this.root = r,
-      error: err => this._root.error(err)   // 🔥 transmet l'erreur à root
+      next: r => {
+        this.logger.info('Ressource racine HAL chargée avec succès');
+        this.logger.debug('Ressource racine:', r);
+        this.root = r;
+      },
+      error: err => {
+        this.logger.error('Erreur lors du chargement de la ressource racine HAL', err);
+        this._root.error(err);   // 🔥 transmet l'erreur à root
+      }
     });
   }
 
@@ -44,24 +57,27 @@ export class NgxHalFormsService {
 
 
   private loadRoot(): Observable<HalResource> {
+    this.logger.debug('Chargement de la ressource racine depuis:', this.baseUrl);
     return this.http.get<HalResource>(this.baseUrl, this.header).pipe(
       // delay(2000),
       /*      map(() => {
               throw new Error("test")
             })*/
     );
-
   }
 
   public loadResource<T extends HalResource>(href: string): Observable<T> {
-    return this.http.get<T>(href, this.header).pipe(this.simulateDelay());
+    this.logger.debug('Chargement de la ressource depuis:', href);
+    return this.http.get<T>(href, this.header).pipe(
+      this.simulateDelay()
+    );
   }
 
   public hasFollow(resource: HalResource | PaginatedHalResource<HalResource>, linkName: string): boolean {
     return !!resource._links[linkName];
   }
 
-  public follow<T extends HalResource | HalResource[] | PaginatedHalResource<HalResource>>(resource: HalResource | PaginatedHalResource<HalResource> | AllHalResources<HalResource>, linkName: string, params?: Param): Observable<T> {
+  public follow<T extends HalResource | HalResource[] | PaginatedHalResource<HalResource>>(resource: HalResource | PaginatedHalResource<HalResource> | AllHalResources, linkName: string, params?: Param): Observable<T> {
     if (!this.hasFollow(resource, linkName)) {
       throw new Error("Link inexistant.");
     }

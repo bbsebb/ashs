@@ -15,6 +15,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller interface defining the REST API endpoints for coach operations.
+ * 
+ * <p>This interface provides endpoints for creating, retrieving, updating, and deleting
+ * coach resources. It supports both individual coach operations and operations on collections
+ * of coaches, including pagination. Some operations require administrative privileges.</p>
+ * 
+ * <p>All endpoints return HATEOAS-compliant responses with appropriate links to related resources.</p>
+ * 
+ * @since 1.0
+ */
 public interface CoachController {
 
     /**

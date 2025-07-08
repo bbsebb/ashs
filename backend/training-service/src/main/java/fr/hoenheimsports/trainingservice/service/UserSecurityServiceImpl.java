@@ -1,5 +1,6 @@
 package fr.hoenheimsports.trainingservice.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,17 +22,23 @@ import org.springframework.stereotype.Service;
  * be injected wherever user security checks are required.</p>
  */
 @Service
+@Slf4j
 public class UserSecurityServiceImpl implements UserSecurityService {
 
     @Override
     public boolean hasRole(String role) {
+        log.debug("Vérification si l'utilisateur possède le rôle: {}", role);
         role = "ROLE_".concat(role);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            return authentication.getAuthorities().stream()
+            log.debug("Utilisateur authentifié: {}", authentication.getName());
+            boolean hasRole = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .anyMatch(role::equals);
+            log.debug("L'utilisateur {} le rôle {}", hasRole ? "possède" : "ne possède pas", role);
+            return hasRole;
         }
+        log.debug("Aucun utilisateur authentifié ou authentification invalide");
         return false;
     }
 }
