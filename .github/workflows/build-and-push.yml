@@ -36,6 +36,10 @@ jobs:
       - name: Extract module name
         run: echo "MODULE_NAME=$(basename ${{ matrix.module }})" >> $GITHUB_ENV
 
+      - name: Add execution permission to gradlew
+        working-directory: ${{ matrix.module }}
+        run: chmod +x gradlew
+
       - name: Build with Gradle
         working-directory: ${{ matrix.module }}
         run: ./gradlew bootJar
