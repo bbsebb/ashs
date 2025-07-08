@@ -37,7 +37,7 @@ export class TeamsComponent {
 
   reloadTeams() {
     this.logger.info('Rechargement des données des équipes');
-    this.teamsStore.reloadTeams();
+    //todo
     this.logger.debug('Demande de rechargement des équipes envoyée au store');
   }
 }

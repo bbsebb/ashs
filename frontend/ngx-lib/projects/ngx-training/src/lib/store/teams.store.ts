@@ -314,7 +314,7 @@ export class TeamsStore {
   /**
    * Reloads the teams resource
    */
-  private reloadTeamsResource() {
+  public reloadTeamsResource() {
     this._teamsResource.reload()
   }
 }
