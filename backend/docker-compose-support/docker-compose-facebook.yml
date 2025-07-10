@@ -1,7 +1,7 @@
 services:
   postgres-facebook-service: # Nom du service
     image: postgres:17.4 # Image officielle PostgreSQL (version: 15)
-    container_name: facebook-service-db # Nom du conteneur
+    container_name: facebook-service-db-dev # Nom du conteneur
     restart: always # Redémarre le conteneur automatiquement si nécessaire
     ports:
       - "5433:5432" # Expose le port 5432 sur la machine hôte (par défaut pour PostgreSQL)
@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: devpassword # Mot de passe de l'utilisateur
       POSTGRES_DB: facebook-db # Nom de la base de données initiale
     volumes:
-      - postgres_data_facebook_service:/var/lib/postgresql/data # Volume Docker pour persister les données
+      - postgres_data_facebook_service-dev:/var/lib/postgresql/data # Volume Docker pour persister les données
 
 
 volumes:

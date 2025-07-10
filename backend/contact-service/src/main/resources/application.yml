@@ -6,7 +6,7 @@ spring:
   application:
     name: contact-service
   config:
-    import: configserver:http://localhost:8888
+    import: configserver:${CONFIG_SERVER:http://localhost:8888}
 
 
 

@@ -5,14 +5,6 @@ spring:
     name:
       config-service
 
-
-#        git:
-#          uri: file:///C:/Users/bbseb/Documents/programmation/ashs2/ashs/backend/configuration/
-#          clone-on-start: true
-#          skipSslValidation: true
-
-
-
 encrypt:
   key-store:
     location: classpath:config-keystore.p12

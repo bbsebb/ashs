@@ -3,5 +3,6 @@ spring:
     config:
       server:
         git:
-          uri: file:///C:/Users/bbseb/Documents/programmation/ashs2/ashs/backend/configuration/
+          uri: ${CONFIG_SERVER_URI:https://github.com/bbsebb/temp-configuration.git}
           clone-on-start: true
+          skipSslValidation: true

@@ -1,5 +1,5 @@
 services:
-  mailhog:
+  mailhog-dev:
     image: mailhog/mailhog
     container_name: mailhog
     ports:

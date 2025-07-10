@@ -1,0 +1,249 @@
+version: '3.8'
+
+services:
+  # OBSERVABILITY SERVICES
+  prometheus:
+    extends:
+      file: ./observability/docker-compose.yml
+      service: prometheus
+    env_file:
+      - ./.env
+
+  tempo:
+    extends:
+      file: ./observability/docker-compose.yml
+      service: tempo
+    env_file:
+      - ./.env
+
+  loki:
+    extends:
+      file: ./observability/docker-compose.yml
+      service: loki
+    env_file:
+      - ./.env
+
+  grafana:
+    extends:
+      file: ./observability/docker-compose.yml
+      service: grafana
+    env_file:
+      - ./.env
+    depends_on:
+      - prometheus
+      - tempo
+      - loki
+
+  # KEYCLOAK SERVICES
+  postgres-kc:
+    extends:
+      file: ./keycloak/docker-compose.yml
+      service: postgres-kc
+    env_file:
+      - ./.env
+
+  keycloak:
+    extends:
+      file: ./keycloak/docker-compose.yml
+      service: keycloak
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres-kc
+
+  # DATABASE SERVICES
+  postgres-training-service:
+    image: postgres:17.4
+    container_name: training-service-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: training-db
+    volumes:
+      - postgres_data_training_service:/var/lib/postgresql/data
+    networks:
+      - backend-network
+
+  postgres-facebook-service:
+    image: postgres:17.4
+    container_name: facebook-service-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: facebook-db
+    volumes:
+      - postgres_data_facebook_service:/var/lib/postgresql/data
+    networks:
+      - backend-network
+
+  # EMAIL SERVICE
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "127.0.0.1:8025:8025"   # Interface Web - localhost only
+    networks:
+      - backend-network
+
+  # BACKEND SERVICES
+  config-service:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-config-service:${GIT_VERSION:-latest}
+    container_name: config-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - CONFIG_SERVICE_KEYSTORE_PASS=${CONFIG_SERVICE_KEYSTORE_PASS}
+      - CONFIG_SERVER_URI=https://github.com/bbsebb/temp-configuration.git
+    depends_on:
+      - tempo
+      - prometheus
+      - grafana
+      - loki
+    networks:
+      - backend-network
+      - observability-network
+
+
+  discovery-service:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-discovery-service:${GIT_VERSION:-latest}
+    container_name: discovery-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
+    depends_on:
+      - config-service
+    networks:
+      - backend-network
+      - observability-network
+
+
+
+  gateway-service:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-gateway-service:${GIT_VERSION:-latest}
+    container_name: gateway-service
+    ports:
+      - "8080:8080"  # Main API gateway - exposed
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
+      - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
+      - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
+      - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+    depends_on:
+      - discovery-service
+      - config-service
+    networks:
+      - backend-network
+      - observability-network
+      - keycloak-network
+
+  contact-service:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-contact-service:${GIT_VERSION:-latest}
+    container_name: contact-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
+      - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
+      - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
+      - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+      - CONTACT_MAIL=${CONTACT_MAIL}
+      - CONTACT_MAIL_HOST=${CONTACT_MAIL_HOST}
+      - CONTACT_MAIL_PORT=${CONTACT_MAIL_PORT}
+      - CONTACT_MAIL_USERNAME=${CONTACT_MAIL_USERNAME}
+      - CONTACT_MAIL_PASSWORD=${CONTACT_MAIL_PASSWORD}
+    depends_on:
+      - discovery-service
+      - config-service
+      - mailhog
+    networks:
+      - backend-network
+      - observability-network
+      - keycloak-network
+
+  training-service:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-training-service:${GIT_VERSION:-latest}
+    container_name: training-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
+      - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
+      - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
+      - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-training-service:5432/training-db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      - discovery-service
+      - config-service
+      - keycloak
+    networks:
+      - backend-network
+      - observability-network
+      - keycloak-network
+
+  facebook-service:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-facebook-service:${GIT_VERSION:-latest}
+    container_name: facebook-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
+      - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
+      - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
+      - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-facebook-service:5432/facebook-db
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      - discovery-service
+      - config-service
+      - keycloak
+    networks:
+      - backend-network
+      - observability-network
+      - keycloak-network
+
+  # FRONTEND APPLICATIONS
+  ashs-frontend:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-ashs-frontend:${GIT_VERSION:-latest}
+    container_name: ashs-frontend
+    ports:
+      - "4200:80"  # Main frontend - exposed
+    depends_on:
+      - contact-service
+      - facebook-service
+      - training-service
+      - gateway-service
+    networks:
+      - backend-network
+
+  ashs-frontend-admin:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-ashs-frontend-admin:${GIT_VERSION:-latest}
+    container_name: ashs-frontend-admin
+    ports:
+      - "4201:80"  # Admin frontend - exposed
+    depends_on:
+      - contact-service
+      - facebook-service
+      - training-service
+      - gateway-service
+    networks:
+      - backend-network
+
+networks:
+  observability-network:
+    driver: bridge
+  keycloak-network:
+    driver: bridge
+  backend-network:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  tempo_data:
+  loki_data:
+  grafana_data:
+  postgres_data_kc:
+  keycloak_data:
+  postgres_data_training_service:
+  postgres_data_facebook_service:

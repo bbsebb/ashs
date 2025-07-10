@@ -23,3 +23,4 @@ out/
 ### VS Code ###
 .vscode/
 
+/deployment/.env

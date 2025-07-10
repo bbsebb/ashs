@@ -1,16 +1,16 @@
 services:
   postgres-kc: # Nom du service
     image: postgres:17.4 # Image officielle PostgreSQL (version: 15)
-    container_name: kc-db-container # Nom du conteneur
+    container_name: kc-db-container-dev # Nom du conteneur
     restart: always # Redémarre le conteneur automatiquement si nécessaire
     environment:
       POSTGRES_USER: devuser # Nom d'utilisateur pour PostgreSQL
       POSTGRES_PASSWORD: devpassword # Mot de passe de l'utilisateur
       POSTGRES_DB: kc-db # Nom de la base de données initiale
     volumes:
-      - postgres_data_kc:/var/lib/postgresql/data # Volume Docker pour persister les données
+      - postgres_data_kc_dev:/var/lib/postgresql/data # Volume Docker pour persister les données
 
-  keycloak:
+  keycloak-dev:
     image: quay.io/keycloak/keycloak:24.0.2
     command: start-dev
     environment:
@@ -27,4 +27,4 @@ services:
 
 
 volumes:
-  postgres_data_kc:
+  postgres_data_kc_dev:
