@@ -26,7 +26,7 @@ services:
       KC_DB_USERNAME: ${POSTGRES_USER:-devuser}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-devpassword}
     ports:
-      - "127.0.0.1:8079:8080"
+      - "8079:8080"
     depends_on:
       - postgres-kc
     volumes:

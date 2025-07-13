@@ -24,3 +24,4 @@ out/
 .vscode/
 
 /deployment/.env
+/deployment/observability/.tempo/

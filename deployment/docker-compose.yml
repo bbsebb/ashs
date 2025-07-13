@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # OBSERVABILITY SERVICES
   prometheus:
@@ -8,6 +6,12 @@ services:
       service: prometheus
     env_file:
       - ./.env
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   tempo:
     extends:
@@ -15,6 +19,12 @@ services:
       service: tempo
     env_file:
       - ./.env
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3200/status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   loki:
     extends:
@@ -22,6 +32,12 @@ services:
       service: loki
     env_file:
       - ./.env
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   grafana:
     extends:
@@ -29,10 +45,19 @@ services:
       service: grafana
     env_file:
       - ./.env
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
     depends_on:
-      - prometheus
-      - tempo
-      - loki
+      prometheus:
+        condition: service_healthy
+      tempo:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
 
   # KEYCLOAK SERVICES
   postgres-kc:
@@ -41,15 +66,20 @@ services:
       service: postgres-kc
     env_file:
       - ./.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   keycloak:
     extends:
       file: ./keycloak/docker-compose.yml
       service: keycloak
-    env_file:
-      - ./.env
     depends_on:
-      - postgres-kc
+      postgres-kc:
+        condition: service_healthy
 
   # DATABASE SERVICES
   postgres-training-service:
@@ -62,6 +92,12 @@ services:
       POSTGRES_DB: training-db
     volumes:
       - postgres_data_training_service:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - backend-network
 
@@ -75,6 +111,12 @@ services:
       POSTGRES_DB: facebook-db
     volumes:
       - postgres_data_facebook_service:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - backend-network
 
@@ -84,6 +126,12 @@ services:
     container_name: mailhog
     ports:
       - "127.0.0.1:8025:8025"   # Interface Web - localhost only
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8025" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     networks:
       - backend-network
 
@@ -95,11 +143,21 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - CONFIG_SERVICE_KEYSTORE_PASS=${CONFIG_SERVICE_KEYSTORE_PASS}
       - CONFIG_SERVER_URI=https://github.com/bbsebb/temp-configuration.git
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
-      - tempo
-      - prometheus
-      - grafana
-      - loki
+      tempo:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
     networks:
       - backend-network
       - observability-network
@@ -109,10 +167,17 @@ services:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-discovery-service:${GIT_VERSION:-latest}
     container_name: discovery-service
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod
       - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
-      - config-service
+      config-service:
+        condition: service_healthy
     networks:
       - backend-network
       - observability-network
@@ -130,9 +195,17 @@ services:
       - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
       - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
       - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
-      - discovery-service
-      - config-service
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
     networks:
       - backend-network
       - observability-network
@@ -148,14 +221,23 @@ services:
       - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
       - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
       - CONTACT_MAIL=${CONTACT_MAIL}
-      - CONTACT_MAIL_HOST=${CONTACT_MAIL_HOST}
-      - CONTACT_MAIL_PORT=${CONTACT_MAIL_PORT}
-      - CONTACT_MAIL_USERNAME=${CONTACT_MAIL_USERNAME}
-      - CONTACT_MAIL_PASSWORD=${CONTACT_MAIL_PASSWORD}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
-      - discovery-service
-      - config-service
-      - mailhog
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+      mailhog:
+        condition: service_healthy
     networks:
       - backend-network
       - observability-network
@@ -173,10 +255,19 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-training-service:5432/training-db
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
-      - discovery-service
-      - config-service
-      - keycloak
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+      postgres-training-service:
+        condition: service_healthy
     networks:
       - backend-network
       - observability-network
@@ -194,10 +285,19 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-facebook-service:5432/facebook-db
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
-      - discovery-service
-      - config-service
-      - keycloak
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+      postgres-facebook-service:
+        condition: service_healthy
     networks:
       - backend-network
       - observability-network
@@ -210,10 +310,14 @@ services:
     ports:
       - "4200:80"  # Main frontend - exposed
     depends_on:
-      - contact-service
-      - facebook-service
-      - training-service
-      - gateway-service
+      contact-service:
+        condition: service_healthy
+      facebook-service:
+        condition: service_healthy
+      training-service:
+        condition: service_healthy
+      gateway-service:
+        condition: service_healthy
     networks:
       - backend-network
 
@@ -223,10 +327,14 @@ services:
     ports:
       - "4201:80"  # Admin frontend - exposed
     depends_on:
-      - contact-service
-      - facebook-service
-      - training-service
-      - gateway-service
+      contact-service:
+        condition: service_healthy
+      facebook-service:
+        condition: service_healthy
+      training-service:
+        condition: service_healthy
+      gateway-service:
+        condition: service_healthy
     networks:
       - backend-network
 

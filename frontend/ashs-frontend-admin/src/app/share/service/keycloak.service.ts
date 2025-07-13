@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import Keycloak, {KeycloakInitOptions, KeycloakLoginOptions} from 'keycloak-js';
+import {environment} from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class KeycloakService {
 
   constructor() {
     this.keycloak = new Keycloak({
-      url: 'http://localhost:8079',
+      url: `${environment.keycloakUrl}`,
       realm: 'ashs',
       clientId: 'angular-frontend-admin'
     });

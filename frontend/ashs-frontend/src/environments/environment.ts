@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  baseUrl: '' //todo
+  baseUrl: 'http://gateway:8080/api'
 
 
 };
