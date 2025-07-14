@@ -9,13 +9,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * Implementation of the AccessTokenService interface for managing Facebook access tokens.
- * 
+ *
  * <p>This service is responsible for retrieving and exchanging Facebook access tokens
  * used to authenticate requests to the Facebook Graph API. It interacts with the
  * Facebook Graph API through a Feign client and stores tokens in a repository.</p>
- * 
+ *
  * @since 1.0
  */
 @Service
@@ -51,10 +53,10 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     /**
      * Constructs a new AccessTokenServiceImpl with the specified dependencies.
-     * 
-     * @param accessTokenRepository Repository for storing and retrieving access tokens
+     *
+     * @param accessTokenRepository       Repository for storing and retrieving access tokens
      * @param facebookGraphAPIFeignClient Feign client for communicating with the Facebook Graph API
-     * @param accessTokenMapper Mapper for converting between DTO and entity objects
+     * @param accessTokenMapper           Mapper for converting between DTO and entity objects
      */
     public AccessTokenServiceImpl(AccessTokenRepository accessTokenRepository,
                                   FacebookGraphAPIFeignClient facebookGraphAPIFeignClient, AccessTokenMapper accessTokenMapper) {
@@ -65,28 +67,26 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>This implementation retrieves the token with ID 1 from the repository.
      * If no token is found, an EntityNotFoundException is thrown.</p>
-     * 
+     *
      * @return The current access token entity
      * @throws EntityNotFoundException if no token is found in the repository
      */
     @Override
-    public AccessToken getCurrentToken() {
+    public Optional<AccessToken> getCurrentToken() {
         log.debug("Récupération du token d'accès courant");
-        var token = accessTokenRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
-        log.debug("Token d'accès récupéré avec succès");
-        return token;
+        return accessTokenRepository.findById(1L);
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>This implementation calls the Facebook Graph API to exchange the token,
      * converts the response to an entity, and saves it in the repository with ID 1,
      * replacing any existing token.</p>
-     * 
+     *
      * @param fbExchangeToken The short-lived token to exchange
      * @return The new long-lived access token entity
      */
