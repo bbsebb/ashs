@@ -1,43 +1,13 @@
 {
   "realm": "ashs",
   "enabled": true,
-  "sslRequired": "external",
-  "registrationAllowed": false,
-  "privateKey": "MIIEowIBAAKCAQEAiU54OXoCbHDgUoJCuXxGCJRGBZD7V1Fzz1OlTO9T/BRgZeBVztXDKesWNuLSFDNdcX4xNWNLEXw9ifY9GqKJb4EbhU3TzW9LFVs4mYfA4+E8yXw5qPfGEOzh0TuYko4VUG0gSA/0gqGei7BOGzXzWEJTms/MYkXwvNAuQ7Qjz8itlV3Qn4KcOcYY6GDdgfABVrpxY+u0xciqWZIVcB7xpHVezqvQW4MwQvK4C1JRMqLy0hQNvR5ogUGYjlTryhK0GrQP+J5JQoIr6oH8UxJLqQGFTSRZDk/bVGGloc3zdQYeHKzHvI5j1zEQfR/Nnoc6OFRZiB2NyjMQjziy9Q4+wwIDAQABAoIBAFUY8z0/ZP4iVPhdLGw/rxS/OjkQjAgzpJW9Ej0nNDpHu3IA+UQzYv/bCEwP9yd3/8iK5ncvlhaIhbRtgaKQV8PxQmkRbsQq8790q5yRwvVcbqECBzQsxMbdXTJmvDKxnc3XrHx0FfZ6oCr1yQ6MQeBouHH+3yM2utQRYDJFIWOr0qNm8iQNuNDGdcC5mRLpTRYoKZxTfph/sCUvxAtQS5Eo6fRFKHpA3/NWlk3UQ3sRUY7zmXGCmXRxFCwLFBGH/LJZmXbZ2ggMQqJBApcCipaYPiVnO1J88CMSdcQWwGV1QBVlSEjwBZZjOD/0G4j9SpcjxJr8vRUZ6UQ+/+ECgYEA4aBhTzMH+i5iyJfZxlPEYmrE9Gx/Bsk5E0a5qY+uZhJI7Iza5JkhqZ/lFXEHBZ2eFYpyl6y6LvNUeIYndMOhSuU7edyZVX7EFmLY/yWNrNTbqFKhGVwFbxMi2LiWxJQW6JvTgDhXV9xgvvW4/RkUEGwduG2m9nTWHf/cj5qfQn0CgYEAnDSlaVtYcqhH9F4uGp6UhJXpQ9RVE0EKwVRDvv0AkNMYnJUl0O8mf6+lJY6gLx4qLtbZqHFMTFOQwUkc3lxZT7ZLiDGZUmWMGRCKcHH7lxrTRZcFcxogRxLvQhIZ4XqBGYNQVbFgjtbmj8/N8gCqNhS/d/dFjhDwLw6V0YU6+SUCgYEAjghyQbx2qYDSzwQwfM8BDC8ZmXOZ2YLMeItjjJNbBK64xjYIQgkA9Jnf1SYtY8XGCHpodGOCIX8Z7ZnNux+IEXMmLQI9HUHfqwZdRJEixUdEf1ViKZ8BHBB9/5X3YyUEJmVFbqLRGw0ZQveuKQnuXpkPcIZWj+wjXLhy+aNvXpkCgYAQmxFeCzgPd1o2EjJd5DuUnMiKnW8yCjLNYKtLZTEbfSRa0Hr4dCEk/RxS+AfJrb/eA7TlnOmNHPGQRpvkVfBTKZs4Tm/d1iyKpUYMGIpMFQkY8XOUcUEcX1cybeAiUZZJMRNrj0w+UEYlk3Z7KXB8lxOmG5LmvGvNZGfdhXv8PQKBgFXQm6/QpOX4PYquL4ZULuZ4Hy5LAqBeRvx+NYHH8Uj3r6VdCdqJwGCjDxFX+mMK6zdPJb7JrXLOHcRZV3/R5O0XfXSiqLzUNZhRrQJ2r+mSXAWMEwOJjxK0KKqkXhfxiyE9HtNZYI/vJYTvSlDy2QZI6IOO8r8oGILohRmKIpBB",
-  "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiU54OXoCbHDgUoJCuXxGCJRGBZD7V1Fzz1OlTO9T/BRgZeBVztXDKesWNuLSFDNdcX4xNWNLEXw9ifY9GqKJb4EbhU3TzW9LFVs4mYfA4+E8yXw5qPfGEOzh0TuYko4VUG0gSA/0gqGei7BOGzXzWEJTms/MYkXwvNAuQ7Qjz8itlV3Qn4KcOcYY6GDdgfABVrpxY+u0xciqWZIVcB7xpHVezqvQW4MwQvK4C1JRMqLy0hQNvR5ogUGYjlTryhK0GrQP+J5JQoIr6oH8UxJLqQGFTSRZDk/bVGGloc3zdQYeHKzHvI5j1zEQfR/Nnoc6OFRZiB2NyjMQjziy9Q4+wwIDAQAB",
-  "roles": {
-    "realm": [
-      {
-        "name": "user",
-        "description": "User role"
-      },
-      {
-        "name": "admin",
-        "description": "Admin role"
-      }
-    ]
-  },
   "clients": [
     {
-      "clientId": "ashs-frontend",
-      "enabled": true,
-      "publicClient": true,
-      "redirectUris": [
-        "http://localhost:4200/*"
-      ],
-      "webOrigins": [
-        "http://localhost:4200"
-      ],
-      "standardFlowEnabled": true,
-      "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": false,
-      "fullScopeAllowed": true
-    },
-    {
-      "clientId": "ashs-frontend-admin",
-      "enabled": true,
-      "publicClient": true,
+      "id": "4f8e4b8c-dc08-4d05-bb0f-dc95c35b9ce9",
+      "clientId": "angular-frontend-admin",
+      "rootUrl": "http://localhost:4201",
+      "adminUrl": "http://localhost:4201",
+      "baseUrl": "http://localhost:4201",
       "redirectUris": [
         "http://localhost:4201/*"
       ],
@@ -45,41 +15,41 @@
         "http://localhost:4201"
       ],
       "standardFlowEnabled": true,
-      "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": false,
-      "fullScopeAllowed": true
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:4201/*",
+        "use.refresh.tokens": "true",
+        "backchannel.logout.session.required": "true",
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
     }
   ],
-  "users": [
-    {
-      "username": "user",
-      "enabled": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "user",
-          "temporary": false
-        }
-      ],
-      "realmRoles": [
-        "user"
-      ]
-    },
-    {
-      "username": "admin",
-      "enabled": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "admin",
-          "temporary": false
-        }
-      ],
-      "realmRoles": [
-        "admin",
-        "user"
-      ]
-    }
-  ]
+  "roles": {
+    "realm": [
+      {
+        "name": "ADMIN",
+        "description": ""
+      },
+      {
+        "name": "USER",
+        "description": ""
+      }
+    ]
+  }
 }

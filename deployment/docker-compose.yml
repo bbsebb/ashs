@@ -1,4 +1,23 @@
 services:
+  # NGINX REVERSE PROXY
+  nginx:
+    extends:
+      file: ./nginx/docker-compose.yml
+      service: nginx
+    env_file:
+      - ./.env
+    depends_on:
+      keycloak:
+        condition: service_started
+      gateway-service:
+        condition: service_healthy
+      ashs-frontend:
+        condition: service_started
+      ashs-frontend-admin:
+        condition: service_started
+      grafana:
+        condition: service_healthy
+
   # OBSERVABILITY SERVICES
   prometheus:
     extends:
@@ -64,8 +83,6 @@ services:
     extends:
       file: ./keycloak/docker-compose.yml
       service: postgres-kc
-    env_file:
-      - ./.env
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 10s
@@ -137,7 +154,7 @@ services:
 
   # BACKEND SERVICES
   config-service:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-config-service:${GIT_VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-config-service:${GIT_VERSION}
     container_name: config-service
     environment:
       - SPRING_PROFILES_ACTIVE=prod
@@ -166,7 +183,7 @@ services:
 
 
   discovery-service:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-discovery-service:${GIT_VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-discovery-service:${GIT_VERSION}
     container_name: discovery-service
     environment:
       - SPRING_PROFILES_ACTIVE=prod
@@ -189,10 +206,11 @@ services:
 
 
   gateway-service:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-gateway-service:${GIT_VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-gateway-service:${GIT_VERSION}
     container_name: gateway-service
-    ports:
-      - "8080:8080"  # Main API gateway - exposed
+    # Ports now exposed through nginx
+    # ports:
+    #   - "8080:8080"  # Main API gateway - now accessed via nginx
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
@@ -217,7 +235,7 @@ services:
       - keycloak-network
 
   contact-service:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-contact-service:${GIT_VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-contact-service:${GIT_VERSION}
     container_name: contact-service
     environment:
       - SPRING_PROFILES_ACTIVE=prod
@@ -250,7 +268,7 @@ services:
       - keycloak-network
 
   training-service:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-training-service:${GIT_VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-training-service:${GIT_VERSION}
     container_name: training-service
     environment:
       - SPRING_PROFILES_ACTIVE=prod
@@ -281,7 +299,7 @@ services:
       - keycloak-network
 
   facebook-service:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-facebook-service:${GIT_VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-facebook-service:${GIT_VERSION}
     container_name: facebook-service
     environment:
       - SPRING_PROFILES_ACTIVE=prod
@@ -313,10 +331,11 @@ services:
 
   # FRONTEND APPLICATIONS
   ashs-frontend:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-ashs-frontend:${GIT_VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-ashs-frontend:${GIT_VERSION}
     container_name: ashs-frontend
-    ports:
-      - "4200:80"  # Main frontend - exposed
+    # Ports now exposed through nginx
+    # ports:
+    #   - "4200:80"  # Main frontend - now accessed via nginx
     depends_on:
       contact-service:
         condition: service_healthy
@@ -330,10 +349,11 @@ services:
       - backend-network
 
   ashs-frontend-admin:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ashs}/ashs-ashs-frontend-admin:${GIT_VERSION:-latest}
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-ashs-frontend-admin:${GIT_VERSION}
     container_name: ashs-frontend-admin
-    ports:
-      - "4201:80"  # Admin frontend - exposed
+    # Ports now exposed through nginx
+    # ports:
+    #   - "4201:80"  # Admin frontend - now accessed via nginx
     depends_on:
       contact-service:
         condition: service_healthy

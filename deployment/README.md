@@ -9,6 +9,9 @@ This directory contains the configuration files for deploying the ASHS applicati
   - `tempo/`: Tempo configuration
   - `grafana/`: Grafana configuration
 - `keycloak/`: Configuration files for Keycloak authentication
+- `nginx/`: Configuration files for Nginx reverse proxy
+  - `nginx.conf`: Nginx configuration file
+  - `docker-compose.yml`: Docker Compose file for Nginx service
 - `.env`: Environment variables for all services
 - `docker-compose.yml`: Main Docker Compose file that includes all services
 
@@ -25,22 +28,37 @@ docker-compose up -d
 
 ## Accessing Services
 
+All services are now accessible through the Nginx reverse proxy. You need to configure your hosts file to map the server names to localhost.
+
+Add the following entries to your hosts file (`/etc/hosts` on Linux/Mac or `C:\Windows\System32\drivers\etc\hosts` on Windows):
+
+```
+127.0.0.1 frontend
+127.0.0.1 admin
+127.0.0.1 api
+127.0.0.1 auth
+127.0.0.1 grafana
+127.0.0.1 prometheus
+127.0.0.1 tempo
+127.0.0.1 loki
+```
+
 ### Frontend Applications
-- **Main Frontend**: http://localhost:4200
-- **Admin Frontend**: http://localhost:4201
+- **Main Frontend**: http://frontend
+- **Admin Frontend**: http://admin
 
 ### API Gateway
-- **API Gateway**: http://localhost:8080
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **API Gateway**: http://api
+- **Swagger UI**: http://api/swagger-ui.html
 
 ### Observability Tools
-- **Grafana**: http://localhost:3000 (admin/password by default)
-- **Prometheus**: http://localhost:9090
-- **Tempo UI**: http://localhost:3200
+- **Grafana**: http://grafana (admin/password by default)
+- **Prometheus**: http://prometheus
+- **Tempo UI**: http://tempo
 
 ### Authentication
-- **Keycloak Admin Console**: http://localhost:8079 (admin/admin by default)
-- **MailHog Web UI**: http://localhost:8025 (for email testing)
+- **Keycloak Admin Console**: http://auth (admin/admin by default)
+- **MailHog Web UI**: http://localhost:8025 (for email testing, only accessible from localhost)
 
 ## Configuration
 
@@ -96,6 +114,19 @@ Keycloak is configured with a pre-defined realm for the ASHS application. The co
 - `realm-export.json`: Contains the realm configuration with roles, clients, and users
 - `import-realm.sh`: Script to import the realm into Keycloak
 
+### Nginx Reverse Proxy
+
+Nginx is configured as a reverse proxy to provide a unified access point for all services. The configuration files are located in the `nginx/` directory:
+
+- `nginx.conf`: Contains the Nginx configuration with proxy settings for all services
+- `docker-compose.yml`: Contains the Docker Compose configuration for the Nginx service
+
+The Nginx reverse proxy provides the following benefits:
+- Single entry point for all services
+- Improved security by not exposing services directly
+- Simplified access through consistent URLs
+- Ability to add SSL/TLS termination in one place
+
 ## Customization
 
 To customize the configuration:
@@ -111,3 +142,8 @@ If you encounter issues:
 1. Check the logs using `docker-compose logs <service-name>`
 2. Verify that all services are running using `docker-compose ps`
 3. Ensure that the configuration files are correctly mounted in the containers
+4. For Nginx-related issues:
+   - Check Nginx logs: `docker-compose logs nginx`
+   - Verify that your hosts file is correctly configured
+   - Ensure that all services are healthy and accessible from within the Docker network
+   - Test direct access to services by temporarily re-enabling their port mappings
