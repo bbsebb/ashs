@@ -3,6 +3,22 @@ spring:
     config:
       server:
         git:
-          uri: ${CONFIG_SERVER_URI:https://github.com/bbsebb/temp-configuration.git}
+          uri: ${CONFIG_SERVER_URI}
           clone-on-start: true
           skipSslValidation: true
+
+server:
+  error:
+    include-stacktrace: never
+
+management:
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_TRACING_ENDPOINT}
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+  tracing:
+    sampling:
+      probability: 0.1
