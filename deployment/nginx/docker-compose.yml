@@ -6,9 +6,11 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx-staging.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx-selfsigned.crt:/etc/nginx/nginx-selfsigned.crt:ro
+      - ./nginx-selfsigned.key:/etc/nginx/nginx-selfsigned.key:ro
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80" ]
       interval: 10s
       timeout: 5s
       retries: 5

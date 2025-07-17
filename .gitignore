@@ -25,3 +25,5 @@ out/
 
 /deployment/.env
 /deployment/observability/.tempo/
+/deployment/nginx/nginx-selfsigned.crt
+/deployment/nginx/nginx-selfsigned.key
