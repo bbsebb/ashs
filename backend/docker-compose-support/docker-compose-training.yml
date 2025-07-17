@@ -14,4 +14,4 @@ services:
 
 
 volumes:
-  postgres_data_training_service:
+  postgres_data_training_service-dev:
