@@ -137,20 +137,6 @@ services:
     networks:
       - backend-network
 
-  # EMAIL SERVICE
-  mailhog:
-    image: mailhog/mailhog
-    container_name: mailhog
-    ports:
-      - "127.0.0.1:8025:8025"   # Interface Web - localhost only
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8025" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    networks:
-      - backend-network
 
   # BACKEND SERVICES
   config-service:
@@ -216,7 +202,8 @@ services:
       - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
       - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
       - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
-      - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+      - SECURITY_OAUTH2_JWT_ISSUER_URI=${JWT_ISSUER_URI}
+      - SECURITY_OAUTH2_JWT_JWK_URI=${INTERNAL_KEYCLOAK_URL}
       - LOKI_URL=${INTERNAL_LOKI_URL}
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
@@ -242,7 +229,8 @@ services:
       - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
       - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
       - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
-      - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+      - SECURITY_OAUTH2_JWT_ISSUER_URI=${JWT_ISSUER_URI}
+      - SECURITY_OAUTH2_JWT_JWK_URI=${INTERNAL_KEYCLOAK_URL}
       - CONTACT_MAIL=${CONTACT_MAIL}
       - MAIL_HOST=${MAIL_HOST}
       - MAIL_PORT=${MAIL_PORT}
@@ -275,7 +263,8 @@ services:
       - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
       - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
       - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
-      - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+      - SECURITY_OAUTH2_JWT_ISSUER_URI=${JWT_ISSUER_URI}
+      - SECURITY_OAUTH2_JWT_JWK_URI=${INTERNAL_KEYCLOAK_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-training-service:5432/training-db
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
@@ -306,7 +295,8 @@ services:
       - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
       - EUREKA_SERVER_URI=${INTERNAL_DISCOVERY_URL}
       - ZIPKIN_TRACING_ENDPOINT=${INTERNAL_ZIPKIN_ENDPOINT}
-      - SECURITY_OAUTH2_JWT_ISSUER_URI=${INTERNAL_KEYCLOAK_URL}
+      - SECURITY_OAUTH2_JWT_ISSUER_URI=${JWT_ISSUER_URI}
+      - SECURITY_OAUTH2_JWT_JWK_URI=${INTERNAL_KEYCLOAK_URL}
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-facebook-service:5432/facebook-db
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
