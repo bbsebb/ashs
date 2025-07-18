@@ -248,8 +248,6 @@ services:
         condition: service_healthy
       config-service:
         condition: service_healthy
-      mailhog:
-        condition: service_healthy
     networks:
       - backend-network
       - observability-network
