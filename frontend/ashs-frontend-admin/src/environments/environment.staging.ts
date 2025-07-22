@@ -1,5 +1,9 @@
 export const environment = {
   production: true,
   baseUrl: 'https://api/api',
-  keycloakUrl: 'https://auth'
+  keycloak: {
+    realm: 'ashs',
+    url: 'https://auth',
+    clientId: 'angular-frontend-admin'
+  }
 };

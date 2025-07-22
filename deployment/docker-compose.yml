@@ -17,6 +17,14 @@ services:
         condition: service_started
       grafana:
         condition: service_healthy
+        
+  nginx-exporter:
+    extends:
+      file: ./nginx/docker-compose.yml
+      service: nginx-exporter
+    depends_on:
+      nginx:
+        condition: service_started
 
   # OBSERVABILITY SERVICES
   prometheus:

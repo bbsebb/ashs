@@ -15,7 +15,27 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-retries: "5"
+        no-file: "false"
+        keep-file: "true"
+        max-file: "3"
+        loki-batch-size: "400"
+        loki-external-labels: "job=nginx,service=nginx"
     networks:
       - backend-network
       - observability-network
       - keycloak-network
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    command:
+      - -nginx.scrape-uri=http://nginx:80/stub_status
+    depends_on:
+      - nginx
+    networks:
+      - observability-network

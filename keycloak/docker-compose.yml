@@ -17,7 +17,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://kc-db-container:5432/kc-db
+      KC_DB_URL: jdbc:postgresql://kc-db-container-dev:5432/kc-db
       KC_DB_USERNAME: devuser
       KC_DB_PASSWORD: devpassword
     ports:

@@ -10,9 +10,9 @@ export class KeycloakService {
 
   constructor() {
     this.keycloak = new Keycloak({
-      url: `${environment.keycloakUrl}`,
-      realm: 'ashs',
-      clientId: 'angular-frontend-admin'
+      url: `${environment.keycloak.url}`,
+      realm: `${environment.keycloak.realm}`,
+      clientId: `${environment.keycloak.clientId}`
     });
   }
 
