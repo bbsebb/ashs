@@ -4,7 +4,7 @@ server:
 distributor:
   receivers:
     zipkin:
-      endpoint: "my-tempo:9411"
+      endpoint: "localhost:9411"
 
 storage:
   trace:

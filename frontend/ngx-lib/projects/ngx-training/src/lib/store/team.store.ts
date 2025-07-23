@@ -143,7 +143,7 @@ export class TeamStore {
   get roleCoach() {
     return this.roleCoachResource.value;
   }
-  
+
 
   reloadRoleCoach() {
     this.roleCoachResource.reload();
@@ -180,7 +180,37 @@ export class TeamStore {
 
     return this.teamsStore.updateTeam(team, updateTeamDTORequest, trainingSessions, formTrainingSessionsDTO, roleCoaches, roleCoachesDTORequest)
       .pipe(
-        tap(() => this.teamResource.reload()), //TODO A optimiser en modifiant directement le store
+        // Directly update the store resources instead of reloading
+        tap((result) => {
+          // Update team resource directly with the updated team
+          this.teamResource.update(() => result.team);
+
+          // Calculate the updated training sessions by removing deleted ones and adding new ones
+          this.trainingSessionResource.update((currentTrainingSessions) => {
+            // Filter out deleted training sessions
+            const filteredTrainingSessions = currentTrainingSessions?.filter(ts =>
+              !result.deletedTrainingSessions.some(deleted =>
+                deleted._links?.self?.href === ts._links?.self?.href
+              )
+            ) ?? [];
+
+            // Add new training sessions
+            return [...filteredTrainingSessions, ...result.trainingResults];
+          });
+
+          // Calculate the updated role coaches by removing deleted ones and adding new ones
+          this.roleCoachResource.update((currentRoleCoaches) => {
+            // Filter out deleted role coaches
+            const filteredRoleCoaches = currentRoleCoaches?.filter(rc =>
+              !result.deletedRoleCoaches.some(deleted =>
+                deleted._links?.self?.href === rc._links?.self?.href
+              )
+            ) ?? [];
+
+            // Add new role coaches
+            return [...filteredRoleCoaches, ...result.roleCoachResults];
+          });
+        })
       );
   }
 

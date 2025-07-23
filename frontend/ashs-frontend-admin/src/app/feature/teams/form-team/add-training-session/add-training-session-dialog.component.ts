@@ -41,6 +41,33 @@ export class AddTrainingSessionDialogComponent {
     hall: this.formBuild.control<Hall | undefined>(undefined, Validators.required),
   })
 
+  constructor() {
+    const timeSlotGroup = this.addTrainingSessionForm.get('timeSlot');
+    if (timeSlotGroup) {
+      // Surveille les changements de startTime
+      timeSlotGroup.get('startTime')?.valueChanges.subscribe((start: string) => {
+        if (start && /^\d{2}:\d{2}$/.test(start)) {
+          const end = this.addDurationToTime(start, 1, 30);
+          timeSlotGroup.get('endTime')?.setValue(end, {emitEvent: false});
+        }
+      });
+    }
+
+  }
+
+  // Ajoute une durée en heures et minutes à une chaîne "HH:mm"
+  private addDurationToTime(start: string, hours: number, minutes: number): string {
+    const [h, m] = start.split(':').map(Number);
+    const startDate = new Date();
+    startDate.setHours(h, m, 0, 0);
+    startDate.setMinutes(startDate.getMinutes() + hours * 60 + minutes);
+
+    // Format "HH:mm"
+    const endH = String(startDate.getHours()).padStart(2, '0');
+    const endM = String(startDate.getMinutes()).padStart(2, '0');
+    return `${endH}:${endM}`;
+  }
+
 
   add() {
     if (this.addTrainingSessionForm.invalid) {

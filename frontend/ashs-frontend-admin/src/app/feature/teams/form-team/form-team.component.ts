@@ -1,4 +1,4 @@
-import {Component, computed, effect, inject, input, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
+import {Component, computed, effect, inject, input, Signal, signal, WritableSignal} from '@angular/core';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
@@ -27,7 +27,6 @@ import {
   FormTrainingSessionDTO,
   Gender,
   GenderPipe,
-  RoleCoach,
   RoleToFrenchPipe,
   Team,
   TeamsStore,
@@ -87,8 +86,8 @@ export class FormTeamComponent {
   constructor() {
     effect(() => this.teamStore.uri = this.uri());
     effect(() => this.teamForm = this.createTeamForm(this.teamStore.team()));
-    this.trainingSessionsSignal = linkedSignal(() => this.teamStore.trainingSession() ?? [])
-    this.roleCoachesSignal = linkedSignal(() => this.teamStore.roleCoach() ?? [])
+    this.trainingSessionsSignal = signal([...(this.teamStore.trainingSession() ?? [])])
+    this.roleCoachesSignal = signal([...(this.teamStore.roleCoach() ?? [])])
     this.isCreateSignal = computed(() => this.uri() === undefined);
   }
 
@@ -127,7 +126,7 @@ export class FormTeamComponent {
   }
 
   addCoach() {
-    const matDialogRef = this.matDialog.open<AddRoleCoachDialogComponent, any, RoleCoach>(AddRoleCoachDialogComponent);
+    const matDialogRef = this.matDialog.open<AddRoleCoachDialogComponent, any, FormRoleCoachDTO>(AddRoleCoachDialogComponent);
     matDialogRef.afterClosed().subscribe(res => {
       if (res) {
         this.roleCoachesSignal.update((rc) => {

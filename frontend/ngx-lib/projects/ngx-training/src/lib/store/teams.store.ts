@@ -12,7 +12,7 @@ import {
   unwrap
 } from 'ngx-hal-forms';
 
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {Team} from '../model/team';
 import {CreateTeamDTORequest} from '../dto/create-team-d-t-o-request';
 import {FormTrainingSessionDTO} from '../dto/form-training-session-d-t-o';
@@ -186,6 +186,7 @@ export class TeamsStore {
       .pipe(
         tap((res) => this.teamsResource.update(teamsResource => setItemInEmbedded(teamsResource, 'teams', res.team))),
         tap(() => this.reloadTeamsResource())
+        // Return the full result object to be used by team.store.ts
       );
   }
 
@@ -199,10 +200,9 @@ export class TeamsStore {
       tap(() => {
         if (this.teams().length === 1) {
           this.goToPreviousPage()
-        } else {
-          this.teamsResource.update((teamsResource) => deleteItemInEmbedded(teamsResource, 'teams', team));
         }
       }),
+      tap(() => this.teamsResource.update((teamsResource) => deleteItemInEmbedded(teamsResource, 'teams', team))),
       tap(() => this.reloadTeamsResource())
     );
   }
