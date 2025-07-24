@@ -171,7 +171,7 @@ jobs:
           FACEBOOK_CLIENT_SECRET=${{ secrets.FACEBOOK_CLIENT_SECRET }}
 
           # Git Configuration
-          GIT_VERSION=${GIT_VERSION}
+          GIT_VERSION=${{ env.GIT_VERSION }}
           GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
 
           # Grafana Configuration
