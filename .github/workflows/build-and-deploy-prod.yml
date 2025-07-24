@@ -221,4 +221,4 @@ jobs:
 
       - name: Deploy to VPS
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "cd /home/${{ vars.VPS_USERNAME }}/ashs && docker compose -f docker-compose-prod.yml pull && docker compose -f docker-compose-prod.yml up -d"
+          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "cd /home/${{ vars.VPS_USERNAME }}/ashs && docker compose pull && docker compose up -d"
