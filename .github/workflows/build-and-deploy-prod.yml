@@ -202,6 +202,7 @@ jobs:
       - name: Create remote directories
         run: |
           ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/nginx"
+          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/keycloak"
           ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/observability/tempo"
           ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/observability/prometheus"
           ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/observability/grafana/datasources"
