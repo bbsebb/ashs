@@ -2,7 +2,7 @@ services:
   # NGINX REVERSE PROXY
   nginx:
     extends:
-      file: ./nginx/docker-compose.yml
+      file: nginx/docker-compose-staging.yml
       service: nginx
     env_file:
       - ./.env
@@ -17,10 +17,10 @@ services:
         condition: service_started
       grafana:
         condition: service_healthy
-        
+
   nginx-exporter:
     extends:
-      file: ./nginx/docker-compose.yml
+      file: nginx/docker-compose-staging.yml
       service: nginx-exporter
     depends_on:
       nginx:
