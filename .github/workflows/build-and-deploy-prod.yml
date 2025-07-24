@@ -1,0 +1,223 @@
+name: Build and Deploy Docker Images for Production Environment
+
+permissions:
+  contents: read
+  packages: write
+on:
+  push:
+    branches: [ prod ]
+  pull_request:
+    branches: [ prod ]
+  workflow_dispatch:
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: [
+          "backend/config-service",
+          "backend/contact-service",
+          "backend/discovery-service",
+          "backend/facebook-service",
+          "backend/gateway-service",
+          "backend/training-service"
+        ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 24
+        uses: actions/setup-java@v4
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Extract module name
+        run: echo "MODULE_NAME=$(basename ${{ matrix.module }})" >> $GITHUB_ENV
+
+      - name: Add execution permission to gradlew
+        working-directory: ${{ matrix.module }}
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        working-directory: ${{ matrix.module }}
+        run: ./gradlew bootJar
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Dockerfile for backend module
+        run: |
+          cat > ${{ matrix.module }}/Dockerfile << 'EOF'
+          FROM eclipse-temurin:24-jre-alpine
+          WORKDIR /app
+          COPY build/libs/*.jar app.jar
+          ENTRYPOINT ["java", "-jar", "app.jar"]
+          EOF
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.module }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ github.repository_owner }}/ashs-${{ env.MODULE_NAME }}:prod-${{ github.sha }}
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [
+          "frontend/ashs-frontend",
+          "frontend/ashs-frontend-admin"
+        ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+
+      - name: Extract app name
+        run: echo "APP_NAME=$(basename ${{ matrix.app }})" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.app }}
+        run: npm ci
+
+      - name: Build Angular app
+        working-directory: ${{ matrix.app }}
+        run: npm run build -- --configuration production
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Dockerfile for frontend app
+        run: |
+          cat > ${{ matrix.app }}/Dockerfile << 'EOF'
+          FROM nginx:alpine
+          COPY dist/${{env.APP_NAME}}/browser /usr/share/nginx/html
+          COPY nginx.conf /etc/nginx/conf.d/default.conf
+          EXPOSE 80
+          CMD ["nginx", "-g", "daemon off;"]
+          EOF
+
+          cat > ${{ matrix.app }}/nginx.conf << 'EOF'
+          server {
+            listen 80;
+            server_name localhost;
+            root /usr/share/nginx/html;
+            index index.html;
+          
+            location / {
+              try_files $uri $uri/ /index.html;
+            }
+          }
+          EOF
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.app }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/${{ github.repository_owner }}/ashs-${{ env.APP_NAME }}:prod-${{ github.sha }}
+
+  deploy-to-production:
+    needs: [ build-backend, build-frontend ]
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set GIT_VERSION environment variable
+        run: echo "GIT_VERSION=prod-${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Create .env file
+        run: |
+          cat > deployment/.env << EOF
+          # Database Credentials
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER=${{ env.POSTGRES_USER }}
+
+          # Email Configuration
+          CONTACT_MAIL=${{ env.CONTACT_MAIL }}
+          MAIL_HOST=${{ env.MAIL_HOST }}
+          MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
+          MAIL_PORT=${{ env.MAIL_PORT }}
+          MAIL_USERNAME=${{ env.MAIL_USERNAME }}
+
+          # Facebook API Configuration
+          FACEBOOK_API_URI=${{ env.FACEBOOK_API_URI }}
+          FACEBOOK_CLIENT_ID=${{ env.FACEBOOK_CLIENT_ID }}
+          FACEBOOK_CLIENT_SECRET=${{ secrets.FACEBOOK_CLIENT_SECRET }}
+
+          # Git Configuration
+          GIT_VERSION=${GIT_VERSION}
+          GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
+
+          # Grafana Configuration
+          GF_SECURITY_ADMIN_PASSWORD=${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+          GF_SECURITY_ADMIN_USER=${{ env.GF_SECURITY_ADMIN_USER }}
+
+          # Internal Network Configuration
+          CONFIG_SERVICE_KEYSTORE_PASS=${{ secrets.CONFIG_SERVICE_KEYSTORE_PASS }}
+          INTERNAL_CONFIG_SERVER=${{ env.INTERNAL_CONFIG_SERVER }}
+          INTERNAL_DISCOVERY_URL=${{ env.INTERNAL_DISCOVERY_URL }}
+          INTERNAL_KEYCLOAK_URL=${{ env.INTERNAL_KEYCLOAK_URL }}
+          INTERNAL_LOKI_URL=${{ env.INTERNAL_LOKI_URL }}
+          INTERNAL_ZIPKIN_ENDPOINT=${{ env.INTERNAL_ZIPKIN_ENDPOINT }}
+          JWT_ISSUER_URI=${{ env.JWT_ISSUER_URI }}
+
+          # Keycloak Configuration
+          KEYCLOAK_ADMIN=${{ env.KEYCLOAK_ADMIN }}
+          KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+          KEYCLOAK_HOSTNAME=${{ env.KEYCLOAK_HOSTNAME }}
+          KEYCLOAK_HOSTNAME_ADMIN=${{ env.KEYCLOAK_HOSTNAME_ADMIN }}
+          EOF
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Create remote directories
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/nginx"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/tempo"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/prometheus"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/grafana/datasources"
+
+      - name: Copy configuration files to VPS
+        run: |
+          scp -o StrictHostKeyChecking=no deployment/.env ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/
+          scp -o StrictHostKeyChecking=no deployment/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/
+          scp -o StrictHostKeyChecking=no deployment/nginx/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/nginx/
+          scp -o StrictHostKeyChecking=no deployment/nginx/nginx-prod.conf ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/nginx/nginx.conf
+          scp -o StrictHostKeyChecking=no deployment/keycloak/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/keycloak/
+          scp -o StrictHostKeyChecking=no deployment/observability/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/
+          scp -o StrictHostKeyChecking=no deployment/observability/tempo/tempo.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/tempo/tempo.yml
+          scp -o StrictHostKeyChecking=no deployment/observability/prometheus/prometheus.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/prometheus/
+          scp -o StrictHostKeyChecking=no deployment/observability/grafana/datasources/datasources.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/grafana/datasources/
+
+      - name: Deploy to VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment && docker-compose pull && docker-compose up -d"

@@ -4,10 +4,10 @@ server:
 distributor:
   receivers:
     zipkin:
-      endpoint: "localhost:9411"
+      endpoint: "0.0.0.0:9411"
 
 storage:
   trace:
     backend: local
     local:
-      path: /tmp/tempo/blocks
+      path: /tmp/tempo
