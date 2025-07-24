@@ -201,23 +201,23 @@ jobs:
 
       - name: Create remote directories
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/nginx"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/tempo"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/prometheus"
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "mkdir -p /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/grafana/datasources"
+          ssh -o StrictHostKeyChecking=no ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }} "mkdir -p /home/${{ env.VPS_USERNAME }}/ashs/nginx"
+          ssh -o StrictHostKeyChecking=no ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }} "mkdir -p /home/${{ env.VPS_USERNAME }}/ashs/observability/tempo"
+          ssh -o StrictHostKeyChecking=no ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }} "mkdir -p /home/${{ env.VPS_USERNAME }}/ashs/observability/prometheus"
+          ssh -o StrictHostKeyChecking=no ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }} "mkdir -p /home/${{ env.VPS_USERNAME }}/ashs/observability/grafana/datasources"
 
       - name: Copy configuration files to VPS
         run: |
-          scp -o StrictHostKeyChecking=no deployment/.env ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/
-          scp -o StrictHostKeyChecking=no deployment/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/
-          scp -o StrictHostKeyChecking=no deployment/nginx/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/nginx/
-          scp -o StrictHostKeyChecking=no deployment/nginx/nginx-prod.conf ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/nginx/nginx.conf
-          scp -o StrictHostKeyChecking=no deployment/keycloak/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/keycloak/
-          scp -o StrictHostKeyChecking=no deployment/observability/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/
-          scp -o StrictHostKeyChecking=no deployment/observability/tempo/tempo.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/tempo/tempo.yml
-          scp -o StrictHostKeyChecking=no deployment/observability/prometheus/prometheus.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/prometheus/
-          scp -o StrictHostKeyChecking=no deployment/observability/grafana/datasources/datasources.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment/observability/grafana/datasources/
+          scp -o StrictHostKeyChecking=no deployment/.env ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/
+          scp -o StrictHostKeyChecking=no deployment/docker-compose.yml ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/
+          scp -o StrictHostKeyChecking=no deployment/nginx/docker-compose.yml ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/nginx/
+          scp -o StrictHostKeyChecking=no deployment/nginx/nginx-prod.conf ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/nginx/nginx.conf
+          scp -o StrictHostKeyChecking=no deployment/keycloak/docker-compose.yml ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/keycloak/
+          scp -o StrictHostKeyChecking=no deployment/observability/docker-compose.yml ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/observability/
+          scp -o StrictHostKeyChecking=no deployment/observability/tempo/tempo.yml ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/observability/tempo/tempo.yml
+          scp -o StrictHostKeyChecking=no deployment/observability/prometheus/prometheus.yml ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/observability/prometheus/
+          scp -o StrictHostKeyChecking=no deployment/observability/grafana/datasources/datasources.yml ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }}:/home/${{ env.VPS_USERNAME }}/ashs/observability/grafana/datasources/
 
       - name: Deploy to VPS
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} "cd /home/${{ secrets.VPS_USERNAME }}/ashs-prod/deployment && docker-compose pull && docker-compose up -d"
+          ssh -o StrictHostKeyChecking=no ${{ env.VPS_USERNAME }}@${{ env.VPS_HOST }} "cd /home/${{ env.VPS_USERNAME }}/ashs && docker-compose pull && docker-compose up -d"
