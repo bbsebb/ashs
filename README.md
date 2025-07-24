@@ -113,6 +113,26 @@ Organisés en microservices indépendants :
 - GitHub Actions/Travis CI pour la construction des images Docker.
 - Déploiement automatique en staging/production.
 
+### 4.3 Nettoyage Manuel
+
+Un workflow GitHub Actions a été créé pour faciliter le nettoyage complet de l'environnement:
+
+- **Workflow**: `manual-cleanup.yml`
+- **Déclenchement**: Manuel uniquement (via l'interface GitHub Actions)
+- **Fonctionnalités**:
+  - Arrêt de tous les services Docker Compose
+  - Suppression de toutes les images Docker
+  - Suppression du répertoire ashs et de tout son contenu
+
+**Comment utiliser le workflow de nettoyage**:
+1. Accédez à l'onglet "Actions" du dépôt GitHub
+2. Sélectionnez le workflow "Manual Cleanup" dans la liste
+3. Cliquez sur "Run workflow"
+4. Tapez "YES" dans le champ de confirmation pour confirmer l'opération
+5. Cliquez sur "Run workflow" pour lancer le processus
+
+⚠️ **Attention**: Cette opération est irréversible et supprimera toutes les données non sauvegardées.
+
 ---
 
 ## 5. Exemple de Flux de Requête

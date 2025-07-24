@@ -1,0 +1,36 @@
+name: Manual Cleanup
+
+# This workflow will only run when manually triggered
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type "YES" to confirm you want to perform a complete cleanup'
+        required: true
+        default: 'NO'
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.confirmation == 'YES' }}
+    
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+      
+      - name: Stop Docker Compose services
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "cd /home/${{ vars.VPS_USERNAME }}/ashs && docker compose down"
+      
+      - name: Remove all Docker images
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "docker system prune -a -f --volumes"
+      
+      - name: Delete ashs directory and all contents
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "rm -rf /home/${{ vars.VPS_USERNAME }}/ashs"
+      
+      - name: Confirmation message
+        run: echo "Cleanup completed successfully. All Docker services stopped, images removed, and ashs directory deleted."
