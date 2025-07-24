@@ -1,0 +1,10 @@
+services:
+  nginx:
+    extends:
+      file: nginx/docker-compose-prod.yml
+      service: nginx
+
+  nginx-exporter:
+    extends:
+      file: nginx/docker-compose-prod.yml
+      service: nginx-exporter

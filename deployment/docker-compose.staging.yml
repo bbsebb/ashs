@@ -1,0 +1,10 @@
+services:
+  nginx:
+    extends:
+      file: nginx/docker-compose-staging.yml
+      service: nginx
+
+  nginx-exporter:
+    extends:
+      file: nginx/docker-compose-staging.yml
+      service: nginx-exporter
