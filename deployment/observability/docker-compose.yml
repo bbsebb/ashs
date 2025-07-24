@@ -16,7 +16,7 @@ services:
     container_name: tempo
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./.tempo/tempo-data:/var/tempo
+      - tempo_data:/var/tempo
       - ./tempo/tempo.yml:/etc/tempo.yaml:ro
     #    ports:
     #      - "3200:3200"  # Tempo
@@ -56,5 +56,6 @@ networks:
 
 volumes:
   prometheus_data:
+  tempo_data:
   loki_data:
   grafana_data:

@@ -27,3 +27,5 @@ out/
 /deployment/observability/.tempo/
 /deployment/nginx/nginx-selfsigned.crt
 /deployment/nginx/nginx-selfsigned.key
+/deployment/nginx/certs/ashs-local.crt
+/deployment/nginx/certs/ashs-local.key
