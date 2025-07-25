@@ -1,31 +1,4 @@
 services:
-  # NGINX REVERSE PROXY
-  nginx:
-    extends:
-      file: nginx/docker-compose-prod.yml
-      service: nginx
-    env_file:
-      - ./.env
-    depends_on:
-      keycloak:
-        condition: service_started
-      gateway-service:
-        condition: service_healthy
-      ashs-frontend:
-        condition: service_started
-      ashs-frontend-admin:
-        condition: service_started
-      grafana:
-        condition: service_healthy
-
-  nginx-exporter:
-    extends:
-      file: nginx/docker-compose-prod.yml
-      service: nginx-exporter
-    depends_on:
-      nginx:
-        condition: service_started
-
   # OBSERVABILITY SERVICES
   prometheus:
     extends:
@@ -70,6 +43,8 @@ services:
     extends:
       file: ./observability/docker-compose.yml
       service: grafana
+    ports:
+      - "3000:3000"  # Grafana dashboard
     env_file:
       - ./.env
     healthcheck:
@@ -102,6 +77,8 @@ services:
     extends:
       file: ./keycloak/docker-compose.yml
       service: keycloak
+    ports:
+      - "8180:8080"  # Keycloak authentication
     depends_on:
       postgres-kc:
         condition: service_healthy
@@ -204,9 +181,8 @@ services:
   gateway-service:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-gateway-service:${GIT_VERSION}
     container_name: gateway-service
-    # Ports now exposed through nginx
-    # ports:
-    #   - "8080:8080"  # Main API gateway - now accessed via nginx
+    ports:
+      - "8080:8080"  # Main API gateway
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - CONFIG_SERVER=${INTERNAL_CONFIG_SERVER}
@@ -334,9 +310,8 @@ services:
   ashs-frontend:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-ashs-frontend:${GIT_VERSION}
     container_name: ashs-frontend
-    # Ports now exposed through nginx
-    # ports:
-    #   - "4200:80"  # Main frontend - now accessed via nginx
+    ports:
+      - "4200:80"  # Main frontend
     depends_on:
       contact-service:
         condition: service_healthy
@@ -352,9 +327,8 @@ services:
   ashs-frontend-admin:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-ashs-frontend-admin:${GIT_VERSION}
     container_name: ashs-frontend-admin
-    # Ports now exposed through nginx
-    # ports:
-    #   - "4201:80"  # Admin frontend - now accessed via nginx
+    ports:
+      - "4201:80"  # Admin frontend
     depends_on:
       contact-service:
         condition: service_healthy

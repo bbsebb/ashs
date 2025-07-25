@@ -201,7 +201,6 @@ jobs:
 
       - name: Create remote directories
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/nginx"
           ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/keycloak"
           ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/observability/tempo"
           ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/observability/prometheus"
@@ -211,8 +210,6 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no deployment/.env ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/
           scp -o StrictHostKeyChecking=no deployment/docker-compose.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/
-          scp -o StrictHostKeyChecking=no deployment/nginx/docker-compose-prod.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/nginx/
-          scp -o StrictHostKeyChecking=no deployment/nginx/nginx-prod.conf ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/nginx/
           scp -o StrictHostKeyChecking=no deployment/keycloak/docker-compose.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/keycloak/
           scp -o StrictHostKeyChecking=no deployment/observability/docker-compose.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/observability/
           scp -o StrictHostKeyChecking=no deployment/observability/tempo/tempo.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/observability/tempo/tempo.yml
