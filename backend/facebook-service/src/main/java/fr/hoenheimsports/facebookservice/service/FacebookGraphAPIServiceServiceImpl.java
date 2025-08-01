@@ -71,7 +71,7 @@ public class FacebookGraphAPIServiceServiceImpl implements FacebookGraphAPIServi
      *
      * @return A list of feed entities containing the posts and their attachments, or an empty list if no data is available
      */
-    @Cacheable(value = "facebookFeeds")
+    @Cacheable(value = "facebookFeeds", unless = "#result.isEmpty()")
     @Override
     public List<FeedEntity> fetchFacebookFeeds() {
         log.info("Récupération des feeds Facebook");
