@@ -1,9 +1,9 @@
 export const environment = {
   production: true,
-  baseUrl: 'http://gateway:8080/api',
+  baseUrl: 'https://api.hoenheimsports.fr/api',
   keycloak: {
     realm: 'ashs',
-    url: 'http://keycloak:8080',
+    url: 'https://kc.hoenheimsports.fr',
     clientId: 'angular-frontend-admin'
   }
 };

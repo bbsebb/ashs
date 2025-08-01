@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  baseUrl: 'http://gateway:8080/api'
+  baseUrl: 'https://api.hoenheimsports.fr/api'
 
 
 };
