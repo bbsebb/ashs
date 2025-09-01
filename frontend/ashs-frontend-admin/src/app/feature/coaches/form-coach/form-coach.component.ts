@@ -64,8 +64,8 @@ export class FormCoachComponent {
     return this.formBuilder.group({
       name: this.formBuilder.control<string>(values.name, Validators.required),
       surname: this.formBuilder.control<string>(values.surname, Validators.required),
-      email: this.formBuilder.control<string>(values.email, [Validators.required, Validators.email]),
-      phone: this.formBuilder.control<string>(values.phone, [Validators.required, Validators.pattern('\\+?[0-9]{10,15}')])
+      email: this.formBuilder.control<string>(values.email, [Validators.email]),
+      phone: this.formBuilder.control<string>(values.phone, [Validators.pattern('\\+?[0-9]{10,15}')])
     });
   }
 
