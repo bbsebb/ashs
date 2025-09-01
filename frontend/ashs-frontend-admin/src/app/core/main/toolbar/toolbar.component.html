@@ -8,14 +8,16 @@
       <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
     </button>
   }
-
-  <a class="logo" routerLink="/"></a>
-  <span>Administration ASHS</span>
-
+  @if (!isHandset()) {
+    <a class="logo" routerLink="/"></a>
+    <span>Administration ASHS</span>
+  }
   <span class="spacer"></span>
 
   @if (keycloakService.isAuthenticated()) {
-    <span class="username">{{ keycloakService.getUsername() }}</span>
+    @if (!isHandset()) {
+      <span class="username">{{ keycloakService.getUsername() }}</span>
+    }
     <button mat-button (click)="logout()">Déconnexion</button>
   } @else {
     <button mat-button (click)="login()">Connexion</button>
