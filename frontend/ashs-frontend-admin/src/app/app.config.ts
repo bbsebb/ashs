@@ -22,7 +22,8 @@ export const appConfig: ApplicationConfig = {
       },
       initOptions: {
         onLoad: 'check-sso',
-        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html'
+        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+        redirectUri: window.location.origin + '/home'
       }
     }),
     provideHttpClient(withInterceptors([jwtInterceptor])),
