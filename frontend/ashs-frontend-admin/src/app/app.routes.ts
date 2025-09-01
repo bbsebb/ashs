@@ -11,9 +11,11 @@ import {FormHallComponent} from '@app/feature/halls/form-hall/form-hall.componen
 import {FormCoachComponent} from '@app/feature/coaches/form-coach/form-coach.component';
 import {CoachComponent} from '@app/feature/coaches/coach/coach.component';
 import {roleGuard} from '@app/share/gards/role.guard';
+import {UnauthorizedComponent} from '@app/feature/unauthorized/unauthorized.component';
 
 export const routes: Routes = [
   {path: 'home', component: HomeComponent},
+  {path: 'unauthorized', component: UnauthorizedComponent},
   {
     path: 'halls',
     canActivate: [roleGuard(['USER'])],
