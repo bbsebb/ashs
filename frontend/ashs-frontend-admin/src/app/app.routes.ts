@@ -5,16 +5,18 @@ import {TeamComponent} from '@app/feature/teams/team/team.component';
 import {FormTeamComponent} from '@app/feature/teams/form-team/form-team.component';
 import {CoachesComponent} from '@app/feature/coaches/coaches.component';
 import {HallsComponent} from '@app/feature/halls/halls.component';
-import {TestComponent} from '@app/feature/test/test.component';
+import {HomeComponent} from '@app/feature/home/home.component';
 import {HallComponent} from '@app/feature/halls/hall/hall.component';
 import {FormHallComponent} from '@app/feature/halls/form-hall/form-hall.component';
 import {FormCoachComponent} from '@app/feature/coaches/form-coach/form-coach.component';
 import {CoachComponent} from '@app/feature/coaches/coach/coach.component';
+import {roleGuard} from '@app/share/gards/role.guard';
 
 export const routes: Routes = [
-  {path: 'home', component: TestComponent},
+  {path: 'home', component: HomeComponent},
   {
     path: 'halls',
+    canActivate: [roleGuard(['USER'])],
     children: [
       {path: '', component: HallsComponent},
       {path: 'create', component: FormHallComponent},
@@ -24,6 +26,7 @@ export const routes: Routes = [
   },
   {
     path: 'coaches',
+    canActivate: [roleGuard(['USER'])],
     children: [
       {path: '', component: CoachesComponent},
       {path: 'create', component: FormCoachComponent},
@@ -33,6 +36,7 @@ export const routes: Routes = [
   },
   {
     path: 'teams',
+    canActivate: [roleGuard(['USER'])],
     children: [
       {path: '', component: TeamsComponent},
       {path: 'create', component: FormTeamComponent},

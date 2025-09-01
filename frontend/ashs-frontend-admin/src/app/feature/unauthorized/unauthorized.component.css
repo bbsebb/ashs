@@ -1,0 +1,149 @@
+.unauthorized-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.unauthorized-card {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+mat-card-header {
+  justify-content: center;
+  padding-top: 20px;
+}
+
+.warning-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  color: #ff9800;
+}
+
+.card-content {
+  padding: 20px 30px;
+}
+
+.error-code {
+  font-size: 4rem;
+  margin: 0;
+  color: #ff9800;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.error-title {
+  font-size: 2rem;
+  margin-top: 10px;
+  margin-bottom: 1rem;
+  color: #343a40;
+}
+
+.user-info {
+  background-color: #e3f2fd;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border-left: 4px solid #2196f3;
+}
+
+.welcome-text {
+  margin: 0;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+.info-section {
+  display: flex;
+  align-items: flex-start;
+  text-align: left;
+  background-color: #fff3e0;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border-left: 4px solid #ff9800;
+}
+
+.info-icon {
+  color: #ff9800;
+  margin-right: 15px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-text {
+  flex: 1;
+}
+
+.info-text p {
+  margin: 0 0 10px 0;
+  color: #e65100;
+  font-weight: 500;
+}
+
+.info-text ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #bf360c;
+}
+
+.info-text li {
+  margin: 5px 0;
+  line-height: 1.4;
+}
+
+.action-buttons {
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+button {
+  min-width: 150px;
+}
+
+button mat-icon {
+  margin-right: 8px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .unauthorized-card {
+    margin: 10px;
+  }
+
+  .card-content {
+    padding: 15px 20px;
+  }
+
+  .error-code {
+    font-size: 3rem;
+  }
+
+  .error-title {
+    font-size: 1.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button {
+    width: 100%;
+  }
+}

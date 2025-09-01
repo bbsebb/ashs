@@ -1,0 +1,38 @@
+<div class="unauthorized-container">
+  <mat-card class="unauthorized-card">
+    <mat-card-header>
+      <mat-icon class="warning-icon">warning</mat-icon>
+    </mat-card-header>
+    <mat-card-content class="card-content">
+      <div class="error-code">403</div>
+      <h2 class="error-title">Accès non autorisé</h2>
+      <div class="user-info">
+        <p class="welcome-text">Bonjour {{ getUserName() }}</p>
+      </div>
+      <p class="error-message">
+        Vous n'avez pas les permissions nécessaires pour accéder à cette page.
+      </p>
+      <div class="info-section">
+        <mat-icon class="info-icon">info</mat-icon>
+        <div class="info-text">
+          <p><strong>Pour obtenir l'accès :</strong></p>
+          <ul>
+            <li>Contactez l'administrateur du site</li>
+            <li>Demandez l'attribution des rôles appropriés</li>
+            <li>Précisez les sections auxquelles vous souhaitez accéder</li>
+          </ul>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="start" class="action-buttons">
+      <button mat-raised-button color="primary" (click)="goHome()">
+        <mat-icon>home</mat-icon>
+        Retour à l'accueil
+      </button>
+      <button mat-stroked-button color="warn" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Se déconnecter
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

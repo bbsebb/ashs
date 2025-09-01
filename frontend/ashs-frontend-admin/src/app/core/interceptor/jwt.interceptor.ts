@@ -1,7 +1,8 @@
 import {HttpInterceptorFn} from '@angular/common/http';
 import {KeycloakService} from '@app/share/service/keycloak.service';
 import {inject} from '@angular/core';
-import {NGX_LOGGER, NgxLoggerService} from 'ngx-logger';
+import {NGX_LOGGER} from 'ngx-logger';
+import {catchError, from, switchMap} from 'rxjs';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const keycloakService = inject(KeycloakService);
@@ -11,24 +12,33 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     url: req.url,
     method: req.method
   });
+  logger.debug('Authentification requise ?', keycloakService.isAuthenticated());
+  // Vérifier si la requête nécessite une authentification
+  if (req.url.includes('/api') && keycloakService.isAuthenticated()) {
+    logger.debug('Ajout du token d\'authentification à la requête');
 
-  const token = keycloakService.getToken();
-
-  if (token) {
-    logger.debug('Token Keycloak trouvé, ajout de l\'en-tête Authorization');
-
-    const cloned = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    logger.debug('Requête clonée avec l\'en-tête Authorization');
-    return next(cloned);
+    return from(keycloakService.getValidToken()).pipe(
+      switchMap(token => {
+        if (token) {
+          const cloned = req.clone({
+            setHeaders: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          logger.debug('Token ajouté avec succès');
+          return next(cloned);
+        } else {
+          logger.warn('Token non disponible');
+          return next(req);
+        }
+      }),
+      catchError(error => {
+        logger.error('Erreur lors de l\'ajout du token:', error);
+        return next(req);
+      })
+    );
   }
 
-  logger.warn('Aucun token Keycloak trouvé, la requête sera envoyée sans authentification', {
-    url: req.url
-  });
+  logger.debug('Requête envoyée sans authentification');
   return next(req);
 };

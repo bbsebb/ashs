@@ -3,7 +3,7 @@
                [attr.role]="isHandset() ? 'dialog' : 'navigation'"
                [mode]="isHandset() ? 'over' : 'side'"
                [opened]="!isHandset()">
-  <app-navigation></app-navigation>
+    <app-navigation></app-navigation>
   </mat-sidenav>
   <mat-sidenav-content>
     <app-toolbar [isHandset]="isHandset()" (opening)="drawer.toggle()"></app-toolbar>

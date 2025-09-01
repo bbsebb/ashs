@@ -1,0 +1,123 @@
+<div class="home-container">
+  <!-- Section d'en-tête -->
+  <section class="hero-section">
+    <mat-card class="welcome-card">
+      <mat-card-content>
+        <header class="welcome-content">
+          <mat-icon class="hero-icon" aria-label="Icône d'accueil">home</mat-icon>
+          <h1 class="hero-title">Bienvenue sur ASHS Admin</h1>
+
+          <!-- Accueil utilisateur authentifié -->
+          @if (authenticationStatus().isAuthenticated) {
+            <div class="authenticated-welcome">
+              <p class="hero-subtitle">Bonjour !</p>
+              <p>Vous êtes connecté et pouvez accéder à toutes les fonctionnalités de l'application.</p>
+            </div>
+          } @else {
+            <!-- Invitation utilisateur non authentifié -->
+            <div class="unauthenticated-welcome">
+              <p class="hero-subtitle">Système d'administration pour la gestion sportive</p>
+              <p class="auth-message">
+                Pour accéder à l'application, vous devez vous connecter ou créer un compte.
+              </p>
+
+              <div class="auth-buttons">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="onLogin()"
+                  class="auth-button"
+                  aria-label="Se connecter à l'application">
+                  <mat-icon>login</mat-icon>
+                  Se connecter
+                </button>
+                <button
+                  mat-raised-button
+                  color="accent"
+                  (click)="onRegister()"
+                  class="auth-button"
+                  aria-label="S'inscrire à l'application">
+                  <mat-icon>person_add</mat-icon>
+                  S'inscrire
+                </button>
+              </div>
+
+              <!-- Avis d'approbation administrateur -->
+              <mat-card class="approval-notice" role="alert">
+                <mat-card-content>
+                  <div class="notice-content">
+                    <mat-icon color="warn" aria-label="Information importante">info</mat-icon>
+                    <div class="notice-text">
+                      <h3>Information importante</h3>
+                      <p>
+                        Après votre inscription, votre compte devra être validé par un administrateur
+                        avant que vous puissiez accéder à l'application. Vous recevrez une notification
+                        par email une fois votre compte approuvé.
+                      </p>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          }
+        </header>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <!-- Section des fonctionnalités -->
+  <section class="features-section">
+    <header class="section-header">
+      <h2 class="section-title">Fonctionnalités disponibles</h2>
+      <p class="section-subtitle">Découvrez les différents modules de gestion disponibles</p>
+    </header>
+
+    <div class="features-grid">
+      @for (feature of features; track trackByFeature($index, feature)) {
+        <mat-card class="feature-card">
+          <mat-card-header>
+            <div mat-card-avatar>
+              <mat-icon [color]="feature.color" class="feature-icon" [attr.aria-label]="'Icône ' + feature.title">
+                {{ feature.icon }}
+              </mat-icon>
+            </div>
+            <mat-card-title>{{ feature.title }}</mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p class="feature-description">{{ feature.description }}</p>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button
+              mat-button
+              [color]="feature.color"
+              [routerLink]="authenticationStatus().isAuthenticated ? feature.route : null"
+              [disabled]="!authenticationStatus().isAuthenticated"
+              class="feature-button"
+              [attr.aria-label]="'Accéder à ' + feature.title">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Avis d'accès pour les utilisateurs non authentifiés -->
+    @if (!authenticationStatus().isAuthenticated) {
+      <div class="access-notice">
+        <mat-card class="notice-card" role="alert">
+          <mat-card-content>
+            <div class="notice-content">
+              <mat-icon color="primary" aria-label="Accès verrouillé">lock</mat-icon>
+              <p>Connectez-vous pour accéder aux fonctionnalités de gestion</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  </section>
+</div>

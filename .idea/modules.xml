@@ -3,6 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ashs.iml" filepath="$PROJECT_DIR$/.idea/ashs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/contact-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/contact-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/facebook-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/facebook-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/facebook-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/facebook-service.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/training-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/training-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/training-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/training-service.test.iml" />
     </modules>
   </component>
 </project>

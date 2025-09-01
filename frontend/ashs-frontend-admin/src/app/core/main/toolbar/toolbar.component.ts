@@ -27,10 +27,10 @@ export class ToolbarComponent {
   }
 
   login() {
-    this.keycloakService.login();
+    void this.keycloakService.login();
   }
 
   logout() {
-    this.keycloakService.logout();
+    void this.keycloakService.logout();
   }
 }

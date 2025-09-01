@@ -10,6 +10,7 @@ import {RouterOutlet} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {NavigationComponent} from './navigation/navigation.component';
 import {ToolbarComponent} from './toolbar/toolbar.component';
+import {HasRolesDirective} from 'keycloak-angular';
 
 @Component({
   selector: 'app-main',
@@ -24,6 +25,7 @@ import {ToolbarComponent} from './toolbar/toolbar.component';
     RouterOutlet,
     NavigationComponent,
     ToolbarComponent,
+    HasRolesDirective,
 
   ]
 })
@@ -34,5 +36,5 @@ export class MainComponent {
     .pipe(
       map(result => result.matches),
       shareReplay()
-    ),{ initialValue: false });
+    ), {initialValue: false});
 }
