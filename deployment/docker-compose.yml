@@ -1,87 +1,15 @@
+networks:
+  observability-net:
+    external: true
+  keycloak-net:
+    external: true
+  backend-network:
+    driver: bridge
+
 services:
   # OBSERVABILITY SERVICES
-  prometheus:
-    extends:
-      file: ./observability/docker-compose.yml
-      service: prometheus
-    env_file:
-      - ./.env
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
 
-  tempo:
-    extends:
-      file: ./observability/docker-compose.yml
-      service: tempo
-    env_file:
-      - ./.env
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3200/status" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
 
-  loki:
-    extends:
-      file: ./observability/docker-compose.yml
-      service: loki
-    env_file:
-      - ./.env
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
-
-  grafana:
-    extends:
-      file: ./observability/docker-compose.yml
-      service: grafana
-    ports:
-      - "3000:3000"  # Grafana dashboard
-    env_file:
-      - ./.env
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
-    depends_on:
-      prometheus:
-        condition: service_healthy
-      tempo:
-        condition: service_healthy
-      loki:
-        condition: service_healthy
-
-  # KEYCLOAK SERVICES
-  postgres-kc:
-    extends:
-      file: ./keycloak/docker-compose.yml
-      service: postgres-kc
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  keycloak:
-    extends:
-      file: ./keycloak/docker-compose.yml
-      service: keycloak
-    ports:
-      - "8180:8080"  # Keycloak authentication
-    depends_on:
-      postgres-kc:
-        condition: service_healthy
 
   # DATABASE SERVICES
   postgres-training-service:
@@ -140,18 +68,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
-    depends_on:
-      tempo:
-        condition: service_healthy
-      prometheus:
-        condition: service_healthy
-      grafana:
-        condition: service_healthy
-      loki:
-        condition: service_healthy
     networks:
       - backend-network
-      - observability-network
+      - observability-net
 
 
   discovery-service:
@@ -174,7 +93,7 @@ services:
         condition: service_healthy
     networks:
       - backend-network
-      - observability-network
+      - observability-net
 
 
 
@@ -204,8 +123,8 @@ services:
         condition: service_healthy
     networks:
       - backend-network
-      - observability-network
-      - keycloak-network
+      - observability-net
+      - keycloak-net
 
   contact-service:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-contact-service:${GIT_VERSION}
@@ -236,8 +155,8 @@ services:
         condition: service_healthy
     networks:
       - backend-network
-      - observability-network
-      - keycloak-network
+      - observability-net
+      - keycloak-net
 
   training-service:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-training-service:${GIT_VERSION}
@@ -268,8 +187,8 @@ services:
         condition: service_healthy
     networks:
       - backend-network
-      - observability-network
-      - keycloak-network
+      - observability-net
+      - keycloak-net
 
   facebook-service:
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/ashs-facebook-service:${GIT_VERSION}
@@ -303,8 +222,8 @@ services:
         condition: service_healthy
     networks:
       - backend-network
-      - observability-network
-      - keycloak-network
+      - observability-net
+      - keycloak-net
 
   # FRONTEND APPLICATIONS
   ashs-frontend:
@@ -341,20 +260,8 @@ services:
     networks:
       - backend-network
 
-networks:
-  observability-network:
-    driver: bridge
-  keycloak-network:
-    driver: bridge
-  backend-network:
-    driver: bridge
+
 
 volumes:
-  prometheus_data:
-  tempo_data:
-  loki_data:
-  grafana_data:
-  postgres_data_kc:
-  keycloak_data:
   postgres_data_training_service:
   postgres_data_facebook_service:

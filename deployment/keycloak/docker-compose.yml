@@ -7,6 +7,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: kc-db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     volumes:
       - postgres_data_kc:/var/lib/postgresql/data
     networks:
@@ -29,8 +35,11 @@ services:
       KC_HOSTNAME_STRICT: true
       KC_HOSTNAME_STRICT_HTTPS: true
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
+    ports:
+      - "8180:8080"
     depends_on:
-      - postgres-kc
+      postgres-kc:
+        condition: service_healthy
     volumes:
       - keycloak_data:/opt/keycloak/data
       - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
@@ -40,6 +49,8 @@ services:
 networks:
   keycloak-network:
     driver: bridge
+  keycloak-net:
+    external: true
 
 volumes:
   postgres_data_kc:
