@@ -6,16 +6,13 @@ services:
     env_file:
       - ./.env
     depends_on:
-      keycloak:
-        condition: service_started
       gateway-service:
         condition: service_healthy
       ashs-frontend:
         condition: service_started
       ashs-frontend-admin:
         condition: service_started
-      grafana:
-        condition: service_healthy
+
 
   nginx-exporter:
     extends:
