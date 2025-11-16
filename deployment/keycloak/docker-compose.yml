@@ -49,8 +49,7 @@ services:
 networks:
   keycloak-network:
     driver: bridge
-  keycloak-net:
-    external: true
+    name: keycloak-network
 
 volumes:
   postgres_data_kc:
