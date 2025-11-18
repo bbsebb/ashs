@@ -32,3 +32,5 @@ out/
 /deployment/observability/.env
 /deployment/keycloak/.env
 *.env
+/deployment/nginx/certs/fullchain.pem
+/deployment/nginx/certs/privkey.pem

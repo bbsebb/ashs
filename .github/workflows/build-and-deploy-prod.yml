@@ -157,26 +157,26 @@ jobs:
           # Database Credentials
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_USER=${{ vars.POSTGRES_USER }}
-
+          
           # Email Configuration
           CONTACT_MAIL=${{ vars.CONTACT_MAIL }}
           MAIL_HOST=${{ vars.MAIL_HOST }}
           MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
           MAIL_PORT=${{ vars.MAIL_PORT }}
           MAIL_USERNAME=${{ vars.MAIL_USERNAME }}
-
+          
           # Facebook API Configuration
           FACEBOOK_API_URI=${{ vars.FACEBOOK_API_URI }}
           FACEBOOK_CLIENT_ID=${{ vars.FACEBOOK_CLIENT_ID }}
           FACEBOOK_CLIENT_SECRET=${{ secrets.FACEBOOK_CLIENT_SECRET }}
-
+          
           # Git Configuration
           GIT_VERSION=${{ env.GIT_VERSION }}
           GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
-
-          # Grafana Configuration
-          GF_SECURITY_ADMIN_PASSWORD=${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
-          GF_SECURITY_ADMIN_USER=${{ vars.GF_SECURITY_ADMIN_USER }}
+          
+          #          # Grafana Configuration
+          #          GF_SECURITY_ADMIN_PASSWORD=${{ secrets.GF_SECURITY_ADMIN_PASSWORD }}
+          #          GF_SECURITY_ADMIN_USER=${{ vars.GF_SECURITY_ADMIN_USER }}
 
           # Internal Network Configuration
           CONFIG_SERVICE_KEYSTORE_PASS=${{ secrets.CONFIG_SERVICE_KEYSTORE_PASS }}
@@ -186,12 +186,12 @@ jobs:
           INTERNAL_LOKI_URL=${{ vars.INTERNAL_LOKI_URL }}
           INTERNAL_ZIPKIN_ENDPOINT=${{ vars.INTERNAL_ZIPKIN_ENDPOINT }}
           JWT_ISSUER_URI=${{ vars.JWT_ISSUER_URI }}
-
-          # Keycloak Configuration
-          KEYCLOAK_ADMIN=${{ vars.KEYCLOAK_ADMIN }}
-          KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-          KEYCLOAK_HOSTNAME=${{ vars.KEYCLOAK_HOSTNAME }}
-          KEYCLOAK_HOSTNAME_ADMIN=${{ vars.KEYCLOAK_HOSTNAME_ADMIN }}
+          
+          #          # Keycloak Configuration
+          #          KEYCLOAK_ADMIN=${{ vars.KEYCLOAK_ADMIN }}
+          #          KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+          #          KEYCLOAK_HOSTNAME=${{ vars.KEYCLOAK_HOSTNAME }}
+          #          KEYCLOAK_HOSTNAME_ADMIN=${{ vars.KEYCLOAK_HOSTNAME_ADMIN }}
           EOF
 
       - name: Setup SSH
@@ -199,22 +199,11 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      - name: Create remote directories
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/keycloak"
-          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/observability/tempo"
-          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/observability/prometheus"
-          ssh -o StrictHostKeyChecking=no ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }} "mkdir -p /home/${{ vars.VPS_USERNAME }}/ashs/observability/grafana/datasources"
 
       - name: Copy configuration files to VPS
         run: |
           scp -o StrictHostKeyChecking=no deployment/.env ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/
           scp -o StrictHostKeyChecking=no deployment/docker-compose.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/
-          scp -o StrictHostKeyChecking=no deployment/keycloak/docker-compose.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/keycloak/
-          scp -o StrictHostKeyChecking=no deployment/observability/docker-compose.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/observability/
-          scp -o StrictHostKeyChecking=no deployment/observability/tempo/tempo.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/observability/tempo/tempo.yml
-          scp -o StrictHostKeyChecking=no deployment/observability/prometheus/prometheus.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/observability/prometheus/
-          scp -o StrictHostKeyChecking=no deployment/observability/grafana/datasources/datasources.yml ${{ vars.VPS_USERNAME }}@${{ vars.VPS_HOST }}:/home/${{ vars.VPS_USERNAME }}/ashs/observability/grafana/datasources/
 
       - name: Deploy to VPS
         run: |
