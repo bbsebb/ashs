@@ -48,6 +48,7 @@ export class CoachesStore {
     })
   }
 
+
   reloadCoaches() {
     this.coachesResource.reload();
   }

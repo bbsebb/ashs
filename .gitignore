@@ -31,6 +31,7 @@ out/
 /deployment/nginx/certs/ashs-local.key
 /deployment/observability/.env
 /deployment/keycloak/.env
-*.env
+*.env*
 /deployment/nginx/certs/fullchain.pem
 /deployment/nginx/certs/privkey.pem
+

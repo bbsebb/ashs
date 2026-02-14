@@ -120,7 +120,8 @@ jobs:
           EXPOSE 80
           CMD ["nginx", "-g", "daemon off;"]
           EOF
-
+          
+          
           cat > ${{ matrix.app }}/nginx.conf << 'EOF'
           server {
             listen 80;

@@ -6,9 +6,7 @@ import {HallsStore} from './halls.store';
 import {HALL_SERVICE} from '../service/i-hall.service';
 import {UpdateHallDTORequest} from '../dto/update-hall-d-t-o-request';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class HallStore {
   private readonly hallService = inject(HALL_SERVICE);
   private readonly hallsStore = inject(HallsStore);

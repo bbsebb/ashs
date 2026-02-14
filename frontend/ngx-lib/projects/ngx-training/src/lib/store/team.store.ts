@@ -12,9 +12,7 @@ import {TEAM_SERVICE} from '../service/i-team.service';
  * Store for managing a single team's data and operations
  * Provides functionality for retrieving and updating a team
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class TeamStore {
   private readonly teamService = inject(TEAM_SERVICE);
   private readonly _uri = signal<string | undefined>(undefined);
